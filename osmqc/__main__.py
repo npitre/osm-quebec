@@ -256,10 +256,6 @@ def regions_comparer(lieu, conf, preparer=False):
         proteges = [w for w in plan["retires"] if regions.protege(index.chemins[w].get("tags", {}))]
         plan["proteges"] = regions.reporter_notes(proteges, index, plan)
         actuelles = {c: osm.objets("relation", [r.id])[0] for c, r in rels.items()}
-        out = dossier("sortie", lieu)
-        osmchange.ecrire_osc(osmchange.osc_regions(plan, actuelles, supp[0], supp[1], index,
-                                                   str(cr.get("admin_level", "8"))),
-                             os.path.join(out, "regions.osc"))
         apres, _ = regions.comparer(charger_adresses(lieu), polys, regions.anneaux_proposes(plan, ext))
         plan["verification"] = apres
         print("Limites proposées : %d adresses dans la bonne municipalité, %d non" % (
@@ -271,12 +267,18 @@ def regions_comparer(lieu, conf, preparer=False):
         plan["coupures"] = regions.coupures(idx_routes, nouvelles, anciennes)
         print("Coupures de routes : %s" % ", ".join(
             "%s %d" % kv for kv in Counter(c[0] for c in plan["coupures"]).most_common()))
+        plan["decoupe"] = couper_routes(plan, idx_routes, pbf)
+        out = dossier("sortie", lieu)
+        osmchange.ecrire_osc(osmchange.osc_regions(plan, actuelles, supp[0], supp[1], index,
+                                                   str(cr.get("admin_level", "8"))),
+                             os.path.join(out, "regions.osc"))
         for ligne in plan["rapport"]:
             print("  " + ligne)
         print("Remplacement : %d nœuds et %d chemins créés, %d relations modifiées, "
-              "%d chemins retirés dont %d supprimés; %d chemins protégés." % (
+              "%d chemins retirés dont %d supprimés; %d chemins protégés; %d routes coupées." % (
                   len(plan["noeuds"]), len(plan["chemins"]), len(plan["membres"]),
-                  len(plan["retires"]), len(supp[0]), len(plan["proteges"])))
+                  len(plan["retires"]), len(supp[0]), len(plan["proteges"]),
+                  len(plan["decoupe"]["modifies"])))
         print("Envoi : %s/regions.osc" % out)
     noms = {c: v[0] for c, v in officiel.items()}
     rapport.ecrire_geojson_compact(regions.geojson(polys, anneaux, ecarts, noms,
@@ -285,6 +287,38 @@ def regions_comparer(lieu, conf, preparer=False):
     rapport.ecrire(os.path.join("rapports", lieu, "regions.md"),
                    rapport.regions(lieu, conf, officiel, rels, compte, ecarts, plan, supp))
     print("Révision : rapports/%s/regions.md" % lieu)
+
+
+def couper_routes(plan, idx_routes, pbf):
+    """Coupe les routes aux limites proposées, à partir de leur version
+    actuelle dans OSM. Une route modifiée depuis l'extrait est laissée de
+    côté et signalée."""
+    wids = sorted({c[5] for c in plan["coupures"]
+                   if c[0] in ("coupure à ajouter", "coupure à déplacer")})
+    if not wids:
+        return {"noeuds": {}, "chemins": {}, "modifies": {}, "relations": {}, "rapport": [],
+                "actuels": {}, "rels_actuelles": {}}
+    actuels = {e["id"]: e for e in osm.objets("way", wids)}
+    ignores = []
+    for w in wids:
+        a = actuels.get(w)
+        if a is None or a["nodes"] != idx_routes.chemins[w]["nodes"]:
+            ignores.append(w)
+            actuels.pop(w, None)
+    if pbf:
+        rels_ids = sorted({r for rs in extrait.usages(pbf, [], list(actuels))[2].values() for r in rs})
+    else:
+        rels_ids = sorted({r for w in actuels for r in regions.relations_du_chemin(w)})
+    rels_actuelles = {e["id"]: e for e in osm.objets("relation", rels_ids)}
+    for w, e in actuels.items():
+        idx_routes.chemins[w] = e
+    prochain_noeud = min([-1] + list(plan["noeuds"].values())) - 1
+    prochain_chemin = min([-1] + [w for w, _, _ in plan["chemins"]]) - 1
+    d = regions.decouper(idx_routes, plan["coupures"], rels_actuelles, prochain_noeud, prochain_chemin)
+    d["rapport"] += ["way %d laissé de côté : modifié depuis l'extrait" % w for w in ignores]
+    d["actuels"] = actuels
+    d["rels_actuelles"] = rels_actuelles
+    return d
 
 
 def routes_autour(lieu, lignes):

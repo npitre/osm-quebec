@@ -143,7 +143,10 @@ dans `sortie/LIEU/` (hors du dépôt); les rapports de révision, dans
    de limite (voir la règle 2). Le rapport classe chaque croisement :
    déjà coupé, coupure à ajouter, coupure à déplacer, ou coupure devenue
    inutile (sur l'ancienne limite, entre deux segments aux étiquettes
-   identiques). Rien n'est encore modifié.
+   identiques). Une coupure à ajouter ou à déplacer est faite, et le
+   nouveau segment prend place à côté de l'ancien dans les relations de
+   route qui le contiennent; l'ancienne coupure, devenue inutile, est
+   seulement signalée.
 8. **Lien avec le nœud de lieu** : chaque relation municipale doit avoir
    un membre `label` (ou `admin_centre`) qui pointe vers un nœud `place`
    portant exactement le même `name` que la relation. Sans ce lien,
@@ -349,9 +352,8 @@ Liste au 17 octobre 2026, par ordre de priorité.
 
 ### Régions
 
-4. **Coupures de routes** : couper une route à la nouvelle limite,
-   déplacer une coupure mal placée, fusionner celles devenues inutiles
-   (aujourd'hui seulement rapportées).
+4. **Coupures devenues inutiles** : fusionner les deux segments d'une
+   route coupée sur l'ancienne limite (aujourd'hui seulement signalées).
 5. **Relation de la MRC** : la reconstruire à partir des limites
    extérieures de ses municipalités, pour éviter les tracés doubles le
    long du contour.

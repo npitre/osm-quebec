@@ -113,10 +113,29 @@ def osc_regions(plan, actuelles, supp_chemins, supp_noeuds, index, admin_level="
         tags.update(plan.get("etiquettes", {}).get(wid, {}))
         for k in sorted(tags):
             ET.SubElement(w, "tag", k=k, v=tags[k])
+    # Routes coupées aux limites : nœuds et morceaux neufs.
+    d = plan.get("decoupe") or {}
+    for nid, (lon, lat) in sorted(d.get("noeuds", {}).items(), reverse=True):
+        ET.SubElement(cree, "node", id=str(nid), version="0", lat="%.7f" % lat, lon="%.7f" % lon)
+    for wid, (ids, tags) in sorted(d.get("chemins", {}).items(), reverse=True):
+        w = ET.SubElement(cree, "way", id=str(wid), version="0")
+        for n in ids:
+            ET.SubElement(w, "nd", ref=str(n))
+        for k in sorted(tags):
+            ET.SubElement(w, "tag", k=k, v=tags[k])
     modif = ET.SubElement(racine, "modify")
+    # Les étiquettes des relations ne changent jamais : seulement leurs membres.
     for code, rel in sorted(actuelles.items()):
         r = dict(rel)
         r["members"] = plan["membres"][code]
+        modif.append(element_xml(r, {}))
+    for wid, ids in sorted(d.get("modifies", {}).items()):
+        w = dict(d["actuels"][wid])
+        w["nodes"] = ids
+        modif.append(element_xml(w, {}))
+    for rid, membres in sorted(d.get("relations", {}).items()):
+        r = dict(d["rels_actuelles"][rid])
+        r["members"] = membres
         modif.append(element_xml(r, {}))
     supp = ET.SubElement(racine, "delete")
     for wid in supp_chemins:

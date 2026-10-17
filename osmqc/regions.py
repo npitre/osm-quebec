@@ -355,7 +355,7 @@ def geojson(officiel, osm_rel, ecarts, noms, coupures=None):
                                  "selon_mrnf": m or "aucune", "selon_osm": o or "aucune"}})
     couleurs = {"déjà coupée": "#2ca02c", "coupure à déplacer": "#ff7f0e",
                 "coupure à ajouter": "#d62728", "coupure devenue inutile": "#9467bd"}
-    for action, nom, wid, p, d in coupures or []:
+    for action, nom, wid, p, d, _ in coupures or []:
         f.append({"type": "Feature", "geometry": {"type": "Point", "coordinates": list(p)},
                   "properties": {"coupure": action, "rue": nom, "objet": "way/%d" % wid,
                                  "distance_m": round(d) if d is not None else None,
@@ -398,7 +398,7 @@ def coupures(index, nouvelles, anciennes):
     """Routes nommées qui traversent les limites, et leurs coupures.
     index : objets OSM (routes); nouvelles, anciennes : polylignes des
     limites proposées et actuelles. Renvoie des lignes de rapport :
-    (action, nom, chemin, point, distance)."""
+    (action, nom, chemin, point, distance, chemin qui croise la limite)."""
     grille_n = geo.Grille([l for l in nouvelles if len(l) > 1])
     grille_a = geo.Grille([l for l in anciennes if len(l) > 1])
     routes = [w for w in index.chemins.values()
@@ -430,11 +430,11 @@ def coupures(index, nouvelles, anciennes):
             vus.add(cle)
             proches = sorted((geo.distance(p, b), wid) for b, wid in bouts[nom] if geo.distance(p, b) < 500)
             if proches and proches[0][0] < COUPURE_M:
-                res.append(("déjà coupée", nom, proches[0][1], p, proches[0][0]))
+                res.append(("déjà coupée", nom, proches[0][1], p, proches[0][0], w["id"]))
             elif proches:
-                res.append(("coupure à déplacer", nom, proches[0][1], p, proches[0][0]))
+                res.append(("coupure à déplacer", nom, proches[0][1], p, proches[0][0], w["id"]))
             else:
-                res.append(("coupure à ajouter", nom, w["id"], p, None))
+                res.append(("coupure à ajouter", nom, w["id"], p, None, w["id"]))
     # Coupures au droit d'une limite actuelle qui ne correspondent plus à
     # aucune limite proposée. Seulement si les deux chemins ont les mêmes
     # étiquettes : sinon la coupure sert à autre chose (pont, revêtement).
@@ -442,5 +442,68 @@ def coupures(index, nouvelles, anciennes):
         da = grille_a.distance(b)
         dn = grille_n.distance(b, rayon_deg=0.004)
         if da is not None and da < COUPURE_M and (dn is None or dn > 200):
-            res.append(("coupure devenue inutile", nom, wid, b, da))
+            res.append(("coupure devenue inutile", nom, wid, b, da, None))
+    return res
+
+
+def decouper(index, coupures_, relations_routes, prochain_noeud, prochain_chemin):
+    """Coupe les routes là où elles traversent une limite proposée (cas
+    « coupure à ajouter » et « coupure à déplacer ») : un nœud est ajouté
+    sur la route au point de croisement, sans changer sa géométrie, et le
+    chemin est coupé à ce nœud. Le nœud n'appartient pas au chemin de
+    limite. Le morceau neuf garde les étiquettes de la route et rejoint,
+    juste après elle, chaque relation dont elle est membre (lignes
+    d'autobus, routes numérotées).
+    index : routes (versions actuelles); relations_routes : {id: relation};
+    prochain_noeud, prochain_chemin : premiers identifiants négatifs libres.
+    Renvoie {"noeuds": {id: (lon, lat)}, "chemins": {id: (nœuds, étiquettes)},
+    "modifies": {id: nœuds}, "relations": {id: membres}, "rapport": [...]}."""
+    a_couper = defaultdict(list)
+    for action, nom, _, p, _, wid in coupures_:
+        if action in ("coupure à ajouter", "coupure à déplacer") and wid in index.chemins:
+            a_couper[wid].append(p)
+    res = {"noeuds": {}, "chemins": {}, "modifies": {}, "relations": {}, "rapport": []}
+    nid, wnid = prochain_noeud, prochain_chemin
+    for wid, points in sorted(a_couper.items()):
+        w = index.chemins[wid]
+        noeuds = list(w["nodes"])
+        coupes = []         # positions (indices) des nœuds de coupure
+        for p in points:
+            pts = [index.point(n) for n in noeuds]
+            i = min(range(len(pts) - 1), key=lambda k: geo.distance_segment(p, pts[k], pts[k + 1]))
+            # Un nœud existant tout près du croisement sert de coupure.
+            proche = min((i, i + 1), key=lambda k: geo.distance(p, pts[k]))
+            if geo.distance(p, pts[proche]) < 1:
+                k = proche
+            else:
+                res["noeuds"][nid] = p
+                noeuds.insert(i + 1, nid)
+                index.noeuds[nid] = {"type": "node", "id": nid, "lon": p[0], "lat": p[1], "tags": {}}
+                nid -= 1
+                k = i + 1
+                coupes = [c + 1 if c >= k else c for c in coupes]
+            if 0 < k < len(noeuds) - 1:
+                coupes.append(k)
+        coupes = sorted(set(coupes))
+        if not coupes:
+            continue
+        bornes = [0] + coupes + [len(noeuds) - 1]
+        morceaux = [noeuds[a:b + 1] for a, b in zip(bornes, bornes[1:])]
+        res["modifies"][wid] = morceaux[0]
+        neufs = []
+        for m in morceaux[1:]:
+            res["chemins"][wnid] = (m, dict(w.get("tags", {})))
+            neufs.append(wnid)
+            wnid -= 1
+        for rid, rel in relations_routes.items():
+            membres = res["relations"].get(rid, rel["members"])
+            nouveaux = []
+            for m in membres:
+                nouveaux.append(m)
+                if m["type"] == "way" and m["ref"] == wid:
+                    nouveaux += [{"type": "way", "ref": n, "role": m["role"]} for n in neufs]
+            if nouveaux != membres:
+                res["relations"][rid] = nouveaux
+        res["rapport"].append("way %d (%s) coupé en %d morceaux" % (
+            wid, w.get("tags", {}).get("name", ""), len(morceaux)))
     return res

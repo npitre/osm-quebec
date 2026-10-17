@@ -146,6 +146,13 @@ def regions(lieu, conf, officiel, rels, compte, ecarts, plan, supp):
                 "[%d](https://www.openstreetmap.org/way/%d)" % (w, w) for w in supp[0])
         s += ("\nLe littoral et les autres objets retirés des relations ne sont pas modifiés : "
               "seule leur appartenance aux limites change.\n")
+    if plan and plan.get("decoupe"):
+        d = plan["decoupe"]
+        s += "\n## Routes coupées\n\n"
+        s += ("%d routes coupées, %d nœuds de coupure ajoutés sur les routes, %d morceaux neufs, "
+              "%d relations de route mises à jour.\n\n" % (
+                  len(d["modifies"]), len(d["noeuds"]), len(d["chemins"]), len(d["relations"])))
+        s += "\n".join("- " + r for r in d["rapport"]) + "\n"
     if plan and plan.get("proteges"):
         s += "\n## Chemins protégés\n\n"
         s += ("Ces chemins portent une note, un fixme, une description ou une étiquette "
@@ -166,9 +173,11 @@ def regions(lieu, conf, officiel, rels, compte, ecarts, plan, supp):
         c = plan["coupures"]
         n = Counter(x[0] for x in c)
         s += "\n## Routes qui traversent les limites\n\n"
-        s += ("Une route nommée doit être coupée là où elle traverse une limite municipale, "
-              "pour que chaque côté garde son nom (à moins de %d m). Rien n'est encore "
-              "modifié : ces cas sont à valider.\n\n" % 25)
+        s += ("Une route nommée est coupée exactement là où elle traverse une limite "
+              "municipale (à moins de %d m), même si ses étiquettes sont identiques des deux "
+              "côtés : Nominatim et Photon rattachent chaque segment de rue à une seule "
+              "municipalité. Les coupures « à ajouter » et « à déplacer » sont faites dans le "
+              "fichier d'envoi; une coupure « devenue inutile » est seulement signalée.\n\n" % 25)
         s += tableau(["Situation", "Nombre"], [[k, n[k]] for k in (
             "déjà coupée", "coupure à déplacer", "coupure à ajouter", "coupure devenue inutile")])
         autres = [x for x in c if x[0] != "déjà coupée"]
@@ -176,7 +185,7 @@ def regions(lieu, conf, officiel, rels, compte, ecarts, plan, supp):
             s += "\n" + tableau(["Situation", "Rue", "Chemin", "Position", "Écart"], [
                 [a, nom, "[%d](https://www.openstreetmap.org/way/%d)" % (w, w),
                  "%.5f, %.5f" % (p[1], p[0]), "%.0f m" % d if d is not None else ""]
-                for a, nom, w, p, d in sorted(autres)])
+                for a, nom, w, p, d, _ in sorted(autres, key=lambda x: x[:2])])
     return s
 
 
