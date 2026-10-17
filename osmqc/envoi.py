@@ -85,6 +85,21 @@ def jeton(mode):
     return j
 
 
+def etiquettes(groupe, mode, section=""):
+    """Étiquettes du groupe de modifications : import=yes, source,
+    commentaire et lien de la discussion publique. L'envoi réel est refusé
+    sans discussion."""
+    tags = {"comment": groupe["comment"], "source": groupe["source"], "import": "yes",
+            "created_by": "osmqc"}
+    if groupe.get("discussion"):
+        tags["discussion"] = groupe["discussion"]
+        tags["comment"] += ". Discussion : " + groupe["discussion"]
+    elif mode == "reel":
+        sys.exit("Pas de discussion inscrite dans [%s.groupe] : un import doit d'abord être "
+                 "annoncé." % section)
+    return tags
+
+
 def envoyer(osc, etiquettes, mode):
     """osc : élément XML osmChange. etiquettes : celles du groupe de
     modifications. mode : « test » ou « reel »."""

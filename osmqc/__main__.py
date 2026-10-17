@@ -148,8 +148,7 @@ def adresses_preparer(lieu, conf):
     # (section rues), pour voir ce qui restera à régler.
     appliquer_modifications(index, conf.get("rues", {}))
     plan_rues, _ = rues.plan_renommage(rues.analyser(charger_adresses(lieu), index))
-    for w, nom in plan_rues.items():
-        index.chemins[w]["tags"]["name"] = nom
+    rues.appliquer(index, plan_rues)
     appliquer_modifications(index, ca)
     pos = positions.Positions(ca["positions"]) if "positions" in ca else None
     plan = adresses.preparer(charger_adresses(lieu), index, ca, pos)
@@ -399,13 +398,7 @@ def envoyer(lieu, conf, section, args):
     mode = "reel" if "--reel" in args else "test" if "--test" in args else None
     if not mode:
         sys.exit("Ajoutez --test (serveur de test) ou --reel (OpenStreetMap).")
-    g = conf[section]["groupe"]
-    tags = {"comment": g["comment"], "source": g["source"], "import": "yes", "created_by": "osmqc"}
-    if g.get("discussion"):
-        tags["discussion"] = g["discussion"]
-        tags["comment"] += ". Discussion : " + g["discussion"]
-    elif mode == "reel":
-        sys.exit("Pas de discussion inscrite dans [%s.groupe] : un import doit d'abord être annoncé." % section)
+    tags = envoi.etiquettes(conf[section]["groupe"], mode, section)
     osc = ET.parse(os.path.join("sortie", lieu, section + ".osc")).getroot()
     envoi.envoyer(osc, tags, mode)
 

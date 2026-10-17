@@ -160,3 +160,11 @@ def etiquettes_renommage(actuelles, nouveau, demandees=None):
     if ancien not in gardes:
         tags["old_name"] = ";".join([v for v in (tags.get("old_name") or actuelles.get("old_name") or "").split(";") if v] + [ancien])
     return tags
+
+
+def appliquer(index, plan):
+    """Applique en mémoire des renommages {chemin: nom}, pour préparer les
+    adresses comme si les rues étaient déjà renommées."""
+    for w, nom in plan.items():
+        if w in index.chemins:
+            index.chemins[w].setdefault("tags", {})["name"] = nom
