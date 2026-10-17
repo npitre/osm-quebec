@@ -222,9 +222,13 @@ dans `sortie/LIEU/` (hors du dépôt); les rapports de révision, dans
 8. **Position** : le point du RQA, sauf si une source plus précise est
    donnée, par exemple les portes d'entrée placées à la main par la
    Chaire Mobilité (voir « Le fichier d'un lieu »). Ce point est ignoré
-   s'il est trop loin du point du RQA (150 m par défaut), ou si la même
-   unité d'évaluation porte plusieurs numéros (la porte ne dit pas
-   lequel); il sera alors corrigé manuellement plus tard. Le rapport
+   si la même unité d'évaluation porte plusieurs numéros (la porte ne dit
+   pas lequel); les logements d'un même numéro partagent la porte. Un
+   point d'un GeoJSON est aussi ignoré s'il est trop loin du point du RQA
+   (150 m par défaut); une porte de la Chaire Mobilité, vérifiée à la
+   main, est gardée même loin du RQA, dont les points sont parfois
+   décalés d'un terrain, et signalée dans le rapport. Un point ignoré
+   sera corrigé manuellement plus tard. Le rapport
    indique la source retenue pour chaque adresse. Une étiquette
    `entrance=*` n'est ajoutée que si le point de cette source est sur le
    contour d'un bâtiment (à moins de 1 m) : `home` pour une adresse
@@ -290,7 +294,7 @@ exclure = [ { municipalite = "80135", rue = "Chemin du Tour-du-Lac", numero = "1
 fichier = "donnees/Iles_de_la_Madeleine/portes.csv"   # CSV ou GeoJSON, voir plus bas
 # propriete = "matricule"            # GeoJSON : propriété qui sert de clé
 # cle_rqa = "id_provinc"             # ou matricule, lot, ident, adresse
-ecart_max_m = 150
+ecart_max_m = 150                    # GeoJSON seulement
 nom = "portes"
 
 [[rues.modifier]]                    # renommages décidés à la main
@@ -311,7 +315,11 @@ Le CSV est celui du rôle d'évaluation corrigé par la Chaire Mobilité
 EWKT ou EWKB hexadécimal, comme l'écrit PostGIS),
 `geog_changed_entrance_aligned`, `geog_approximate` et `is_ignored`.
 Seuls les points placés sur la porte, ni approximatifs ni ignorés, sont
-retenus. Un GeoJSON de points est relié au RQA par la propriété
+retenus. Un point approximatif est une porte que la Chaire Mobilité n'a
+pu déterminer avec certitude; son erreur maximale
+(`geog_approximate_max_error_distance_m`, pas encore disponible pour
+toutes les régions) pourra servir plus tard à en accepter certains. Un
+GeoJSON de points est relié au RQA par la propriété
 `propriete`.
 
 ## Durées et usage des serveurs

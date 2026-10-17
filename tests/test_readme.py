@@ -332,19 +332,27 @@ class Adresses(unittest.TestCase):
                   "80135%s,SRID=4326;POINT(%r %r),t,f,f" % ("2" * 18, *P(3, 1)),
                   "80135%s,SRID=4326;POINT(%r %r),false,false,false" % ("3" * 18, *P(4, 1)),
                   "80135%s,SRID=4326;POINT(%r %r),true,true,false" % ("4" * 18, *P(5, 1)),
-                  "80135%s,SRID=4326;POINT(%r %r),true,false,true" % ("5" * 18, *P(6, 1))]
+                  "80135%s,SRID=4326;POINT(%r %r),true,false,true" % ("5" * 18, *P(6, 1)),
+                  "80135%s,SRID=4326;POINT(%r %r),true,false,false" % ("6" * 18, *P(30, 1))]
         with tempfile.NamedTemporaryFile("w", suffix=".csv", delete=False) as fh:
             fh.write("\n".join(lignes) + "\n")
         self.addCleanup(os.unlink, fh.name)
         pos = positions.Positions({"fichier": fh.name})
         self.assertEqual(pos.champ, "id_provinc")
-        self.assertEqual(set(pos.points), {"80135" + "1" * 18, "80135" + "2" * 18})
+        self.assertEqual(set(pos.points), {"80135" + c * 18 for c in "126"})
         self.assertEqual(pos.ecartes, {"pas sur la porte": 1, "approximatif": 1, "ignoré": 1})
         a = [adr("480", matricule="1" * 18), adr("490", dx=3, matricule="2" * 18),
-             adr("492", dx=3, matricule="2" * 18), adr("500", dx=4, matricule="3" * 18)]
+             adr("492", dx=3, matricule="2" * 18), adr("500", dx=4, matricule="3" * 18),
+             adr("600", dx=6, matricule="6" * 18), adr("600", dx=6, unite="2", matricule="6" * 18)]
         p = adresses.preparer(a, rue_osm(), {}, pos)
         source = {l.numero: l.position for l in p.rapport}
-        self.assertEqual(source, {"480": "portes", "490": "RQA", "492": "RQA", "500": "RQA"})
+        self.assertEqual(source, {"480": "portes", "490": "RQA", "492": "RQA", "500": "RQA",
+                                  "600": "portes"})
+        # Porte vérifiée à près de 2 km du RQA : gardée et signalée; les
+        # logements du même numéro la partagent.
+        (l600,) = [l for l in p.rapport if l.numero == "600"]
+        self.assertIn("vérifié, à 1855 m", l600.detail)
+        self.assertEqual(l600.statut, "nouveau")
         self.assertIn(porte, [pt for _, pt in p.creer])
 
 

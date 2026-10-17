@@ -15,10 +15,13 @@
 #   lot         numéro de lot
 #   ident       identifiant_unique_adresse du RQA
 #   adresse     « numéro|nom de rue|code municipalité »
-# Sans correspondance, si le point est trop loin de celui du RQA (ce qui
-# trahit une erreur d'appariement), ou si une même unité d'évaluation
-# porte plusieurs numéros (une porte ne dit pas lequel), on garde le
-# point du MRNF.
+# Sans correspondance, ou si une même unité d'évaluation porte plusieurs
+# numéros (une porte ne dit pas lequel), on garde le point du MRNF. Un
+# point d'un GeoJSON trop loin de celui du RQA (ce qui trahit une erreur
+# d'appariement) est aussi ignoré. Une porte du CSV, elle, a été vérifiée
+# à la main : elle est gardée même loin du RQA (dont les points sont
+# parfois décalés d'un terrain), avec une remarque dans le rapport.
+# Les unités d'un même numéro (101-1234, 102-1234) partagent la porte.
 
 import csv
 import json
@@ -106,10 +109,12 @@ def lire_geojson(fichier, prop):
 class Positions:
     def __init__(self, conf):
         """conf : section [positions] du lieu (fichier, propriete, cle_rqa,
-        ecart_max_m, nom). Pour un CSV, la clé est id_provinc par défaut."""
+        ecart_max_m, nom). Pour un CSV, la clé est id_provinc par défaut,
+        et ses portes vérifiées ne sont pas soumises à ecart_max_m."""
         en_csv = conf["fichier"].lower().endswith(".csv")
         self.champ = conf.get("cle_rqa", "id_provinc" if en_csv else "matricule")
         self.ecart_max = conf.get("ecart_max_m", 150)
+        self.verifiees = en_csv
         self.nom = conf.get("nom", "portes")
         self.ecartes = {}
         if en_csv:
@@ -137,6 +142,8 @@ class Positions:
             return a.point, "RQA", "point %s ignoré : %d numéros pour la même unité d'évaluation" % (
                 self.nom, self.partages[cle])
         d = geo.distance(p, a.point)
+        if d > self.ecart_max and self.verifiees:
+            return p, self.nom, "point %s vérifié, à %.0f m du point RQA" % (self.nom, d)
         if d > self.ecart_max:
             return a.point, "RQA", "point %s ignoré, à %.0f m du RQA" % (self.nom, d)
         return p, self.nom, "%.0f m du point RQA" % d if d >= 1 else ""
