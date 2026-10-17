@@ -97,7 +97,7 @@ dans `sortie/LIEU/` (hors du dépôt); les rapports de révision, dans
    [discussion sur les géocodeurs](https://community.openstreetmap.org/t/148901).
 2. **Les rues** ensuite : une adresse n'est créée que si sa rue existe
    dans OSM sous son nom officiel. Les anciens noms ou noms alternatifs
-   sont conservés dans les tags old_name et alt_name.
+   sont conservés dans les tags `old_name` et `alt_name`.
 3. **Les adresses** enfin.
 
 ### Régions
@@ -173,7 +173,10 @@ dans `sortie/LIEU/` (hors du dépôt); les rapports de révision, dans
    La Martinique », « Rue St. Andrew » devient « Rue Saint-Andrew »).
    Tous les segments reliés qui portent ce nom sont renommés, trottoirs
    compris, même loin des adresses; une rue homonyme qui n'y est pas
-   reliée n'est pas touchée.
+   reliée n'est pas touchée. Un renommage garde `alt_name` et
+   `old_name`; l'ancien nom s'ajoute à `old_name` s'il diffère
+   autrement que de ces façons (donc seulement pour un renommage
+   décidé à la main), et s'il n'est pas déjà gardé.
 3. **Autres écarts, rapportés seulement** : une voie proche qui porte un
    autre nom, une voie sans nom le long des adresses (candidate pour
    recevoir le nom officiel), ou aucune voie. Ils se règlent à la main ou

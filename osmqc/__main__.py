@@ -376,8 +376,7 @@ def rues_preparer(lieu, conf):
     changes = []
     for w in sorted(noms):
         e = actuels[w]
-        tags = dict(extra.get(w, {}))
-        tags["name"] = noms[w]
+        tags = rues.etiquettes_renommage(e.get("tags", {}), noms[w], extra.get(w))
         if all(e.get("tags", {}).get(k) == v for k, v in tags.items()):
             continue
         changes.append((w, e.get("tags", {}).get("name", ""), noms[w], raisons[w]))

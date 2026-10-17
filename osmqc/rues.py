@@ -138,3 +138,25 @@ def plan_renommage(rues):
             voulu[w].add(r.officiel)
     conflits = {w: n for w, n in voulu.items() if len(n) > 1}
     return {w: n.pop() for w, n in voulu.items() if len(n) == 1}, conflits
+
+
+def etiquettes_renommage(actuelles, nouveau, demandees=None):
+    """Étiquettes à poser pour renommer une voie. Les noms existants ne se
+    perdent pas : alt_name et old_name restent tels quels, et l'ancien
+    nom passe dans old_name s'il diffère du nouveau autrement que par la
+    casse ou les accents (inutile de garder « Chemin de la Martinique »
+    pour « Chemin de La Martinique ») et n'est pas déjà conservé ailleurs.
+    actuelles : étiquettes actuelles de la voie; demandees : étiquettes
+    décidées à la main (section [[rues.modifier]])."""
+    tags = dict(demandees or {})
+    tags["name"] = nouveau
+    ancien = actuelles.get("name")
+    if not ancien or cle_nom(ancien) == cle_nom(nouveau):
+        return tags
+    gardes = set()
+    for k in ("alt_name", "old_name"):
+        for source in (actuelles, tags):
+            gardes.update(v for v in (source.get(k) or "").split(";") if v)
+    if ancien not in gardes:
+        tags["old_name"] = ";".join([v for v in (tags.get("old_name") or actuelles.get("old_name") or "").split(";") if v] + [ancien])
+    return tags
