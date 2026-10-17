@@ -240,11 +240,21 @@ def regions_comparer(lieu, conf, preparer=False):
         print("%s : %d adresses dans la bonne municipalité, %d non" % (
             src, compte[(src, True)], compte[(src, False)]))
     plan = supp = None
+    # Lien de chaque relation avec son nœud de lieu (règle 8).
+    liens = {c: regions.lien_lieu(r.rel, r.index) for c, r in rels.items()}
+    for c, (statut, detail) in sorted(liens.items()):
+        if statut != "lié":
+            print("Lien avec le nœud de lieu, %s : %s (%s)" % (rels[c].tags.get("name"), statut, detail))
     if preparer:
         ext = regions.Relation(int(cr["exterieur"]), pbf, commun) if cr.get("exterieur") else None
         plan = regions.preparer(polys, rels, ext)
+        plan["liens"] = liens
         index = commun or osm.Index([e for r in rels.values() for e in r.index.tous()])
         supp = regions.supprimables(plan["retires"], index, [r.id for r in rels.values()], pbf)
+        # Chemins protégés (note, fixme, description, disputed*) : jamais
+        # supprimés; leur note passe au chemin neuf le plus proche.
+        proteges = [w for w in plan["retires"] if regions.protege(index.chemins[w].get("tags", {}))]
+        plan["proteges"] = regions.reporter_notes(proteges, index, plan)
         actuelles = {c: osm.objets("relation", [r.id])[0] for c, r in rels.items()}
         out = dossier("sortie", lieu)
         osmchange.ecrire_osc(osmchange.osc_regions(plan, actuelles, supp[0], supp[1], index,
@@ -264,9 +274,9 @@ def regions_comparer(lieu, conf, preparer=False):
         for ligne in plan["rapport"]:
             print("  " + ligne)
         print("Remplacement : %d nœuds et %d chemins créés, %d relations modifiées, "
-              "%d chemins retirés dont %d supprimés." % (
+              "%d chemins retirés dont %d supprimés; %d chemins protégés." % (
                   len(plan["noeuds"]), len(plan["chemins"]), len(plan["membres"]),
-                  len(plan["retires"]), len(supp[0])))
+                  len(plan["retires"]), len(supp[0]), len(plan["proteges"])))
         print("Envoi : %s/regions.osc" % out)
     noms = {c: v[0] for c, v in officiel.items()}
     rapport.ecrire_geojson_compact(regions.geojson(polys, anneaux, ecarts, noms,

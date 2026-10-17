@@ -360,37 +360,31 @@ Liste au 17 octobre 2026, par ordre de priorité.
    membre de la bonne MRC (Notre-Dame-de-la-Salette).
 7. **Anciennes municipalités** (niveau 9 ou 10) : simple à coder, mais il
    manque une source autorisée pour les tracés.
-8. **Notes sur les chemins de limite** : aujourd'hui, `genre_chemin()`
-   (`osmqc/regions.py`) classe un chemin qui porte `note` comme « limite
-   seule », donc supprimable. Le retirer de cette liste, signaler ces
-   chemins dans le rapport et reporter leur note sur le chemin neuf.
-9. **Lien limite–lieu** : vérifier pour chaque relation le membre
-   `label` ou `admin_centre` et l'égalité exacte des noms (règle 8).
 
 ### Rues
 
-10. **Nommer les voies sans nom** quand une seule voie dessert toutes les
-    adresses d'une rue, si la communauté accepte la règle.
-11. **`addr:place`** pour les adresses sans rue (Île du Canard-Blanc).
-12. **Abréviations** (« St- » ou « Saint- ») : remplacer toutes les
+8. **Nommer les voies sans nom** quand une seule voie dessert toutes les
+   adresses d'une rue, si la communauté accepte la règle.
+9. **`addr:place`** pour les adresses sans rue (Île du Canard-Blanc).
+10. **Abréviations** (« St- » ou « Saint- ») : remplacer toutes les
     abréviations par la forme complète, selon la règle d'OSM
     ([Abbreviations](https://wiki.openstreetmap.org/wiki/Abbreviations)).
 
 ### Adresses
 
-13. **Portes d'entrée** de la Chaire Mobilité : prêt dans l'outil
+11. **Portes d'entrée** de la Chaire Mobilité : prêt dans l'outil
     (section `[adresses.positions]`), il manque les données.
-14. **Interpolations** : ne supprimer une ligne que si sa rue reçoit
+12. **Interpolations** : ne supprimer une ligne que si sa rue reçoit
     vraiment des adresses (aujourd'hui, une rue « à revoir » peut perdre
     son interpolation sans rien recevoir).
-15. **Anomalies du RQA** : liste automatique des logements sans lot et
+13. **Anomalies du RQA** : liste automatique des logements sans lot et
     des adresses absentes du rôle d'évaluation (comme le logement
     9999-2225 chemin du Lac-Gagnon Ouest ou le 34 chemin de la
     Pointe-à-Baptiste, à Duhamel), pour les signalements au MRNF.
-16. **Rôle d'évaluation foncière** du ministère des Affaires municipales
+14. **Rôle d'évaluation foncière** du ministère des Affaires municipales
     et de l'Habitation (MAMH), géoréférencé, comme source
-    supplémentaire : il sert à repérer les anomalies du point 15 et à
-    apparier les portes d'entrée du point 13 par matricule. Le MAMH a lui
+    supplémentaire : il sert à repérer les anomalies du point 13 et à
+    apparier les portes d'entrée du point 11 par matricule. Le MAMH a lui
     aussi donné une [permission explicite pour
     OSM](https://wiki.openstreetmap.org/wiki/FR:Minist%C3%A8re_des_Affaires_municipales_et_de_l%27Habitation)
     pour ses données ouvertes.

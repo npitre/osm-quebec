@@ -146,6 +146,22 @@ def regions(lieu, conf, officiel, rels, compte, ecarts, plan, supp):
                 "[%d](https://www.openstreetmap.org/way/%d)" % (w, w) for w in supp[0])
         s += ("\nLe littoral et les autres objets retirés des relations ne sont pas modifiés : "
               "seule leur appartenance aux limites change.\n")
+    if plan and plan.get("proteges"):
+        s += "\n## Chemins protégés\n\n"
+        s += ("Ces chemins portent une note, un fixme, une description ou une étiquette "
+              "disputed* : ils sont retirés des relations mais jamais supprimés automatiquement. "
+              "À traiter à la main.\n\n")
+        s += tableau(["Chemin", "Étiquettes", "Note reportée sur"], [
+            ["[%d](https://www.openstreetmap.org/way/%d)" % (w, w),
+             ", ".join("%s=%s" % kv for kv in t.items()) or "(disputed*)",
+             "chemin neuf %d" % n if n else ""] for w, n, t in plan["proteges"]])
+    if plan and plan.get("liens"):
+        s += "\n## Lien avec le nœud de lieu\n\n"
+        s += ("OsmAnd n'utilise une limite que si sa relation a un membre label ou admin_centre "
+              "vers un nœud place portant exactement le même nom. Les membres existants sont "
+              "gardés; les cas à régler sont signalés.\n\n")
+        s += tableau(["Municipalité", "Statut", "Détail"], [
+            [rels[c].tags.get("name", c), st, det] for c, (st, det) in sorted(plan["liens"].items())])
     if plan and plan.get("coupures") is not None:
         c = plan["coupures"]
         n = Counter(x[0] for x in c)

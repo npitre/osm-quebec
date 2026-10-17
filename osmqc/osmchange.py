@@ -109,8 +109,10 @@ def osc_regions(plan, actuelles, supp_chemins, supp_noeuds, index, admin_level="
         w = ET.SubElement(cree, "way", id=str(wid), version="0")
         for n in ids:
             ET.SubElement(w, "nd", ref=str(n))
-        ET.SubElement(w, "tag", k="admin_level", v=admin_level)
-        ET.SubElement(w, "tag", k="boundary", v="administrative")
+        tags = {"admin_level": admin_level, "boundary": "administrative"}
+        tags.update(plan.get("etiquettes", {}).get(wid, {}))
+        for k in sorted(tags):
+            ET.SubElement(w, "tag", k=k, v=tags[k])
     modif = ET.SubElement(racine, "modify")
     for code, rel in sorted(actuelles.items()):
         r = dict(rel)

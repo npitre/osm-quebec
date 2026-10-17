@@ -160,6 +160,8 @@ def relations(pbf, ids):
         chemins.append({"type": "way", "id": o.id, "version": o.version,
                         "nodes": [n.ref for n in o.nodes], "tags": dict(o.tags)})
         noeuds_voulus.update(n.ref for n in o.nodes)
+    # Et les nœuds membres des relations (label, admin_centre).
+    noeuds_voulus.update(m["ref"] for r in rels for m in r["members"] if m["type"] == "node")
     noeuds = [_noeud(o) for o in osmium.FileProcessor(pbf, osmium.osm.NODE)
               .with_filter(osmium.filter.IdFilter(list(noeuds_voulus)))]
     return rels + chemins + noeuds

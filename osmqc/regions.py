@@ -75,9 +75,70 @@ def genre_chemin(t):
     for k in ("natural", "highway", "waterway", "railway"):
         if k in t:
             return k + "=" + t[k]
-    if not t or set(t) <= {"boundary", "admin_level", "source", "name", "note"}:
+    if not t or set(t) <= {"boundary", "admin_level", "source", "name"}:
         return "limite seule"
     return "autre"
+
+
+A_REPORTER = ("note", "fixme", "description")
+
+
+def protege(t):
+    """Étiquettes qui interdisent la suppression automatique d'un chemin
+    de limite : une note, un fixme, une description, ou une limite
+    contestée (disputed*, par exemple la frontière avec
+    Terre-Neuve-et-Labrador). Renvoie ces étiquettes, ou {}."""
+    return {k: v for k, v in t.items() if k in A_REPORTER or k.startswith("disputed")}
+
+
+def frontiere(t):
+    """Frontière provinciale ou internationale : réutilisable, jamais
+    modifiée ni supprimée."""
+    return t.get("admin_level") in ("2", "4")
+
+
+def lien_lieu(rel, index):
+    """Lien entre une relation municipale et son nœud de lieu, dont
+    OsmAnd a besoin : un membre label ou admin_centre qui est un nœud
+    place portant exactement le même name. Renvoie (statut, détail)."""
+    nom = rel.get("tags", {}).get("name", "")
+    membres = [m for m in rel["members"] if m["type"] == "node" and m["role"] in ("label", "admin_centre")]
+    if not membres:
+        return "sans lien", "aucun membre label ni admin_centre"
+    for m in membres:
+        n = index.noeuds.get(m["ref"])
+        if n is None:
+            continue
+        t = n.get("tags", {})
+        if "place" in t and t.get("name") == nom:
+            return "lié", "%s : node %d place=%s" % (m["role"], m["ref"], t["place"])
+    n = index.noeuds.get(membres[0]["ref"], {})
+    t = n.get("tags", {})
+    if "place" not in t:
+        return "lien sans place", "%s : node %d sans étiquette place" % (membres[0]["role"], membres[0]["ref"])
+    return "noms différents", "%s : node %d « %s » contre « %s »" % (
+        membres[0]["role"], membres[0]["ref"], t.get("name", ""), nom)
+
+
+def reporter_notes(proteges, index, plan):
+    """Reporte note, fixme et description des chemins protégés retirés sur
+    le chemin neuf le plus proche. Renvoie [(chemin protégé, chemin neuf,
+    étiquettes)] et met à jour plan["etiquettes"]."""
+    points = {nid: p for p, nid in plan["noeuds"].items()}
+    neufs = [(wid, [points[n] for n in ids]) for wid, ids, _ in plan["chemins"]]
+    plan.setdefault("etiquettes", {})
+    res = []
+    for w in proteges:
+        tags = {k: v for k, v in index.chemins[w].get("tags", {}).items() if k in A_REPORTER}
+        if not tags or not neufs:
+            res.append((w, None, tags))
+            continue
+        ligne = index.ligne(w)
+        echantillon = ligne[::max(1, len(ligne) // 10)]
+        wid = min(neufs, key=lambda nl: sum(geo.distance_ligne(p, nl[1]) for p in echantillon))[0]
+        plan["etiquettes"].setdefault(wid, {}).update(tags)
+        res.append((w, wid, tags))
+    return res
 
 
 class Relation:
@@ -239,9 +300,13 @@ def supprimables(retires, index, relations_traitees, pbf=None):
     avec ses nœuds qui ne servent à rien d'autre. Le littoral, les routes
     et le reste sont seulement retirés. L'usage dans tout OSM est lu dans
     l'extrait local (pbf), sinon demandé à l'API.
+    Un chemin protégé (note, fixme, description, disputed*) ou une
+    frontière provinciale ou internationale n'est jamais supprimé.
     Renvoie (chemins, nœuds) à supprimer."""
     candidats = [w for w in retires
-                 if genre_chemin(index.chemins[w].get("tags", {})) == "limite seule"]
+                 if genre_chemin(index.chemins[w].get("tags", {})) == "limite seule"
+                 and not protege(index.chemins[w].get("tags", {}))
+                 and not frontiere(index.chemins[w].get("tags", {}))]
     noeuds = sorted({n for w in candidats for n in index.chemins[w]["nodes"]
                      if not index.noeuds[n].get("tags")})
     traitees = set(relations_traitees)
