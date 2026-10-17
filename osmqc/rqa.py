@@ -44,6 +44,14 @@ class Adresse:
         """Adresse sans suffixe ni logement."""
         return not self.suffixe and not self.unite
 
+    @property
+    def logement(self):
+        """Numéro de logement : l'unité (2-1701), ou un suffixe en
+        chiffres (329 1)."""
+        if self.unite:
+            return self.unite
+        return self.suffixe if self.suffixe.isdigit() else ""
+
 
 def nom_rue(r):
     """Nom de rue pour OSM : l'odonyme recomposé du RQA, dans l'ordre

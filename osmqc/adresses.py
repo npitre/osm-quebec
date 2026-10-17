@@ -55,10 +55,11 @@ class Plan:
 
 
 def regrouper(adresses):
-    """Une adresse par numéro de base et par rue. Les logements (2-1701)
-    et les suffixes au même point que leur numéro de base y sont
-    fusionnés; un suffixe placé ailleurs devient une adresse à part
-    (120A). Renvoie {(municipalité, odonyme, numéro affiché): (Adresse, [autres])}."""
+    """Une adresse par numéro de base et par rue. Les logements (2-1701,
+    329 1) et les suffixes en lettre au même point que leur numéro de base
+    y sont fusionnés; un suffixe en lettre placé ailleurs devient une
+    adresse à part (120A). Renvoie {(municipalité, odonyme, numéro
+    affiché): (Adresse, [autres])}."""
     groupes = defaultdict(list)
     for a in adresses:
         groupes[(a.municipalite, a.odonyme, a.numero)].append(a)
@@ -69,12 +70,28 @@ def regrouper(adresses):
         for a in lst:
             if a is base:
                 continue
-            if a.suffixe and not a.unite and geo.distance(a.point, base.point) > SUFFIXE_DISTINCT_M:
+            if a.suffixe and not a.logement and geo.distance(a.point, base.point) > SUFFIXE_DISTINCT_M:
                 res[(mun, odo, num + a.suffixe)] = (a, [])
             else:
                 autres.append(a)
         res[(mun, odo, num)] = (base, autres)
     return res
+
+
+def _ordre(v):
+    m = re.match(r"(\d*)(.*)", v)
+    return (int(m.group(1) or 0), m.group(2))
+
+
+def numeros(num, base, autres):
+    """Étiquettes de numéro d'une adresse fusionnée : addr:housenumber
+    avec les suffixes en lettre (« 120;120A;120B »), et addr:unit avec les
+    logements (« 1;2;3 »), ou None s'il n'y en a pas."""
+    groupe = [base] + list(autres)
+    lettres = sorted({a.numero + a.suffixe for a in groupe if a.suffixe and not a.logement}, key=_ordre)
+    logements = sorted({a.logement for a in groupe if a.logement}, key=_ordre)
+    numero = ";".join([num] + [l for l in lettres if l != num])
+    return numero, ";".join(logements) or None
 
 
 INTERPOLATION_M = 300   # une interpolation remplacée est près d'adresses de sa rue
@@ -243,7 +260,10 @@ def preparer(adresses, index, conf, positions=None):
             # tant que la rue n'est pas réglée (renommée ou ajoutée).
             pass
         else:
-            tags = {"addr:housenumber": num, "addr:street": a.rue}
+            numero, logements = numeros(num, a, autres)
+            tags = {"addr:housenumber": numero, "addr:street": a.rue}
+            if logements:
+                tags["addr:unit"] = logements
             if a.code_postal:
                 tags["addr:postcode"] = a.code_postal
             plan.creer.append((tags, point))
