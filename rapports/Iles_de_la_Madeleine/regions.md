@@ -52,9 +52,24 @@ Chemins supprimés : [600699235](https://www.openstreetmap.org/way/600699235), [
 
 Le littoral et les autres objets retirés des relations ne sont pas modifiés : seule leur appartenance aux limites change.
 
+## Routes coupées
+
+1 routes coupées, 1 nœuds de coupure ajoutés sur les routes, 1 morceaux neufs, 3 relations de route mises à jour.
+
+- way 1244695875 (Route 199) coupé en 2 morceaux
+
+## Lien avec le nœud de lieu
+
+OsmAnd n'utilise une limite que si sa relation a un membre label ou admin_centre vers un nœud place portant exactement le même nom. Les membres existants sont gardés; les cas à régler sont signalés.
+
+| Municipalité | Statut | Détail |
+|---|---|---|
+| Les Îles-de-la-Madeleine | lié | label : node 10753351413 place=town |
+| Grosse-Île | sans lien | aucun membre label ni admin_centre |
+
 ## Routes qui traversent les limites
 
-Une route nommée doit être coupée là où elle traverse une limite municipale, pour que chaque côté garde son nom (à moins de 25 m). Rien n'est encore modifié : ces cas sont à valider.
+Une route nommée est coupée exactement là où elle traverse une limite municipale (à moins de 25 m), même si ses étiquettes sont identiques des deux côtés : Nominatim et Photon rattachent chaque segment de rue à une seule municipalité. Les coupures « à ajouter » et « à déplacer » sont faites dans le fichier d'envoi; une coupure « devenue inutile » est seulement signalée.
 
 | Situation | Nombre |
 |---|---|

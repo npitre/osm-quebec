@@ -45,6 +45,9 @@ mauvais côté :
   supprimées.
 - Vérification : avec les limites proposées, les 7 394 adresses tombent
   dans la bonne municipalité.
+- Lien avec le nœud de lieu : la relation des Îles-de-la-Madeleine a son
+  membre `label`; celle de **Grosse-Île n'en a pas**, et OsmAnd
+  n'utilisera pas sa limite tant que ce n'est pas réglé (à la main).
 
 ### Routes qui traversent les limites
 
@@ -52,12 +55,16 @@ Une route nommée doit être coupée là où elle traverse une limite, pour
 que chaque côté garde son nom. Avec les limites proposées :
 
 - la route 199 entre dans Grosse-Île à 47,57047 N, 61,49746 O; la coupure
-  actuelle la plus proche est à 355 m : **coupure à déplacer**;
+  actuelle la plus proche est à 355 m : **coupure à déplacer**. Le
+  chemin 1244695875 est coupé à ce point, et le nouveau segment est
+  ajouté aux trois relations qui le contiennent (route 199, Route verte 1
+  et une ligne d'autobus);
 - le chemin de La Grave a une coupure au bord de l'ancienne limite (le
   littoral), entre deux segments aux étiquettes identiques : **coupure
   devenue inutile**, les deux segments pourraient être fusionnés.
 
-Rien n'est modifié automatiquement pour l'instant.
+L'ancienne coupure de la route 199 et celle du chemin de La Grave sont
+seulement signalées, pas fusionnées.
 
 ### Questions en suspens
 
@@ -130,13 +137,15 @@ prévus (section 2) :
 
 | Résultat | Nombre |
 |---|---|
-| Nouvelles, prêtes à créer | 7 235 |
+| Nouvelles, prêtes à créer | 7 221 |
 | Déjà dans OSM, corrigées | 48 |
 | Déjà dans OSM, inchangées | 35 |
-| À revoir, non créées | 131 |
+| À revoir, non créées | 129 |
 
 - Logements et suffixes fusionnés à leur numéro de base : 628 adresses
-  en avaient. 17 suffixes placés ailleurs que leur numéro de base sont
+  en avaient. Les logements vont dans `addr:unit` (519 adresses), les
+  suffixes en lettre dans `addr:housenumber` (156 adresses, par exemple
+  « 19;19A;19B »). 17 suffixes placés ailleurs que leur numéro de base sont
   gardés comme adresses distinctes (310A et 310B chemin Principal,
   996A et 996B chemin de La Grave, etc.).
 - 55 numéros n'ont pas d'adresse principale au RQA, seulement des
@@ -150,7 +159,7 @@ prévus (section 2) :
 
 ### Exceptions à valider
 
-Les 131 adresses « à revoir » attendent que leur rue existe dans OSM
+Les 129 adresses « à revoir » attendent que leur rue existe dans OSM
 sous son nom officiel (détail dans [adresses.md](adresses.md#à-revoir)) :
 surtout le chemin du Marconi (44), la route 199 (14 adresses à plus de
 300 m de la route), et les allées et chemins sans nom de la section 2.

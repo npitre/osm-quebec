@@ -6,9 +6,9 @@ Noms d'OSM comparés aux odonymes officiels du RQA, autour des adresses. Règles
 
 | Situation | Rues | Adresses |
 |---|---|---|
-| conforme | 1253 | 19374 |
-| à renommer | 32 | 734 |
-| autre nom | 57 | 408 |
+| conforme | 1260 | 19497 |
+| à renommer | 33 | 741 |
+| autre nom | 49 | 278 |
 | sans nom | 30 | 112 |
 | absente | 73 | 269 |
 
@@ -32,6 +32,7 @@ Noms d'OSM comparés aux odonymes officiels du RQA, autour des adresses. Règles
 | Chemin du Lac-des-Îles | Chemin du Lac des Îles (2) | 2 | 10 |
 | Montée de Saint-André–Saint-Sixte | Montée de Saint-André--Saint-Sixte (2) | 2 | 8 |
 | Montée Major | Montee Major (1) | 1 | 8 |
+| Rue Saint-Andrew | Rue St. Andrew (1) | 1 | 7 |
 | Chemin Lefebvre | chemin Lefebvre (1) | 1 | 7 |
 | Rue des Aulnes | Rue Des Aulnes (2) | 2 | 7 |
 | Rue du Lac | Rue Du Lac (2) | 2 | 6 |
@@ -56,21 +57,15 @@ La voie la plus proche des adresses porte un autre nom. À trancher à la main.
 | Nom officiel | Municipalité | Adresses | Voie(s) la plus proche |
 |---|---|---|---|
 | Route 321 Sud | 80027 | 60 | [1365123368](https://www.openstreetmap.org/way/1365123368) secondary « Route 321 » (29), [1196928188](https://www.openstreetmap.org/way/1196928188) service (3), [984863363](https://www.openstreetmap.org/way/984863363) service (2) |
-| Rue St-Julien | 80037 | 38 | [190628701](https://www.openstreetmap.org/way/190628701) residential « Rue Saint-Julien » (17), [1308151408](https://www.openstreetmap.org/way/1308151408) service (4), [1308151403](https://www.openstreetmap.org/way/1308151403) service (4) |
-| Rue St-Denis | 80037 | 30 | [190628695](https://www.openstreetmap.org/way/190628695) residential « Rue Saint-Denis » (20), [883357555](https://www.openstreetmap.org/way/883357555) service (4), [190628696](https://www.openstreetmap.org/way/190628696) residential « Rue Saint-Denis » (4) |
-| Chemin St-Pierre | 80027 | 22 | [190531583](https://www.openstreetmap.org/way/190531583) residential « Chemin Saint-Pierre » (12), [1200002559](https://www.openstreetmap.org/way/1200002559) residential « Chemin Saint-Pierre » (5), [190531582](https://www.openstreetmap.org/way/190531582) residential « Chemin Saint-Pierre » (2) |
 | Rue Sainte-Julie Est | 80027 | 18 | [839997620](https://www.openstreetmap.org/way/839997620) tertiary « Rang Sainte-Julie Est » (15), [190531653](https://www.openstreetmap.org/way/190531653) residential « Rue Bricault » (2), [190531652](https://www.openstreetmap.org/way/190531652) residential « Rue Boyer » (1) |
-| Chemin St-Pierre | 80078 | 14 | [106203026](https://www.openstreetmap.org/way/106203026) residential « Chemin Saint-Pierre » (13) |
 | Chemin des Canotiers | 80145 | 12 | [1333788412](https://www.openstreetmap.org/way/1333788412) unclassified « Chemin du Poisson-Blanc » (12) |
 | 1re Avenue | 80045 | 11 | [190628530](https://www.openstreetmap.org/way/190628530) residential « 1e Avenue » (10), [190628706](https://www.openstreetmap.org/way/190628706) residential « Rue Vanier » (1) |
 | Chemin de la Montagne | 80078 | 11 | [106202979](https://www.openstreetmap.org/way/106202979) unclassified « Chemin des Geais-Bleus » (3), [106203225](https://www.openstreetmap.org/way/106203225) residential « Chemin des Guides » (1) |
-| Rue Hubert-St-Louis | 80027 | 10 | [190531672](https://www.openstreetmap.org/way/190531672) residential « Rue Hubert-Saint-Louis » (8), [190531678](https://www.openstreetmap.org/way/190531678) residential « Rue Lanthier » (1), [190531680](https://www.openstreetmap.org/way/190531680) residential « Rue Leduc » (1) |
 | Rue Sicotte | 80050 | 9 | [190623159](https://www.openstreetmap.org/way/190623159) residential « Place Sicotte » (7), [415141104](https://www.openstreetmap.org/way/415141104) residential « Rue Murphy » (2) |
 | Chemin des Hêtres | 80135 | 9 | [38271481](https://www.openstreetmap.org/way/38271481) unclassified « Chemin Preston » (4) |
 | Chemin David | 80095 | 8 | [525469009](https://www.openstreetmap.org/way/525469009) residential « Chemin de la Presqu'île » (2) |
 | Chemin Marcelais Nord | 80095 | 8 | [106199996](https://www.openstreetmap.org/way/106199996) unclassified « Rue Archambault » (8) |
 | Chemin des Mésanges | 80095 | 8 | [525469009](https://www.openstreetmap.org/way/525469009) residential « Chemin de la Presqu'île » (2) |
-| Chemin St-Arnaud | 80145 | 8 | [106188260](https://www.openstreetmap.org/way/106188260) unclassified « Chemin Saint-Arnaud » (7) |
 | Chemin Jean-Guy | 80090 | 7 | [106204908](https://www.openstreetmap.org/way/106204908) secondary « Route 315 Nord » (2) |
 | Chemin Lépine | 80140 | 7 | [894771155](https://www.openstreetmap.org/way/894771155) unclassified « Chemin Lépine Nord » (4), [938851628](https://www.openstreetmap.org/way/938851628) service (1), [1201175100](https://www.openstreetmap.org/way/1201175100) service « Mon Écocentre Val-des-Bois » (1) |
 | Chemin du Pignon-Vert | 80065 | 6 | [190504705](https://www.openstreetmap.org/way/190504705) unclassified « Chemin de la Rivière-Blanche » (2) |
@@ -83,12 +78,10 @@ La voie la plus proche des adresses porte un autre nom. À trancher à la main.
 | Rue Ludger-Pilon | 80020 | 4 | [396309920](https://www.openstreetmap.org/way/396309920) residential « Rue Lodger Pilon » (3), [866741015](https://www.openstreetmap.org/way/866741015) service (1) |
 | 1er Rang | 80078 | 4 | [106202976](https://www.openstreetmap.org/way/106202976) residential « 1e Rang » (4) |
 | Chemin Hiboux | 80085 | 4 | [190501243](https://www.openstreetmap.org/way/190501243) unclassified « Chemin des Hiboux » (4) |
-| Rue St-Amour | 80087 | 4 | [106201952](https://www.openstreetmap.org/way/106201952) residential « Rue Saint-Amour » (3) |
 | Chemin Makwa | 80095 | 4 | [106203470](https://www.openstreetmap.org/way/106203470) unclassified « Chemin Caron » (1) |
 | Rue de l'Hôtel-de-Ville | 80110 | 4 | [394345385](https://www.openstreetmap.org/way/394345385) residential « Rue Hôtel de Ville » (2), [476661758](https://www.openstreetmap.org/way/476661758) service (1), [394345381](https://www.openstreetmap.org/way/394345381) residential « Rue Du Parc » (1) |
 | Rue des Bouleaux | 80110 | 4 | [394345388](https://www.openstreetmap.org/way/394345388) residential « Rue Bouleau » (4) |
 | Impasse Croft | 80130 | 4 | [360937106](https://www.openstreetmap.org/way/360937106) residential « Impasse du Petit-Lachine » (3), [527986183](https://www.openstreetmap.org/way/527986183) residential « Chemin du Tour du Lac » (1) |
-| Chemin St-Louis | 80140 | 4 | [177808712](https://www.openstreetmap.org/way/177808712) secondary « Route 309 » (1) |
 | Chemin Larose | 80145 | 4 | [106169312](https://www.openstreetmap.org/way/106169312) unclassified « Chemin Léonard » (4) |
 | Chemin Jean-Lanoie | 80090 | 3 | [106204510](https://www.openstreetmap.org/way/106204510) unclassified « Chemin Périard » (2), [572748323](https://www.openstreetmap.org/way/572748323) service (1) |
 | Chemin Cottier | 80095 | 3 | [106203424](https://www.openstreetmap.org/way/106203424) secondary « Route 315 » (1) |
@@ -230,10 +223,11 @@ Aucune voie à moins de 60 m des adresses.
 | Chemin des Mélèzes | 80145 | 1 |  |
 | Chemin du Sous-Bois | 80145 | 1 |  |
 
-## Renommages proposés (44 chemins)
+## Renommages proposés (45 chemins)
 
 | Chemin | Nom actuel | Nouveau nom | Raison |
 |---|---|---|---|
+| [190309880](https://www.openstreetmap.org/way/190309880) | Rue St. Andrew | Rue Saint-Andrew | nom officiel (RQA) : Rue Saint-Andrew |
 | [190531603](https://www.openstreetmap.org/way/190531603) | Montée de Saint-André--Saint-Sixte | Montée de Saint-André–Saint-Sixte | nom officiel (RQA) : Montée de Saint-André–Saint-Sixte |
 | [196803737](https://www.openstreetmap.org/way/196803737) | Chemin Des Grands Danois | Chemin des Grands-Danois | nom officiel (RQA) : Chemin des Grands-Danois |
 | [204198416](https://www.openstreetmap.org/way/204198416) | Rang Des Sources | Rang des Sources | nom officiel (RQA) : Rang des Sources |

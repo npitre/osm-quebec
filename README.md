@@ -32,8 +32,8 @@ communauté. Pour chaque lieu, `rapports/LIEU/` contient :
 
 | Lieu | Municipalités | Limites : adresses mal placées dans OSM | Rues à renommer | Adresses prêtes | Adresses à revoir |
 |---|---|---|---|---|---|
-| [Îles-de-la-Madeleine](rapports/Iles_de_la_Madeleine/) | 2 | 3 sur 7 394 (0 après correction) | 28 segments | 7 235 | 131 |
-| [La Petite-Nation (MRC de Papineau)](rapports/Petite-Nation/) | 25 | 23 sur 20 659 (0 après correction) | 44 segments | 19 403 | 1 729 |
+| [Îles-de-la-Madeleine](rapports/Iles_de_la_Madeleine/) | 2 | 3 sur 7 394 (0 après correction) | 28 segments | 7 221 | 129 |
+| [La Petite-Nation (MRC de Papineau)](rapports/Petite-Nation/) | 25 | 23 sur 20 659 (0 après correction) | 45 segments | 19 430 | 1 544 |
 
 ## Licences
 

@@ -185,9 +185,189 @@ Chemins supprimés : [503796693](https://www.openstreetmap.org/way/503796693), [
 
 Le littoral et les autres objets retirés des relations ne sont pas modifiés : seule leur appartenance aux limites change.
 
+## Routes coupées
+
+143 routes coupées, 163 nœuds de coupure ajoutés sur les routes, 178 morceaux neufs, 19 relations de route mises à jour.
+
+- way 38269910 (Chemin du Lac-Gagnon Est) coupé en 5 morceaux
+- way 38270519 (Chemin Saint-Denis) coupé en 4 morceaux
+- way 38271113 (Chemin Collard) coupé en 2 morceaux
+- way 67487095 (Route 323) coupé en 3 morceaux
+- way 106169479 (Chemin de Val-Ombreuse) coupé en 2 morceaux
+- way 106169520 (Route 309) coupé en 2 morceaux
+- way 106176022 (Chemin des Hautes-Chutes) coupé en 4 morceaux
+- way 106176040 (Chemin des Prés) coupé en 2 morceaux
+- way 106178207 (Chemin de la Base-de-Plein-Air) coupé en 2 morceaux
+- way 106187800 (Chemin des Cantons) coupé en 3 morceaux
+- way 106187942 (Rue French) coupé en 2 morceaux
+- way 106188132 (Chemin du Pouvoir) coupé en 2 morceaux
+- way 106188558 (Chemin du Marais) coupé en 3 morceaux
+- way 106197577 (Chemin Cayer) coupé en 2 morceaux
+- way 106197581 (Chemin Chartrand) coupé en 2 morceaux
+- way 106197671 (Chemin Riopel) coupé en 2 morceaux
+- way 106200017 (Route 321) coupé en 2 morceaux
+- way 106200023 (4e Rang Sud) coupé en 2 morceaux
+- way 106200082 (Chemin de la Rivière-Blanche) coupé en 2 morceaux
+- way 106200269 (Chemin Pilon) coupé en 3 morceaux
+- way 106200436 (Route 315) coupé en 2 morceaux
+- way 106200992 (Chemin de la Montagne-Noire) coupé en 2 morceaux
+- way 106202930 (Route 321) coupé en 2 morceaux
+- way 106202982 (Montée de Vinoy Ouest) coupé en 2 morceaux
+- way 106202993 (Chemin Viceroy) coupé en 4 morceaux
+- way 106203010 (Chemin de Vinoy) coupé en 3 morceaux
+- way 106203225 (Chemin des Guides) coupé en 2 morceaux
+- way 106203347 (Chemin de la Côte-Saint-Pierre) coupé en 2 morceaux
+- way 106203359 (Montée Lavergne) coupé en 3 morceaux
+- way 106203424 (Route 315) coupé en 2 morceaux
+- way 106203429 (Chemin Lapointe) coupé en 2 morceaux
+- way 106203441 (Montée de Vinoy Est) coupé en 2 morceaux
+- way 106203477 (Rang Thomas Ouest) coupé en 3 morceaux
+- way 106203507 (Chemin Périard) coupé en 2 morceaux
+- way 106203569 (Chemin Stéphane-Richer) coupé en 2 morceaux
+- way 106203600 (Chemin Blais) coupé en 2 morceaux
+- way 106203865 (Route Principale) coupé en 2 morceaux
+- way 106204384 (7e Rang) coupé en 2 morceaux
+- way 106204467 (Route 315 Sud) coupé en 2 morceaux
+- way 106206368 (Chemin du Domaine) coupé en 2 morceaux
+- way 106206386 (Route 317) coupé en 2 morceaux
+- way 106206434 (Chemin Neveu) coupé en 2 morceaux
+- way 106206436 (Rang Sainte-Madeleine) coupé en 2 morceaux
+- way 165265243 (Rang Sainte-Julie Ouest) coupé en 2 morceaux
+- way 165329748 (Route 323) coupé en 2 morceaux
+- way 166382004 (Chemin Doherty) coupé en 2 morceaux
+- way 168223507 (Route 309) coupé en 2 morceaux
+- way 171844948 (Route 309) coupé en 2 morceaux
+- way 190308505 (Côte Angèle) coupé en 2 morceaux
+- way 190309750 (Route 323) coupé en 2 morceaux
+- way 190481576 (3e Rang) coupé en 2 morceaux
+- way 190481866 (Montée Laurin) coupé en 2 morceaux
+- way 190501172 (Chemin Ivall) coupé en 2 morceaux
+- way 190501258 (Chemin du Lac-McGuire) coupé en 2 morceaux
+- way 190504672 (Chemin Burke) coupé en 2 morceaux
+- way 190504680 (Chemin D'Aragon) coupé en 2 morceaux
+- way 190504692 (Chemin Riley) coupé en 2 morceaux
+- way 190504701 (Chemin Townline) coupé en 6 morceaux
+- way 190504702 (Chemin Townline) coupé en 2 morceaux
+- way 190504724 (Montée Ranger) coupé en 2 morceaux
+- way 190504725 (Montée Silver Creek) coupé en 2 morceaux
+- way 190504730 (Montée Varin) coupé en 2 morceaux
+- way 190504731 (Montée Varin) coupé en 3 morceaux
+- way 190504741 (Route 315) coupé en 2 morceaux
+- way 190504745 (Route 315) coupé en 2 morceaux
+- way 190509650 (4e rang du Gore) coupé en 2 morceaux
+- way 190513869 (Montée Robinson) coupé en 2 morceaux
+- way 190513881 (Rue Binet) coupé en 2 morceaux
+- way 190513882 (Rue Chartrand) coupé en 2 morceaux
+- way 190513890 (Rue Lauzon) coupé en 2 morceaux
+- way 190513901 (Rue Vincent) coupé en 2 morceaux
+- way 190531579 (Chemin Céré) coupé en 2 morceaux
+- way 190531584 (Chemin de l'Enclave) coupé en 2 morceaux
+- way 190531589 (Chemin de la Rivière-de-la-Petite-Nation) coupé en 3 morceaux
+- way 190531603 (Montée de Saint-André--Saint-Sixte) coupé en 2 morceaux
+- way 190543611 (Rang Saint-Louis) coupé en 2 morceaux
+- way 193063719 (Autoroute Guy-Lafleur) coupé en 2 morceaux
+- way 203864692 (Chemin de Vendée) coupé en 2 morceaux
+- way 203864716 (Route 323 Sud) coupé en 2 morceaux
+- way 239697596 (Route 321 Nord) coupé en 2 morceaux
+- way 242712029 (Chemin de Boileau) coupé en 2 morceaux
+- way 242821990 (Chemin Brookdale) coupé en 2 morceaux
+- way 246254086 (Autoroute Guy-Lafleur) coupé en 2 morceaux
+- way 246254619 (Autoroute Guy-Lafleur) coupé en 2 morceaux
+- way 250905783 (Rue Notre-Dame) coupé en 2 morceaux
+- way 279007804 (Chemin Othmer) coupé en 2 morceaux
+- way 348764168 (Accès chalet du Diable) coupé en 2 morceaux
+- way 359673815 (Route 148 Est) coupé en 3 morceaux
+- way 359673819 (Route 148) coupé en 2 morceaux
+- way 379811154 (Chemin Prud'Homme) coupé en 2 morceaux
+- way 395171513 (Montée des Italiens) coupé en 2 morceaux
+- way 414629748 (Chemin de la Rés.-Faun.-de-Papineau-Labelle) coupé en 3 morceaux
+- way 445252360 (Chemin Sinclair) coupé en 2 morceaux
+- way 446319873 (Chemin de la Baie) coupé en 2 morceaux
+- way 446319875 (Chemin du Lac-Lévesque) coupé en 2 morceaux
+- way 446319881 (Montée Bernard) coupé en 2 morceaux
+- way 446324111 (Montée Archambault) coupé en 2 morceaux
+- way 446324125 (Rang Des Sources) coupé en 2 morceaux
+- way 471813139 (Rue Victoria) coupé en 2 morceaux
+- way 476148666 (Rue Principale) coupé en 2 morceaux
+- way 476317119 (Chemin de Montréal Est) coupé en 2 morceaux
+- way 476661761 (Impasse des Colibris) coupé en 4 morceaux
+- way 476661768 (Chemin E.-Smith) coupé en 2 morceaux
+- way 476731562 (Chemin Currie) coupé en 2 morceaux
+- way 477907945 (Détour Route 309) coupé en 2 morceaux
+- way 484631374 (Route 307) coupé en 2 morceaux
+- way 488096777 (Chemin Richelieu) coupé en 2 morceaux
+- way 488112425 (Côte des Cascades) coupé en 2 morceaux
+- way 525462632 (Chemin du Tour-du-Lac) coupé en 2 morceaux
+- way 525469015 (Chemin Lavergne) coupé en 2 morceaux
+- way 525469023 (Chemin de la Petite-Nation) coupé en 2 morceaux
+- way 527377926 (Rue Notre-Dame) coupé en 2 morceaux
+- way 527986183 (Chemin du Tour du Lac) coupé en 2 morceaux
+- way 556012081 (Chemin du Pont) coupé en 2 morceaux
+- way 620909637 (Montée Labelle) coupé en 3 morceaux
+- way 622492664 (Chemin de la Rivière Maskinogné) coupé en 2 morceaux
+- way 622912934 (Chemin Boileau) coupé en 2 morceaux
+- way 623134229 (Chemin du Lac-Champagneur) coupé en 2 morceaux
+- way 683695350 (Rue Girault) coupé en 2 morceaux
+- way 696479331 (Chemin de Rockway Valley) coupé en 2 morceaux
+- way 779005620 (Route 323) coupé en 2 morceaux
+- way 839997623 (Route 321) coupé en 2 morceaux
+- way 940416984 (Rue Albert-Ferland) coupé en 4 morceaux
+- way 981349876 (5e Rang Est) coupé en 2 morceaux
+- way 989685650 (Chemin du Poisson-Blanc) coupé en 2 morceaux
+- way 1027541037 (Montée Major) coupé en 2 morceaux
+- way 1149291502 (Autoroute Guy-Lafleur) coupé en 5 morceaux
+- way 1192480183 (Chemin des Commissaires) coupé en 2 morceaux
+- way 1201176714 (Chemin de la Plage) coupé en 2 morceaux
+- way 1257883816 (Rang Sainte-Augustine) coupé en 2 morceaux
+- way 1362072960 (Rue Principale) coupé en 2 morceaux
+- way 1365004870 (Autoroute Guy-Lafleur) coupé en 2 morceaux
+- way 1365121860 (Chemin Saint-Hyacinthe) coupé en 2 morceaux
+- way 1365121888 (Autoroute Guy-Lafleur) coupé en 2 morceaux
+- way 1365316107 (Autoroute Guy-Lafleur) coupé en 2 morceaux
+- way 1365342175 (Route 317) coupé en 2 morceaux
+- way 1365342176 (Route 317) coupé en 2 morceaux
+- way 1365381817 (5e Rang Ouest) coupé en 2 morceaux
+- way 1388000762 (Chemin de la Rés.-Faun.-de-Papineau-Labelle) coupé en 3 morceaux
+- way 1408684658 (Rue Galipeau) coupé en 3 morceaux
+- way 1442189119 (Chemin du Tour-du-Lac) coupé en 2 morceaux
+- way 1498879703 (Autoroute Guy-Lafleur) coupé en 2 morceaux
+- way 1498879704 (Autoroute Guy-Lafleur) coupé en 3 morceaux
+
+## Lien avec le nœud de lieu
+
+OsmAnd n'utilise une limite que si sa relation a un membre label ou admin_centre vers un nœud place portant exactement le même nom. Les membres existants sont gardés; les cas à régler sont signalés.
+
+| Municipalité | Statut | Détail |
+|---|---|---|
+| Fassett | lié | label : node 4809920827 place=village |
+| Montebello | lié | label : node 274122891 place=village |
+| Notre-Dame-de-Bonsecours | lien sans place | label : node 4697964657 sans étiquette place |
+| Notre-Dame-de-la-Paix | lié | label : node 2142192689 place=village |
+| Saint-André-Avellin | lié | label : node 2422408229 place=village |
+| Papineauville | lié | label : node 2420397035 place=village |
+| Plaisance | lié | label : node 2012660278 place=village |
+| Thurso | lié | label : node 618497625 place=town |
+| Lochaber | lien sans place | label : node 2522381014 sans étiquette place |
+| Lochaber-Partie-Ouest | sans lien | aucun membre label ni admin_centre |
+| Mayo | lié | label : node 5082531192 place=hamlet |
+| Saint-Sixte | lié | label : node 415833686 place=village |
+| Ripon | lié | label : node 1222628842 place=village |
+| Mulgrave-et-Derry | sans lien | aucun membre label ni admin_centre |
+| Notre-Dame-de-la-Salette | lié | label : node 1222536799 place=village |
+| Montpellier | sans lien | aucun membre label ni admin_centre |
+| Lac-Simon | sans lien | aucun membre label ni admin_centre |
+| Chénéville | lié | label : node 4543403129 place=village |
+| Namur | lié | label : node 2142192688 place=village |
+| Boileau | lié | label : node 2502798967 place=village |
+| Saint-Émile-de-Suffolk | lié | label : node 2522787805 place=village |
+| Lac-des-Plages | sans lien | aucun membre label ni admin_centre |
+| Duhamel | sans lien | aucun membre label ni admin_centre |
+| Val-des-Bois | sans lien | aucun membre label ni admin_centre |
+| Bowman | lié | label : node 8697287650 place=village |
+
 ## Routes qui traversent les limites
 
-Une route nommée doit être coupée là où elle traverse une limite municipale, pour que chaque côté garde son nom (à moins de 25 m). Rien n'est encore modifié : ces cas sont à valider.
+Une route nommée est coupée exactement là où elle traverse une limite municipale (à moins de 25 m), même si ses étiquettes sont identiques des deux côtés : Nominatim et Photon rattachent chaque segment de rue à une seule municipalité. Les coupures « à ajouter » et « à déplacer » sont faites dans le fichier d'envoi; une coupure « devenue inutile » est seulement signalée.
 
 | Situation | Nombre |
 |---|---|
@@ -339,12 +519,12 @@ Une route nommée doit être coupée là où elle traverse une limite municipale
 | coupure à ajouter | Rue Victoria | [471813139](https://www.openstreetmap.org/way/471813139) | 45.59431, -75.25710 |  |
 | coupure à ajouter | Rue Vincent | [190513901](https://www.openstreetmap.org/way/190513901) | 45.73676, -75.19377 |  |
 | coupure à déplacer | Autoroute Guy-Lafleur | [193063719](https://www.openstreetmap.org/way/193063719) | 45.64600, -75.13252 | 85 m |
-| coupure à déplacer | Autoroute Guy-Lafleur | [193063719](https://www.openstreetmap.org/way/193063719) | 45.64616, -75.13247 | 83 m |
 | coupure à déplacer | Autoroute Guy-Lafleur | [1138440603](https://www.openstreetmap.org/way/1138440603) | 45.62342, -75.35758 | 33 m |
+| coupure à déplacer | Autoroute Guy-Lafleur | [1365381719](https://www.openstreetmap.org/way/1365381719) | 45.62320, -75.26012 | 33 m |
 | coupure à déplacer | Autoroute Guy-Lafleur | [1167460644](https://www.openstreetmap.org/way/1167460644) | 45.62524, -75.23922 | 36 m |
 | coupure à déplacer | Autoroute Guy-Lafleur | [1365316107](https://www.openstreetmap.org/way/1365316107) | 45.62551, -75.23284 | 293 m |
 | coupure à déplacer | Autoroute Guy-Lafleur | [1365316107](https://www.openstreetmap.org/way/1365316107) | 45.62518, -75.23280 | 290 m |
-| coupure à déplacer | Autoroute Guy-Lafleur | [1365381719](https://www.openstreetmap.org/way/1365381719) | 45.62320, -75.26012 | 33 m |
+| coupure à déplacer | Autoroute Guy-Lafleur | [193063719](https://www.openstreetmap.org/way/193063719) | 45.64616, -75.13247 | 83 m |
 | coupure à déplacer | Chemin Céré | [190531578](https://www.openstreetmap.org/way/190531578) | 45.74594, -75.10104 | 61 m |
 | coupure à déplacer | Chemin Ivall | [190501172](https://www.openstreetmap.org/way/190501172) | 45.70743, -75.48720 | 39 m |
 | coupure à déplacer | Chemin Lavergne | [106199967](https://www.openstreetmap.org/way/106199967) | 45.88660, -75.06565 | 142 m |

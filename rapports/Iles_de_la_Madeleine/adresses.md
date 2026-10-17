@@ -8,22 +8,22 @@ Source : Référentiel québécois des adresses (MRNF), version AQ20261001. Règ
 
 | Résultat | Nombre |
 |---|---|
-| Nouvelles adresses | 7235 |
+| Nouvelles adresses | 7221 |
 | Déjà dans OSM, corrigées | 48 |
 | Déjà dans OSM, inchangées | 35 |
-| À revoir (non créées) | 131 |
+| À revoir (non créées) | 129 |
 | Exclues | 0 |
 | Objets OSM modifiés | 48 |
 | Lignes d'interpolation supprimées | 12 |
 | Nœuds d'interpolation supprimés | 269 |
 
-Source des positions : RQA 7449.
+Source des positions : RQA 7433.
 
 ## À revoir
 
 Ces adresses ne sont pas créées tant que la rue n'est pas réglée dans OSM.
 
-### Rue absente ou sans nom dans OSM (131 adresses)
+### Rue absente ou sans nom dans OSM (129 adresses)
 
 | Nom officiel (RQA) | Adresses |
 |---|---|
@@ -33,11 +33,11 @@ Ces adresses ne sont pas créées tant que la rue n'est pas réglée dans OSM.
 | Chemin des Falaises | 7 |
 | Allée des Belles-Vues | 6 |
 | Chemin de La Vernière | 5 |
-| Allée de la Petite-École | 4 |
 | Allée du Cap-de-l'Hôpital | 4 |
 | Chemin de la Promenade | 4 |
 | Allée Oscar-Nadeau | 3 |
 | Chemin des Caps | 3 |
+| Allée de la Petite-École | 2 |
 | Chemin Miousse | 2 |
 | Chemin Renaud | 2 |
 | Chemin de La Grave | 2 |
