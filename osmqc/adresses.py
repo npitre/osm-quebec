@@ -240,6 +240,8 @@ def preparer(adresses, index, conf, positions=None):
     deja = existantes(index, ignorer)
     rues = rues_osm(index)
     batiments = contours_batiments(index) if positions else None
+    if hasattr(positions, "associer"):
+        positions.associer(gardees)
     corriger_rue = conf.get("corriger_rue_existante", True)
 
     for (mun, odo, num), (a, autres) in sorted(

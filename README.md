@@ -222,10 +222,13 @@ dans `sortie/LIEU/` (hors du dépôt); les rapports de révision, dans
 8. **Position** : le point du RQA, sauf si une source plus précise est
    donnée (section `[adresses.positions]`, par exemple les portes d'entrée
    placées à la main sur l'imagerie). Le point de cette source est relié
-   à l'adresse par le matricule, le lot, l'identifiant du RQA ou
-   l'adresse elle-même; trop loin d'un point du RQA (150 m par défaut),
-   il est ignoré et sera corrigé manuellement plus tard. Le rapport
-   indique la source retenue pour chaque adresse. Une étiquette
+   à l'adresse par le matricule, l'identifiant provincial du rôle
+   (`id_provinc`, code de municipalité et matricule), le lot,
+   l'identifiant du RQA ou l'adresse elle-même. Il est ignoré s'il est
+   trop loin du point du RQA (150 m par défaut), ou si la même unité
+   d'évaluation porte plusieurs numéros (la porte ne dit pas lequel); il
+   sera alors corrigé manuellement plus tard. Le rapport indique la
+   source retenue pour chaque adresse. Une étiquette
    `entrance=*` n'est ajoutée que si le point de cette source est sur le
    contour d'un bâtiment (à moins de 1 m) : `home` pour une adresse
    résidentielle ou de villégiature du RQA, `shop` pour un commerce,
@@ -287,9 +290,9 @@ creer_si_rue_absente = false
 exclure = [ { municipalite = "80135", rue = "Chemin du Tour-du-Lac", numero = "131", raison = "absent du rôle" } ]
 
 [adresses.positions]                 # facultatif
-fichier = "donnees/portes.geojson"
+fichier = "donnees/portes.geojson"   # GeoJSON de points, ou CSV (voir plus bas)
 propriete = "matricule"              # propriété du GeoJSON
-cle_rqa = "matricule"                # matricule, lot, ident ou adresse
+cle_rqa = "matricule"                # matricule, id_provinc, lot, ident ou adresse
 ecart_max_m = 150
 nom = "portes"
 
@@ -303,6 +306,22 @@ raison = "nom officiel du tronçon de Cap-aux-Meules"
 comment = "Adresses des Îles-de-la-Madeleine d'après le Référentiel québécois des adresses"
 source = "Référentiel québécois des adresses (MRNF), version AQ20261001"
 discussion = "https://community.openstreetmap.org/t/..."
+```
+
+### Portes d'entrée de la Chaire Mobilité
+
+Un fichier `.csv` dans `[adresses.positions]` est lu au format du rôle
+d'évaluation corrigé par la Chaire Mobilité (outil address_integrator) :
+une ligne par unité d'évaluation, avec `id_provinc`, `geog` (point en
+WKT, EWKT ou EWKB hexadécimal, comme l'écrit PostGIS),
+`geog_changed_entrance_aligned`, `geog_approximate` et `is_ignored`.
+Seuls les points placés sur la porte, ni approximatifs ni ignorés, sont
+retenus; la clé est alors `id_provinc` par défaut, et `propriete` est
+inutile :
+
+```toml
+[adresses.positions]
+fichier = "donnees/Iles_de_la_Madeleine/portes.csv"
 ```
 
 ## Durées et usage des serveurs
@@ -380,7 +399,8 @@ Liste au 17 octobre 2026, par ordre de priorité.
 ### Adresses
 
 10. **Portes d'entrée** de la Chaire Mobilité : prêt dans l'outil
-    (section `[adresses.positions]`), il manque les données.
+    (section `[adresses.positions]`, format CSV de son outil), il manque
+    les données.
 11. **Interpolations** : ne supprimer une ligne que si sa rue reçoit
     vraiment des adresses (aujourd'hui, une rue « à revoir » peut perdre
     son interpolation sans rien recevoir).

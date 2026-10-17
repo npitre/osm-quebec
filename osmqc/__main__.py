@@ -151,6 +151,9 @@ def adresses_preparer(lieu, conf):
     rues.appliquer(index, plan_rues)
     appliquer_modifications(index, ca)
     pos = positions.Positions(ca["positions"]) if "positions" in ca else None
+    if pos:
+        print("Positions %s : %d points%s." % (pos.nom, len(pos.points), "".join(
+            ", %d écartés (%s)" % (n, r) for r, n in sorted(pos.ecartes.items()))))
     plan = adresses.preparer(charger_adresses(lieu), index, ca, pos)
     for m in ca.get("modifier", []):
         plan.corriger(m["type"], m["id"], m["tags"], m.get("raison", ""))

@@ -2,11 +2,14 @@
 # test_regions_1, test_rues_2, test_adresses_7, etc. Petits exemples
 # construits à la main, sans données ni accès réseau.
 
+import os
+import struct
+import tempfile
 import unittest
 import xml.etree.ElementTree as ET
 from unittest import mock
 
-from osmqc import adresses, envoi, geo, osm, osmchange, regions, rqa, rues
+from osmqc import adresses, envoi, geo, osm, osmchange, positions, regions, rqa, rues
 
 LON, LAT = -75.0, 46.0
 
@@ -40,12 +43,12 @@ class Rel:
 
 
 def adr(numero, rue="Chemin du Tour-du-Lac", dx=1, dy=0.3, suffixe="", unite="", fin="",
-        municipalite="80135", categorie="RESI", nom_municipalite="Duhamel"):
+        municipalite="80135", categorie="RESI", nom_municipalite="Duhamel", matricule=""):
     p = P(dx, dy)
     return rqa.Adresse(ident="x", municipalite=municipalite, nom_municipalite=nom_municipalite,
                        odonyme="1", rue=rue, numero=numero, suffixe=suffixe, unite=unite,
                        code_postal="J0V 1G0", lon=p[0], lat=p[1], qualite="Bâtiment",
-                       lot="", matricule="", date_creation="", fin=fin, categorie=categorie)
+                       lot="", matricule=matricule, date_creation="", fin=fin, categorie=categorie)
 
 
 def rue_osm(nom="Chemin du Tour-du-Lac"):
@@ -318,6 +321,31 @@ class Adresses(unittest.TestCase):
         self.assertNotIn("entrance", p.creer[0][0])
         p = adresses.preparer([adr("480")], idx, {}, Portes(P(1.5, 30)))    # trop loin
         self.assertEqual(p.rapport[0].position, "RQA")
+
+    def test_adresses_8_portes_chaire_mobilite(self):
+        # Le CSV du rôle corrigé par la Chaire Mobilité, relié au RQA par
+        # id_provinc (code de municipalité et matricule).
+        porte = P(1.5, 1)
+        ewkb = struct.pack("<BII", 1, 0x20000001, 4326).hex() + struct.pack("<dd", *porte).hex()
+        lignes = ["id_provinc,geog,geog_changed_entrance_aligned,geog_approximate,is_ignored",
+                  "80135%s,%s,true,false,false" % ("1" * 18, ewkb),
+                  "80135%s,SRID=4326;POINT(%r %r),t,f,f" % ("2" * 18, *P(3, 1)),
+                  "80135%s,SRID=4326;POINT(%r %r),false,false,false" % ("3" * 18, *P(4, 1)),
+                  "80135%s,SRID=4326;POINT(%r %r),true,true,false" % ("4" * 18, *P(5, 1)),
+                  "80135%s,SRID=4326;POINT(%r %r),true,false,true" % ("5" * 18, *P(6, 1))]
+        with tempfile.NamedTemporaryFile("w", suffix=".csv", delete=False) as fh:
+            fh.write("\n".join(lignes) + "\n")
+        self.addCleanup(os.unlink, fh.name)
+        pos = positions.Positions({"fichier": fh.name})
+        self.assertEqual(pos.champ, "id_provinc")
+        self.assertEqual(set(pos.points), {"80135" + "1" * 18, "80135" + "2" * 18})
+        self.assertEqual(pos.ecartes, {"pas sur la porte": 1, "approximatif": 1, "ignoré": 1})
+        a = [adr("480", matricule="1" * 18), adr("490", dx=3, matricule="2" * 18),
+             adr("492", dx=3, matricule="2" * 18), adr("500", dx=4, matricule="3" * 18)]
+        p = adresses.preparer(a, rue_osm(), {}, pos)
+        source = {l.numero: l.position for l in p.rapport}
+        self.assertEqual(source, {"480": "portes", "490": "RQA", "492": "RQA", "500": "RQA"})
+        self.assertIn(porte, [pt for _, pt in p.creer])
 
 
 # Groupe de modifications
