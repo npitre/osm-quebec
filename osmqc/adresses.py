@@ -245,15 +245,17 @@ def preparer(adresses, index, conf, positions=None):
     for (mun, odo, num), (a, autres) in sorted(
             groupes.items(), key=lambda kv: (kv[0][0], kv[1][0].rue, int(re.match(r"\d*", kv[0][2]).group() or 0), kv[0][2])):
         point, source, remarque = positions.position(a) if positions else (a.point, "RQA", "")
-        detail = [remarque] if remarque else []
         # La rue doit exister dans OSM sous le même nom, tout près.
         proches = [(nom, wid) for nom, wid in rues.get(cle_nom(a.rue), [])
                    if geo.distance_ligne(a.point, index.ligne(wid)) < RUE_PROCHE_M]
+        detail = []
         if not proches:
             detail.append("aucune rue « %s » dans OSM à moins de %d m" % (a.rue, RUE_PROCHE_M))
         elif all(nom != a.rue for nom, _ in proches):
             detail.append("rue écrite « %s » dans OSM" % proches[0][0])
         statut = "à revoir" if detail else None
+        if remarque:
+            detail.insert(0, remarque)
 
         e = correspondance(deja, num, point) or correspondance(deja, num, a.point)
         if e is not None:

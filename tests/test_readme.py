@@ -307,7 +307,7 @@ class Adresses(unittest.TestCase):
             def position(self, a):
                 if geo.distance(self.p, a.point) > 150:
                     return a.point, "RQA", "point portes ignoré"
-                return self.p, "portes", ""
+                return self.p, "portes", "%.0f m du point RQA" % geo.distance(self.p, a.point)
         p = adresses.preparer([adr("480")], idx, {}, Portes(P(1.5, 1)))
         (tags, pt), = p.creer
         self.assertEqual(pt, P(1.5, 1))
