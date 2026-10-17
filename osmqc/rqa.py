@@ -8,6 +8,7 @@
 
 import csv
 import io
+import re
 import zipfile
 from dataclasses import dataclass
 
@@ -54,7 +55,7 @@ def nom_rue(r):
     if disc and nom.endswith("(%s)" % disc):
         nom = nom[:-len(disc) - 2].strip()
     if nom:
-        return nom
+        return developper(nom)
     # Sans forme recomposée : générique, particule, spécifique, point cardinal.
     nom = r["generique_odonyme"]
     if r["particule_odonyme"]:
@@ -63,7 +64,18 @@ def nom_rue(r):
     nom += sep + r["specifique_odonyme"]
     if r["point_cardinal_odonyme"]:
         nom += " " + r["point_cardinal_odonyme"]
-    return nom.strip()
+    return developper(nom.strip())
+
+
+ABREVIATIONS = [(r"(?<!\w)St[-.] ?(?=\w)", "Saint-"), (r"(?<!\w)Ste[-.] ?(?=\w)", "Sainte-")]
+
+
+def developper(nom):
+    """Abréviations développées, selon la règle d'OSM : « Rue St-Julien »
+    devient « Rue Saint-Julien »."""
+    for motif, forme in ABREVIATIONS:
+        nom = re.sub(motif, forme, nom)
+    return nom
 
 
 def adresse(r):

@@ -10,6 +10,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 
 from . import geo
+from .rqa import developper
 
 DOUBLON_M = 30          # adresse OSM existante au même numéro à moins de 30 m
 SUFFIXE_DISTINCT_M = 5  # un suffixe plus loin que ça de son numéro de base est une adresse à part
@@ -18,8 +19,9 @@ RUE_PROCHE_M = 300      # distance maximale entre l'adresse et une rue du même 
 
 def cle_nom(nom):
     """Forme de comparaison d'un nom de rue : sans accents, casse,
-    tirets ni apostrophes (« Chemin du Gros Cap » = « Chemin du Gros-Cap »)."""
-    s = unicodedata.normalize("NFD", nom or "").encode("ascii", "ignore").decode()
+    tirets ni apostrophes (« Chemin du Gros Cap » = « Chemin du Gros-Cap »),
+    abréviations développées (« Rue St. Andrew » = « Rue Saint-Andrew »)."""
+    s = unicodedata.normalize("NFD", developper(nom or "")).encode("ascii", "ignore").decode()
     return re.sub(r"[^a-z0-9]", "", s.lower())
 
 
