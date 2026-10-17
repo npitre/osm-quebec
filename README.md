@@ -220,15 +220,12 @@ dans `sortie/LIEU/` (hors du dépôt); les rapports de révision, dans
    une municipalité du lieu, et si ses nœuds ne servent à rien d'autre et
    ne portent que des étiquettes CanVec.
 8. **Position** : le point du RQA, sauf si une source plus précise est
-   donnée (section `[adresses.positions]`, par exemple les portes d'entrée
-   placées à la main sur l'imagerie). Le point de cette source est relié
-   à l'adresse par le matricule, l'identifiant provincial du rôle
-   (`id_provinc`, code de municipalité et matricule), le lot,
-   l'identifiant du RQA ou l'adresse elle-même. Il est ignoré s'il est
-   trop loin du point du RQA (150 m par défaut), ou si la même unité
-   d'évaluation porte plusieurs numéros (la porte ne dit pas lequel); il
-   sera alors corrigé manuellement plus tard. Le rapport indique la
-   source retenue pour chaque adresse. Une étiquette
+   donnée, par exemple les portes d'entrée placées à la main par la
+   Chaire Mobilité (voir « Le fichier d'un lieu »). Ce point est ignoré
+   s'il est trop loin du point du RQA (150 m par défaut), ou si la même
+   unité d'évaluation porte plusieurs numéros (la porte ne dit pas
+   lequel); il sera alors corrigé manuellement plus tard. Le rapport
+   indique la source retenue pour chaque adresse. Une étiquette
    `entrance=*` n'est ajoutée que si le point de cette source est sur le
    contour d'un bâtiment (à moins de 1 m) : `home` pour une adresse
    résidentielle ou de villégiature du RQA, `shop` pour un commerce,
@@ -289,10 +286,10 @@ corriger_rue_existante = true
 creer_si_rue_absente = false
 exclure = [ { municipalite = "80135", rue = "Chemin du Tour-du-Lac", numero = "131", raison = "absent du rôle" } ]
 
-[adresses.positions]                 # facultatif
-fichier = "donnees/portes.geojson"   # GeoJSON de points, ou CSV (voir plus bas)
-propriete = "matricule"              # propriété du GeoJSON
-cle_rqa = "matricule"                # matricule, id_provinc, lot, ident ou adresse
+[adresses.positions]                 # facultatif : positions plus précises
+fichier = "donnees/Iles_de_la_Madeleine/portes.csv"   # CSV ou GeoJSON, voir plus bas
+# propriete = "matricule"            # GeoJSON : propriété qui sert de clé
+# cle_rqa = "id_provinc"             # ou matricule, lot, ident, adresse
 ecart_max_m = 150
 nom = "portes"
 
@@ -308,21 +305,14 @@ source = "Référentiel québécois des adresses (MRNF), version AQ20261001"
 discussion = "https://community.openstreetmap.org/t/..."
 ```
 
-### Portes d'entrée de la Chaire Mobilité
-
-Un fichier `.csv` dans `[adresses.positions]` est lu au format du rôle
-d'évaluation corrigé par la Chaire Mobilité (outil address_integrator) :
-une ligne par unité d'évaluation, avec `id_provinc`, `geog` (point en
-WKT, EWKT ou EWKB hexadécimal, comme l'écrit PostGIS),
+Le CSV est celui du rôle d'évaluation corrigé par la Chaire Mobilité
+(outil address_integrator) : une ligne par unité d'évaluation, avec
+`id_provinc` (code de municipalité et matricule), `geog` (point en WKT,
+EWKT ou EWKB hexadécimal, comme l'écrit PostGIS),
 `geog_changed_entrance_aligned`, `geog_approximate` et `is_ignored`.
 Seuls les points placés sur la porte, ni approximatifs ni ignorés, sont
-retenus; la clé est alors `id_provinc` par défaut, et `propriete` est
-inutile :
-
-```toml
-[adresses.positions]
-fichier = "donnees/Iles_de_la_Madeleine/portes.csv"
-```
+retenus. Un GeoJSON de points est relié au RQA par la propriété
+`propriete`.
 
 ## Durées et usage des serveurs
 
@@ -398,23 +388,18 @@ Liste au 17 octobre 2026, par ordre de priorité.
 
 ### Adresses
 
-10. **Portes d'entrée** de la Chaire Mobilité : prêt dans l'outil
-    (section `[adresses.positions]`, format CSV de son outil), il manque
-    les données.
+10. **Portes d'entrée** de la Chaire Mobilité : l'outil lit son CSV, il
+    manque les données.
 11. **Interpolations** : ne supprimer une ligne que si sa rue reçoit
     vraiment des adresses (aujourd'hui, une rue « à revoir » peut perdre
     son interpolation sans rien recevoir).
-12. **Anomalies du RQA** : liste automatique des logements sans lot et
-    des adresses absentes du rôle d'évaluation (comme le logement
-    9999-2225 chemin du Lac-Gagnon Ouest ou le 34 chemin de la
-    Pointe-à-Baptiste, à Duhamel), pour les signalements au MRNF.
-13. **Rôle d'évaluation foncière** du ministère des Affaires municipales
-    et de l'Habitation (MAMH), géoréférencé, comme source
-    supplémentaire : il sert à repérer les anomalies du point 12 et à
-    apparier les portes d'entrée du point 10 par matricule. Le MAMH a lui
-    aussi donné une [permission explicite pour
-    OSM](https://wiki.openstreetmap.org/wiki/FR:Minist%C3%A8re_des_Affaires_municipales_et_de_l%27Habitation)
-    pour ses données ouvertes.
+12. **Anomalies du RQA** : liste automatique, pour les signalements au
+    MRNF, des logements sans lot et des adresses absentes du rôle
+    d'évaluation (comme le logement 9999-2225 chemin du Lac-Gagnon Ouest
+    ou le 34 chemin de la Pointe-à-Baptiste, à Duhamel), à partir du rôle
+    géoréférencé du ministère des Affaires municipales et de l'Habitation
+    (MAMH), qui a lui aussi donné une [permission explicite pour
+    OSM](https://wiki.openstreetmap.org/wiki/FR:Minist%C3%A8re_des_Affaires_municipales_et_de_l%27Habitation).
 
 ## Tests
 
