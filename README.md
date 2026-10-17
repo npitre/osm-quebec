@@ -402,9 +402,20 @@ Liste au 17 octobre 2026, par ordre de priorité.
 python3 -m unittest discover tests
 ```
 
-Les tests (`tests/test_regles.py` et `tests/test_rues_coupures.py`)
-vérifient les règles sur de petits exemples construits à la main, sans
-données ni accès réseau :
+Les tests vérifient les règles sur de petits exemples construits à la
+main, sans données ni accès réseau. `tests/test_readme.py` en compte au
+moins un par règle de ce document, nommé d'après elle :
+
+| Règle | Tests |
+|---|---|
+| Ordre des étapes, 2 | `test_rues_4_adresses_apres_renommage`, `test_adresses_4_rue_dans_osm` |
+| Régions, 1 à 8 | `test_regions_1_trace_du_mrnf` à `test_regions_8_lien_lieu` (règle 5 : suppression, chemins protégés, report de la note, étiquettes des relations; règle 7 : nœud ajouté au croisement, chemin coupé, relation de route mise à jour) |
+| Rues, 1 à 4 | `test_rues_1_nom_officiel` (dont les abréviations) à `test_rues_4_adresses_apres_renommage` (règle 2 : `old_name` et `alt_name`) |
+| Adresses, 1 à 8 | `test_adresses_1_logements_et_suffixes` à `test_adresses_8_positions_et_entree` |
+| Groupe de modifications | `test_groupe` (`import=yes`, discussion obligatoire pour un envoi réel) |
+
+`tests/test_regles.py` et `tests/test_rues_coupures.py` vérifient plus
+en détail les fonctions de base :
 
 | Groupe | Ce qui est vérifié |
 |---|---|

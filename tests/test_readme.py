@@ -1,0 +1,338 @@
+# Un test (au moins) par règle du README, nommé d'après elle :
+# test_regions_1, test_rues_2, test_adresses_7, etc. Petits exemples
+# construits à la main, sans données ni accès réseau.
+
+import unittest
+import xml.etree.ElementTree as ET
+from unittest import mock
+
+from osmqc import adresses, envoi, geo, osm, osmchange, regions, rqa, rues
+
+LON, LAT = -75.0, 46.0
+
+
+def P(dx, dy):
+    """Point à dx, dy millièmes de degré du point de référence."""
+    return (round(LON + dx / 1000, 7), round(LAT + dy / 1000, 7))
+
+
+def carre(x0, y0, x1, y1):
+    return [P(x0, y0), P(x1, y0), P(x1, y1), P(x0, y1), P(x0, y0)]
+
+
+def index(noeuds, chemins, relations=()):
+    elems = [{"type": "node", "id": n, "lon": P(*xy)[0], "lat": P(*xy)[1], "version": 1,
+              "tags": t} for n, (xy, t) in noeuds.items()]
+    elems += [{"type": "way", "id": w, "nodes": ns, "tags": t, "version": 2} for w, ns, t in chemins]
+    elems += list(relations)
+    return osm.Index(elems)
+
+
+class Rel:
+    """Relation de limite minimale, comme regions.Relation."""
+
+    def __init__(self, ident, chemins=(), autres=(), tags=None):
+        self.id = ident
+        self.chemins = list(chemins)
+        self.tags = tags or {}
+        self.rel = {"type": "relation", "id": ident, "version": 5, "tags": self.tags,
+                    "members": list(autres) + [{"type": "way", "ref": w, "role": "outer"} for w in chemins]}
+
+
+def adr(numero, rue="Chemin du Tour-du-Lac", dx=1, dy=0.3, suffixe="", unite="", fin="",
+        municipalite="80135", categorie="RESI", nom_municipalite="Duhamel"):
+    p = P(dx, dy)
+    return rqa.Adresse(ident="x", municipalite=municipalite, nom_municipalite=nom_municipalite,
+                       odonyme="1", rue=rue, numero=numero, suffixe=suffixe, unite=unite,
+                       code_postal="J0V 1G0", lon=p[0], lat=p[1], qualite="Bâtiment",
+                       lot="", matricule="", date_creation="", fin=fin, categorie=categorie)
+
+
+def rue_osm(nom="Chemin du Tour-du-Lac"):
+    """Une rue est-ouest le long de y = 0, de x = 0 à x = 10."""
+    return index({1: ((0, 0), {}), 2: ((5, 0), {}), 3: ((10, 0), {})},
+                 [(10, [1, 2], {"highway": "residential", "name": nom}),
+                  (11, [2, 3], {"highway": "residential", "name": nom})])
+
+
+# Régions
+
+class Regions(unittest.TestCase):
+    def setUp(self):
+        # Deux municipalités voisines, A à gauche, B à droite.
+        self.officiel = {"A": [[carre(0, 0, 10, 10)]], "B": [[carre(10, 0, 20, 10)]]}
+        self.rels = {"A": Rel(100, [500]), "B": Rel(200, [501])}
+
+    def test_regions_1_trace_du_mrnf(self):
+        plan = regions.preparer(self.officiel, self.rels)
+        sommets = {p for poly in self.officiel.values() for a in poly[0] for p in a}
+        self.assertEqual(set(plan["noeuds"]), sommets)
+
+    def test_regions_2_chemins_propres(self):
+        plan = regions.preparer(self.officiel, self.rels)
+        # Tous les nœuds des chemins de limite sont neufs.
+        self.assertTrue(all(n < 0 for _, ids, _ in plan["chemins"] for n in ids))
+        racine = osmchange.osc_regions(plan, {c: r.rel for c, r in self.rels.items()}, [], [], osm.Index([]))
+        for w in racine.find("create").iter("way"):
+            self.assertEqual({t.get("k") for t in w.iter("tag")}, {"boundary", "admin_level"})
+
+    def test_regions_3_limite_commune(self):
+        plan = regions.preparer(self.officiel, self.rels)
+        a = {m["ref"] for m in plan["membres"]["A"]}
+        b = {m["ref"] for m in plan["membres"]["B"]}
+        self.assertEqual(len(a & b), 1)       # le côté commun, un seul chemin
+
+    def test_regions_4_contour_ferme_reutilise(self):
+        # Une seule municipalité, une île : son contour fermé reprend le
+        # chemin de la relation parente.
+        officiel = {"A": [[carre(0, 0, 10, 10)]]}
+        parent = Rel(900, [800])
+        parent.index = index({1: ((0, 0), {}), 2: ((10, 0), {}), 3: ((10, 10), {}), 4: ((0, 10), {})},
+                             [(800, [1, 2, 3, 4, 1], {"boundary": "administrative", "admin_level": "6"})])
+        plan = regions.preparer(officiel, {"A": Rel(100, [500])}, parent)
+        self.assertEqual(plan["chemins"], [])
+        self.assertEqual([m["ref"] for m in plan["membres"]["A"]], [800])
+
+    def test_regions_4_contour_ouvert_trace(self):
+        # Avec deux municipalités, le contour extérieur est fait d'arcs
+        # ouverts : tracés d'après le MRNF, même avec une relation parente.
+        parent = Rel(900, [800])
+        parent.index = index({1: ((0, 0), {}), 2: ((20, 0), {})}, [(800, [1, 2], {})])
+        plan = regions.preparer(self.officiel, self.rels, parent)
+        self.assertNotIn(800, {m["ref"] for lst in plan["membres"].values() for m in lst})
+
+    def _retires(self):
+        noeuds = {n: ((n, 0), {}) for n in range(1, 11)}
+        chemins = [(600, [1, 2], {"boundary": "administrative"}),
+                   (601, [3, 4], {"natural": "coastline"}),
+                   (602, [5, 6], {"boundary": "administrative", "note": "à vérifier"}),
+                   (603, [7, 8], {"boundary": "administrative", "admin_level": "4"}),
+                   (604, [9, 10], {"boundary": "administrative", "disputed_by": "NL"})]
+        return index(noeuds, chemins)
+
+    @mock.patch.object(regions, "_usages_api", lambda nids: ({n: set() for n in nids}, set()))
+    @mock.patch.object(regions, "relations_du_chemin", lambda w: [100])
+    def test_regions_5_ce_qui_sort(self):
+        idx = self._retires()
+        chemins, noeuds = regions.supprimables([600, 601, 602, 603, 604], idx, [100])
+        self.assertEqual(chemins, [600])      # la ligne de limite seule
+        self.assertEqual(noeuds, [1, 2])      # littoral, note, frontière et disputed_by restent
+
+    def test_regions_5_chemins_proteges(self):
+        for t in ({"note": "x"}, {"fixme": "x"}, {"description": "x"}, {"disputed_by": "NL"},
+                  {"disputed": "yes"}):
+            self.assertTrue(regions.protege(dict(t, boundary="administrative")), t)
+        self.assertFalse(regions.protege({"boundary": "administrative", "admin_level": "8"}))
+        self.assertTrue(regions.frontiere({"admin_level": "4"}))
+        self.assertTrue(regions.frontiere({"admin_level": "2"}))
+        self.assertFalse(regions.frontiere({"admin_level": "6"}))
+
+    def test_regions_5_note_reportee(self):
+        idx = self._retires()
+        plan = regions.preparer(self.officiel, self.rels)
+        res = regions.reporter_notes([602], idx, plan)
+        self.assertEqual(res[0][2], {"note": "à vérifier"})
+        self.assertEqual(plan["etiquettes"][res[0][1]], {"note": "à vérifier"})
+
+    def test_regions_5_etiquettes_des_relations(self):
+        plan = regions.preparer(self.officiel, self.rels)
+        self.rels["A"].rel["tags"] = {"name": "A", "boundary": "administrative"}
+        racine = osmchange.osc_regions(plan, {"A": self.rels["A"].rel}, [], [], osm.Index([]))
+        rel = racine.find("modify").find("relation")
+        self.assertEqual({t.get("k"): t.get("v") for t in rel.iter("tag")},
+                         {"name": "A", "boundary": "administrative"})
+
+    def test_regions_6_verification(self):
+        a = adr("1", dx=15, dy=5, municipalite="B")
+        compte, ecarts = regions.comparer([a], {c: p for c, p in self.officiel.items()},
+                                          {"A": [carre(0, 0, 20, 10)]})
+        self.assertEqual(compte[("MRNF", True)], 1)
+        self.assertEqual(compte[("OSM", False)], 1)
+        self.assertEqual(ecarts[0][1:], ("B", "A"))
+
+    def test_regions_7_coupure(self):
+        # Une route est-ouest traverse la limite x = 5 sans y être coupée.
+        idx = index({1: ((0, 0), {}), 2: ((8, 0), {})},
+                    [(10, [1, 2], {"highway": "secondary", "name": "Route 315"})])
+        limite = [P(5, -10), P(5, 10)]
+        c = regions.coupures(idx, [limite], [])
+        self.assertEqual(c[0][0], "coupure à ajouter")
+        route = {"type": "relation", "id": 70, "version": 1, "tags": {"type": "route"},
+                 "members": [{"type": "way", "ref": 10, "role": ""}]}
+        d = regions.decouper(idx, c, {70: route}, -100, -100)
+        (nid, p), = d["noeuds"].items()
+        self.assertAlmostEqual(p[0], LON + 0.005, places=7)      # sur la limite, sur la route
+        self.assertEqual(d["modifies"][10], [1, nid])
+        (wid, (ns, tags)), = d["chemins"].items()
+        self.assertEqual(ns, [nid, 2])
+        self.assertEqual(tags["name"], "Route 315")
+        self.assertEqual([m["ref"] for m in d["relations"][70]], [10, wid])
+
+    def test_regions_8_lien_lieu(self):
+        idx = index({1: ((0, 0), {"place": "village", "name": "Duhamel"}),
+                     2: ((0, 0), {"place": "village", "name": "Duhamel (village)"}),
+                     3: ((0, 0), {})}, [])
+        rel = lambda ref: {"tags": {"name": "Duhamel"},
+                           "members": [{"type": "node", "ref": ref, "role": "label"}] if ref else []}
+        self.assertEqual(regions.lien_lieu(rel(1), idx)[0], "lié")
+        self.assertEqual(regions.lien_lieu(rel(2), idx)[0], "noms différents")
+        self.assertEqual(regions.lien_lieu(rel(3), idx)[0], "lien sans place")
+        self.assertEqual(regions.lien_lieu(rel(None), idx)[0], "sans lien")
+
+
+# Rues
+
+class Rues(unittest.TestCase):
+    def test_rues_1_nom_officiel(self):
+        r = {"odonyme_recompose_normal": "Rue St-Julien (Papineauville)",
+             "discriminant_odonyme": "Papineauville"}
+        self.assertEqual(rqa.nom_rue(r), "Rue Saint-Julien")
+        self.assertEqual(rqa.developper("Rue Hubert-St-Louis"), "Rue Hubert-Saint-Louis")
+        self.assertEqual(rqa.developper("Rue Stewart"), "Rue Stewart")
+
+    def test_rues_2_renommage_casse(self):
+        tags = rues.etiquettes_renommage({"name": "Chemin de la Martinique"}, "Chemin de La Martinique")
+        self.assertEqual(tags, {"name": "Chemin de La Martinique"})   # pas d'old_name
+
+    def test_rues_2_abreviation_dans_osm(self):
+        idx = rue_osm("Rue St. Andrew")
+        r = rues.analyser([adr("5", "Rue Saint-Andrew")], idx)[0]
+        self.assertEqual(r.statut, "à renommer")
+
+    def test_rues_2_noms_conserves(self):
+        # Renommage décidé à la main : l'ancien nom passe dans old_name,
+        # sauf s'il est déjà gardé (alt_name).
+        t = rues.etiquettes_renommage({"name": "Chemin Marconi"}, "Chemin du Marconi")
+        self.assertEqual(t["old_name"], "Chemin Marconi")
+        t = rues.etiquettes_renommage({"name": "Chemin du Gros-Cap"}, "Chemin de Gros-Cap",
+                                      {"alt_name": "Chemin du Gros-Cap"})
+        self.assertNotIn("old_name", t)
+        t = rues.etiquettes_renommage({"name": "B", "old_name": "A"}, "C")
+        self.assertEqual(t["old_name"], "A;B")
+
+    def test_rues_3_autres_ecarts(self):
+        idx = rue_osm("Chemin Cormier")
+        r = rues.analyser([adr("5", "Chemin de la Promenade")], idx)[0]
+        self.assertEqual(r.statut, "autre nom")
+        self.assertEqual(r.renommer, [])
+
+    def test_rues_4_adresses_apres_renommage(self):
+        idx = rue_osm("Chemin du Tour du Lac")
+        a = [adr("480")]
+        avant = adresses.preparer(a, idx, {})
+        self.assertEqual(avant.creer, [])
+        plan, _ = rues.plan_renommage(rues.analyser(a, idx))
+        rues.appliquer(idx, plan)
+        apres = adresses.preparer(a, idx, {})
+        self.assertEqual(len(apres.creer), 1)
+
+
+# Adresses
+
+class Adresses(unittest.TestCase):
+    def test_adresses_1_logements_et_suffixes(self):
+        groupe = adresses.regrouper([adr("329"), adr("329", unite="2"), adr("329", suffixe="1"),
+                                     adr("120"), adr("120", suffixe="A"),
+                                     adr("120", suffixe="B", dx=2)])     # à 77 m : distinct
+        base, autres = groupe[("80135", "1", "329")]
+        self.assertEqual(adresses.numeros("329", base, autres), ("329", "1;2"))
+        base, autres = groupe[("80135", "1", "120")]
+        self.assertEqual(adresses.numeros("120", base, autres), ("120;120A", None))
+        base, autres = groupe[("80135", "1", "120B")]
+        self.assertEqual(adresses.numeros("120B", base, autres), ("120B", None))
+        p = adresses.preparer([adr("120"), adr("120", suffixe="B", dx=2)], rue_osm(), {})
+        self.assertEqual(sorted(t["addr:housenumber"] for t, _ in p.creer), ["120", "120B"])
+
+    def test_adresses_2_terminees(self):
+        p = adresses.preparer([adr("480", fin="20250101")], rue_osm(), {})
+        self.assertEqual(p.creer, [])
+        self.assertEqual(p.rapport, [])
+
+    def test_adresses_3_exclusions(self):
+        conf = {"exclure": [{"municipalite": "80135", "rue": "Chemin du Tour-du-Lac",
+                             "numero": "131", "raison": "absent du rôle"}]}
+        p = adresses.preparer([adr("131"), adr("131", rue="Chemin du Geai-Bleu")], rue_osm(), conf)
+        self.assertEqual([l.statut for l in p.rapport if l.rue == "Chemin du Tour-du-Lac"], ["exclu"])
+        with self.assertRaises(SystemExit):
+            adresses.preparer([], rue_osm(), {"exclure": [{"municipalite": "1", "numero": "1"}]})
+
+    def test_adresses_4_rue_dans_osm(self):
+        p = adresses.preparer([adr("480")], rue_osm("Chemin des Pins"), {})
+        self.assertEqual(p.creer, [])
+        self.assertEqual(p.rapport[0].statut, "à revoir")
+
+    def test_adresses_5_doublons(self):
+        idx = rue_osm()
+        idx.noeuds[50] = {"type": "node", "id": 50, "lon": P(1, 0.4)[0], "lat": P(1, 0.4)[1],
+                          "version": 3, "tags": {"addr:housenumber": "480", "addr:street": "Ch. Tour du Lac"}}
+        p = adresses.preparer([adr("480")], idx, {})
+        self.assertEqual(p.creer, [])
+        self.assertEqual(p.modifier[("node", 50)], {"addr:street": "Chemin du Tour-du-Lac",
+                                                   "addr:postcode": "J0V 1G0"})
+
+    def test_adresses_6_etiquettes(self):
+        p = adresses.preparer([adr("480")], rue_osm(), {})
+        (tags, _), = p.creer
+        self.assertEqual(set(tags), {"addr:housenumber", "addr:street", "addr:postcode"})
+
+    def _interpolation(self, ville="Duhamel", dy=0.5, partage=False):
+        idx = rue_osm()
+        bout = {"addr:street": "Chemin du Tour-du-Lac", "addr:city": ville,
+                "source": "NRCan-CanVec-7.0", "addr:housenumber": "400"}
+        idx.noeuds[60] = {"type": "node", "id": 60, "lon": P(0, dy)[0], "lat": P(0, dy)[1], "version": 1, "tags": bout}
+        idx.noeuds[61] = {"type": "node", "id": 61, "lon": P(9, dy)[0], "lat": P(9, dy)[1], "version": 1, "tags": bout}
+        idx.chemins[70] = {"type": "way", "id": 70, "nodes": [60, 61], "version": 1,
+                           "tags": {"addr:interpolation": "even"}}
+        if partage:
+            idx.chemins[71] = {"type": "way", "id": 71, "nodes": [61, 3], "version": 1, "tags": {"highway": "service"}}
+        return adresses.preparer([adr("480")], idx, {}).supprimer_chemins
+
+    def test_adresses_7_interpolations(self):
+        self.assertEqual(self._interpolation(), [70])
+        self.assertEqual(self._interpolation(dy=20), [])            # à plus de 300 m des adresses
+        self.assertEqual(self._interpolation(ville="Lac-Simon"), [])  # autre municipalité
+        self.assertEqual(self._interpolation(partage=True), [])      # nœud partagé
+
+    def test_adresses_8_positions_et_entree(self):
+        idx = rue_osm()
+        # Un bâtiment dont le côté sud passe à y = 1.
+        for n, xy in {80: (1, 1), 81: (2, 1), 82: (2, 2), 83: (1, 2)}.items():
+            idx.noeuds[n] = {"type": "node", "id": n, "lon": P(*xy)[0], "lat": P(*xy)[1], "tags": {}}
+        idx.chemins[90] = {"type": "way", "id": 90, "nodes": [80, 81, 82, 83, 80], "tags": {"building": "house"}}
+
+        class Portes:
+            def __init__(self, p):
+                self.p = p
+
+            def position(self, a):
+                if geo.distance(self.p, a.point) > 150:
+                    return a.point, "RQA", "point portes ignoré"
+                return self.p, "portes", ""
+        p = adresses.preparer([adr("480")], idx, {}, Portes(P(1.5, 1)))
+        (tags, pt), = p.creer
+        self.assertEqual(pt, P(1.5, 1))
+        self.assertEqual(tags["entrance"], "home")
+        p = adresses.preparer([adr("480", categorie="COMM")], idx, {}, Portes(P(1.5, 1)))
+        self.assertEqual(p.creer[0][0]["entrance"], "shop")
+        p = adresses.preparer([adr("480")], idx, {}, Portes(P(1.5, 0.5)))   # pas sur le contour
+        self.assertNotIn("entrance", p.creer[0][0])
+        p = adresses.preparer([adr("480")], idx, {}, Portes(P(1.5, 30)))    # trop loin
+        self.assertEqual(p.rapport[0].position, "RQA")
+
+
+# Groupe de modifications
+
+class Groupe(unittest.TestCase):
+    def test_groupe(self):
+        g = {"comment": "Adresses", "source": "RQA", "discussion": "https://exemple/t/1"}
+        t = envoi.etiquettes(g, "reel")
+        self.assertEqual(t["import"], "yes")
+        self.assertEqual(t["discussion"], "https://exemple/t/1")
+        self.assertIn("Discussion : https://exemple/t/1", t["comment"])
+        with self.assertRaises(SystemExit):
+            envoi.etiquettes({"comment": "A", "source": "B"}, "reel")
+        self.assertNotIn("discussion", envoi.etiquettes({"comment": "A", "source": "B"}, "test"))
+
+
+if __name__ == "__main__":
+    unittest.main()
