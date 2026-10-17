@@ -226,9 +226,10 @@ dans `sortie/LIEU/` (hors du dépôt); les rapports de révision, dans
    l'adresse elle-même; trop loin d'un point du RQA (150 m par défaut),
    il est ignoré et sera corrigé manuellement plus tard. Le rapport
    indique la source retenue pour chaque adresse. Une étiquette
-   `entrance=*` (`main`, `home` ou `shop`, selon le type de bâtiment et
-   d'adresse dans le rôle foncier) n'est ajoutée que si le point est sur
-   le contour du bâtiment.
+   `entrance=*` n'est ajoutée que si le point de cette source est sur le
+   contour d'un bâtiment (à moins de 1 m) : `home` pour une adresse
+   résidentielle ou de villégiature du RQA, `shop` pour un commerce,
+   `main` sinon.
 
 ### Groupe de modifications
 

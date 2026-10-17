@@ -94,6 +94,21 @@ def numeros(num, base, autres):
     return numero, ";".join(logements) or None
 
 
+SUR_CONTOUR_M = 1       # une position à moins de 1 m du contour d'un bâtiment est une porte
+ENTREES = {"RESI": "home", "VILL": "home", "COMM": "shop"}
+
+
+def entree(categorie):
+    """Valeur d'entrance=* selon la catégorie d'utilisation du rôle."""
+    return ENTREES.get(categorie, "main")
+
+
+def contours_batiments(index):
+    """Grille des contours de bâtiments, pour reconnaître une porte."""
+    return geo.Grille([index.ligne(w["id"]) for w in index.chemins.values()
+                       if "building" in w.get("tags", {}) and len(w["nodes"]) > 3])
+
+
 INTERPOLATION_M = 300   # une interpolation remplacée est près d'adresses de sa rue
 
 
@@ -224,6 +239,7 @@ def preparer(adresses, index, conf, positions=None):
         ignorer = set()
     deja = existantes(index, ignorer)
     rues = rues_osm(index)
+    batiments = contours_batiments(index) if positions else None
     corriger_rue = conf.get("corriger_rue_existante", True)
 
     for (mun, odo, num), (a, autres) in sorted(
@@ -266,6 +282,13 @@ def preparer(adresses, index, conf, positions=None):
                 tags["addr:unit"] = logements
             if a.code_postal:
                 tags["addr:postcode"] = a.code_postal
+            # Une position d'une autre source posée sur le contour d'un
+            # bâtiment est une porte d'entrée.
+            if source != "RQA":
+                d = batiments.distance(point, rayon_deg=0.0002)
+                if d is not None and d < SUR_CONTOUR_M:
+                    tags["entrance"] = entree(a.categorie)
+                    detail.append("entrance=%s" % tags["entrance"])
             plan.creer.append((tags, point))
             statut = statut or "nouveau"
         if not a.principale:

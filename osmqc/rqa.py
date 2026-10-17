@@ -34,6 +34,7 @@ class Adresse:
     matricule: str
     date_creation: str
     fin: str            # date_fin : adresse qui n'existe plus
+    categorie: str = ""  # catégorie d'utilisation du rôle (RESI, VILL, COMM...)
 
     @property
     def point(self):
@@ -105,6 +106,7 @@ def adresse(r):
         matricule=r["matricule_unite_evaluation"],
         date_creation=r["date_creation"],
         fin=r["date_fin"],
+        categorie=r.get("categorie", ""),
     )
 
 
