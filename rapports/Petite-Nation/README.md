@@ -137,9 +137,17 @@ segments neufs, et 19 relations de route mises à jour (détail dans
 - Les chiffres tiennent compte des renommages de rues prévus.
 - Logements et suffixes fusionnés : 1 263 adresses en avaient; 676
   numéros n'ont pas d'adresse principale au RQA (on prend le point d'un
-  logement ou d'un suffixe). Les logements vont dans `addr:unit` (721
+  logement ou d'un suffixe). Les logements vont dans `addr:unit` (401
   adresses), les suffixes en lettre dans `addr:housenumber` (576
   adresses, par exemple « 1;1A;1B »).
+- **363 logements douteux écartés** de `addr:unit` : sans lot ni
+  matricule, sur une adresse d'un seul logement selon le rôle (voir
+  [Logements douteux du RQA](../../README.md#logements-douteux-du-rqa)).
+  288 viennent du chargement du RQA du 11 décembre 2021. Surtout à
+  Lac-Simon (97), Duhamel (61) et Saint-André-Avellin (38). Ceux de
+  Duhamel ont été signalés au MRNF le 13 octobre 2026; les autres
+  restent à signaler. Liste complète, avec l'identifiant du RQA, dans
+  [adresses.md](adresses.md#logements-douteux).
 - Exclusion : le 131 chemin du Tour-du-Lac (Duhamel), absent du rôle
   d'évaluation.
 - **3 925 lignes d'interpolation CanVec supprimées** (48 380 nœuds),

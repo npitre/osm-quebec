@@ -13,6 +13,7 @@ Source : Référentiel québécois des adresses (MRNF), version AQ20261001. Règ
 | Déjà dans OSM, inchangées | 35 |
 | À revoir (non créées) | 129 |
 | Exclues | 0 |
+| Logements douteux écartés | 14 |
 | Objets OSM modifiés | 48 |
 | Lignes d'interpolation supprimées | 12 |
 | Nœuds d'interpolation supprimés | 269 |
@@ -61,6 +62,27 @@ Ces adresses ne sont pas créées tant que la rue n'est pas réglée dans OSM.
 | Chemin du Gros-Cap | 1 |
 | Chemin du Parc | 1 |
 | Chemin Wide | 1 |
+
+## Logements douteux
+
+Logements du RQA sans lot ni matricule, sur une adresse qui n'a qu'un logement selon le rôle d'évaluation : ils ne sont pas mis dans addr:unit. Liste à signaler au MRNF (géoboutique). Voir le [README](../../README.md#logements-douteux-du-rqa).
+
+| Municipalité | Adresse | Créé le | Identifiant RQA |
+|---|---|---|---|
+| Les Îles-de-la-Madeleine | 2-10 Allée Hormidas-Cyr | 2022-12-16 | 5941d89b42914e2e8393840f90c427d0 |
+| Les Îles-de-la-Madeleine | 1-75 Allée Robert-Vigneau | 2021-12-11 | 888b2d29af164f6290286b6aeab14b7b |
+| Les Îles-de-la-Madeleine | 2-342 Chemin Arsenault | 2021-12-11 | 308997af3ce2428aac8fdcd3fef5294f |
+| Les Îles-de-la-Madeleine | 2-260 Chemin Boudreau | 2022-09-14 | 85bca98e043e42ba9db0471187ebdf93 |
+| Les Îles-de-la-Madeleine | A-736 Chemin Cormier | 2022-09-14 | aa2b5e6e2abe4049a5f4eb9f1bfeb5ca |
+| Les Îles-de-la-Madeleine | 2-736 Chemin Cormier | 2022-12-16 | 395729f3ae12403a994ece1ab7b79a19 |
+| Les Îles-de-la-Madeleine | 2-587 Chemin des Caps | 2022-09-14 | 88cb7e5714bd4b4989501d1060293a59 |
+| Les Îles-de-la-Madeleine | 2-711 Chemin des Caps | 2022-12-16 | 9d43884d3f05437fb7217c8e09ebb652 |
+| Les Îles-de-la-Madeleine | 2-489 Chemin du Bassin | 2025-02-12 | 496face42e2d4dfd91faffeb92c761c9 |
+| Les Îles-de-la-Madeleine | 1-317 Chemin du Quai | 2021-12-11 | c572b54898c74b1988aa5406509a3611 |
+| Les Îles-de-la-Madeleine | 1-26 Chemin Garneau | 2023-09-26 | d8cd919ab69145bab1e619a4340ffce5 |
+| Les Îles-de-la-Madeleine | 1-25 Chemin Noël | 2023-09-26 | 15354696934c45f286e0b57d531501ba |
+| Les Îles-de-la-Madeleine | 201-380 Route 199 | 2022-12-16 | 7417ae77932d4fbd9da71956aab84a45 |
+| Les Îles-de-la-Madeleine | 1-493 Route 199 | 2024-08-28 | 060b529a4d4e440f96b8f3d642add20d |
 
 ## Objets OSM modifiés
 

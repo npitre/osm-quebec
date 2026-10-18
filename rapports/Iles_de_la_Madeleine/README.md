@@ -143,11 +143,15 @@ prévus (section 2) :
 | À revoir, non créées | 129 |
 
 - Logements et suffixes fusionnés à leur numéro de base : 628 adresses
-  en avaient. Les logements vont dans `addr:unit` (519 adresses), les
+  en avaient. Les logements vont dans `addr:unit` (509 adresses), les
   suffixes en lettre dans `addr:housenumber` (156 adresses, par exemple
   « 19;19A;19B »). 17 suffixes placés ailleurs que leur numéro de base sont
   gardés comme adresses distinctes (310A et 310B chemin Principal,
   996A et 996B chemin de La Grave, etc.).
+- 14 logements douteux écartés de `addr:unit` (sans lot ni matricule,
+  sur une adresse d'un seul logement selon le rôle; voir
+  [adresses.md](adresses.md#logements-douteux)). Contrairement à la
+  Petite-Nation, ils viennent de plusieurs chargements du RQA.
 - 55 numéros n'ont pas d'adresse principale au RQA, seulement des
   logements ou des suffixes : on prend le point d'un logement.
 - Corrections d'adresses existantes : code postal ajouté, nom de rue
