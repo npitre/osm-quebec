@@ -43,12 +43,14 @@ class Rel:
 
 
 def adr(numero, rue="Chemin du Tour-du-Lac", dx=1, dy=0.3, suffixe="", unite="", fin="",
-        municipalite="80135", categorie="RESI", nom_municipalite="Duhamel", matricule=""):
+        municipalite="80135", categorie="RESI", nom_municipalite="Duhamel", matricule="",
+        lot="", logements=""):
     p = P(dx, dy)
     return rqa.Adresse(ident="x", municipalite=municipalite, nom_municipalite=nom_municipalite,
                        odonyme="1", rue=rue, numero=numero, suffixe=suffixe, unite=unite,
                        code_postal="J0V 1G0", lon=p[0], lat=p[1], qualite="Bâtiment",
-                       lot="", matricule=matricule, date_creation="", fin=fin, categorie=categorie)
+                       lot=lot, matricule=matricule, date_creation="20211211", fin=fin,
+                       categorie=categorie, nombre_unite=logements)
 
 
 def rue_osm(nom="Chemin du Tour-du-Lac"):
@@ -245,6 +247,26 @@ class Adresses(unittest.TestCase):
         self.assertEqual(adresses.numeros("120B", base, autres), ("120B", None))
         p = adresses.preparer([adr("120"), adr("120", suffixe="B", dx=2)], rue_osm(), {})
         self.assertEqual(sorted(t["addr:housenumber"] for t, _ in p.creer), ["120", "120B"])
+
+    def test_adresses_1_logements_douteux(self):
+        # Logement 2, ni lot ni matricule, sur une maison d'un seul logement
+        # au rôle : écarté de addr:unit et listé pour le MRNF.
+        maison = adr("250", logements="1")
+        p = adresses.preparer([maison, adr("250", unite="2")], rue_osm(), {})
+        (tags, _), = p.creer
+        self.assertNotIn("addr:unit", tags)
+        self.assertEqual([(x.logement, b.numero) for x, b in p.douteux], [("2", "250")])
+        self.assertIn("logement(s) douteux écarté(s) : 2", p.rapport[0].detail)
+        # Gardés : logement avec matricule ou lot, immeuble de 6 logements,
+        # nombre de logements inconnu, ou règle désactivée.
+        for base, unite, conf in [(maison, adr("250", unite="2", matricule="1" * 18), {}),
+                                  (maison, adr("250", unite="2", lot="1234567"), {}),
+                                  (adr("250", logements="6"), adr("250", unite="2"), {}),
+                                  (adr("250"), adr("250", unite="2"), {}),
+                                  (maison, adr("250", unite="2"), {"ecarter_logements_douteux": False})]:
+            p = adresses.preparer([base, unite], rue_osm(), conf)
+            self.assertEqual(p.creer[0][0].get("addr:unit"), "2")
+            self.assertEqual(p.douteux, [])
 
     def test_adresses_2_terminees(self):
         p = adresses.preparer([adr("480", fin="20250101")], rue_osm(), {})

@@ -35,6 +35,11 @@ def geojson_allege(complet):
     return {"type": "FeatureCollection", "features": f}
 
 
+def _num(v):
+    m = re.match(r"\d*", v)
+    return (int(m.group() or 0), v)
+
+
 def adresses(lieu, conf, plan, version):
     """Rapport Markdown d'un import d'adresses."""
     nom = conf.get("nom", lieu)
@@ -53,6 +58,7 @@ def adresses(lieu, conf, plan, version):
         ["Déjà dans OSM, inchangées", stat["existant"]],
         ["À revoir (non créées)", stat["à revoir"]],
         ["Exclues", stat["exclu"]],
+        ["Logements douteux écartés", len(plan.douteux)],
         ["Objets OSM modifiés", len(plan.modifier)],
         ["Lignes d'interpolation supprimées", len(plan.supprimer_chemins)],
         ["Nœuds d'interpolation supprimés", len(plan.supprimer_noeuds)],
@@ -88,6 +94,17 @@ def adresses(lieu, conf, plan, version):
                              [[a, b, n] for (a, b), n in rues[cause].most_common()])
             s += "\n"
 
+    if plan.douteux:
+        s += "## Logements douteux\n\n"
+        s += ("Logements du RQA sans lot ni matricule, sur une adresse qui n'a qu'un logement "
+              "selon le rôle d'évaluation : ils ne sont pas mis dans addr:unit. Liste à "
+              "signaler au MRNF (géoboutique). Voir le [README](../../README.md#logements-douteux-du-rqa).\n\n")
+        s += tableau(["Municipalité", "Adresse", "Créé le", "Identifiant RQA"], [
+            [x.nom_municipalite, "%s-%s %s" % (x.logement, x.numero, x.rue),
+             "%s-%s-%s" % (x.date_creation[:4], x.date_creation[4:6], x.date_creation[6:8]), x.ident]
+            for x, _ in sorted(plan.douteux, key=lambda d: (d[0].nom_municipalite, d[0].rue.casefold(),
+                                                            _num(d[0].numero), _num(d[0].logement)))])
+        s += "\n"
     if plan.modifier:
         s += "## Objets OSM modifiés\n\n"
         s += tableau(["Objet", "Changements", "Raison"], [

@@ -48,6 +48,7 @@ class Plan:
     supprimer_chemins: list = field(default_factory=list)
     supprimer_noeuds: list = field(default_factory=list)
     rapport: list = field(default_factory=list)
+    douteux: list = field(default_factory=list)     # (logement, adresse de base)
 
     def corriger(self, genre, ident, tags, raison):
         self.modifier.setdefault((genre, ident), {}).update(tags)
@@ -92,6 +93,16 @@ def numeros(num, base, autres):
     logements = sorted({a.logement for a in groupe if a.logement}, key=_ordre)
     numero = ";".join([num] + [l for l in lettres if l != num])
     return numero, ";".join(logements) or None
+
+
+def logement_douteux(base, a):
+    """Logement que rien ne confirme : ni lot ni matricule, sur une
+    adresse principale qui, selon le rôle d'évaluation (nombre_unite du
+    RQA), n'a qu'un logement. Exemple : 9999-2225 chemin du Lac-Gagnon
+    Ouest (Duhamel). Sans adresse principale ou sans nombre de
+    logements connu, on ne juge pas."""
+    return bool(a.logement and not a.lot and not a.matricule and base.principale
+                and base.nombre_unite.isdigit() and int(base.nombre_unite) <= 1)
 
 
 SUR_CONTOUR_M = 1       # une position à moins de 1 m du contour d'un bâtiment est une porte
@@ -247,6 +258,12 @@ def preparer(adresses, index, conf, positions=None):
     for (mun, odo, num), (a, autres) in sorted(
             groupes.items(), key=lambda kv: (kv[0][0], kv[1][0].rue, int(re.match(r"\d*", kv[0][2]).group() or 0), kv[0][2])):
         point, source, remarque = positions.position(a) if positions else (a.point, "RQA", "")
+        if conf.get("ecarter_logements_douteux", True):
+            douteux = [x for x in autres if logement_douteux(a, x)]
+            autres = [x for x in autres if x not in douteux]
+            plan.douteux += [(x, a) for x in douteux]
+        else:
+            douteux = []
         # La rue doit exister dans OSM sous le même nom, tout près.
         proches = [(nom, wid) for nom, wid in rues.get(cle_nom(a.rue), [])
                    if geo.distance_ligne(a.point, index.ligne(wid)) < RUE_PROCHE_M]
@@ -299,6 +316,9 @@ def preparer(adresses, index, conf, positions=None):
             detail.append("pas d'adresse principale au RQA, point d'un logement ou d'un suffixe")
         if autres:
             detail.append("%d logement(s) ou suffixe(s) fusionné(s)" % len(autres))
+        if douteux:
+            detail.append("logement(s) douteux écarté(s) : %s" % ", ".join(
+                sorted({x.logement for x in douteux}, key=_ordre)))
         plan.rapport.append(Ligne(mun, a.rue, num, a.code_postal, point[0], point[1], a.qualite,
                                   statut, "; ".join(detail), source))
     return plan

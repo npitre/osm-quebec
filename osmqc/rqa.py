@@ -35,6 +35,7 @@ class Adresse:
     date_creation: str
     fin: str            # date_fin : adresse qui n'existe plus
     categorie: str = ""  # catégorie d'utilisation du rôle (RESI, VILL, COMM...)
+    nombre_unite: str = ""  # nombre de logements selon le rôle d'évaluation
 
     @property
     def point(self):
@@ -107,6 +108,7 @@ def adresse(r):
         date_creation=r["date_creation"],
         fin=r["date_fin"],
         categorie=r.get("categorie", ""),
+        nombre_unite=r.get("nombre_unite", ""),
     )
 
 

@@ -188,9 +188,10 @@ dans `sortie/LIEU/` (hors du dépôt); les rapports de révision, dans
 1. **Une adresse par numéro de base et par rue.** Le RQA répète le
    point pour chaque logement d'un immeuble (2-1701, 329 1) : seul le
    numéro de base est créé. Les numéros de logement (2-1701, 329 1)
-   vont dans `addr:unit`, séparés par « ; ». Un suffixe en lettre (120A)
-   au même point que son numéro de base est fusionné et ajouté à
-   `addr:housenumber` (« 120;120A;120B »); placé à plus de 5 m, il
+   vont dans `addr:unit`, séparés par « ; », sauf les logements
+   douteux (voir « Logements douteux du RQA »). Un suffixe en lettre
+   (120A) au même point que son numéro de base est fusionné et ajouté
+   à `addr:housenumber` (« 120;120A;120B »); placé à plus de 5 m, il
    devient une adresse distincte. À valider : un suffixe en lettre que
    Postes Canada traite comme un logement devrait aller dans
    `addr:unit` plutôt que dans `addr:housenumber`.
@@ -234,6 +235,39 @@ dans `sortie/LIEU/` (hors du dépôt); les rapports de révision, dans
    contour d'un bâtiment (à moins de 1 m) : `home` pour une adresse
    résidentielle ou de villégiature du RQA, `shop` pour un commerce,
    `main` sinon.
+
+### Logements douteux du RQA
+
+Certains logements du RQA ne correspondent à rien sur le terrain : des
+numéros d'unité bizarres (36A, 3511, 9999) sur des propriétés qui n'ont
+qu'un seul logement. Par exemple, le logement 9999-2225 chemin du
+Lac-Gagnon Ouest, à Duhamel. Ils ne sont pas mis dans `addr:unit`.
+
+**Règle.** Un logement est douteux s'il n'a ni lot ni matricule, et que
+son adresse principale n'a qu'un seul logement selon le rôle
+d'évaluation (champ `nombre_unite` du RQA) : rien ne le confirme, et le
+rôle le contredit. Il est gardé s'il a un lot ou un matricule, si
+l'immeuble compte plusieurs logements, ou si son numéro n'a pas
+d'adresse principale ou pas de nombre de logements connu.
+
+**Origine.** La plupart ont été ajoutés au RQA d'un seul coup, le
+11 décembre 2021 à 20 h 15, dans un chargement d'environ 890 000 unités
+pour tout le Québec. La règle ne repose pas sur cette date : le même
+chargement contient aussi des logements valables (dans des immeubles que
+le rôle compte à 6, 30 ou 54 logements), et des cas semblables viennent
+d'autres chargements. À Duhamel, elle retrouve 62 des 64 unités
+signalées.
+
+**Signalement au MRNF.** Le 13 octobre 2026, 64 de ces logements, à
+Duhamel, ont été signalés au MRNF (Géoboutique), qui a transmis la
+demande à l'équipe responsable du RQA. Les autres régions restent à
+signaler : la section « Logements douteux » du rapport des adresses de
+chaque lieu en donne la liste, avec l'identifiant du RQA. Une version
+corrigée du RQA les fera disparaître de cette liste.
+
+**Effet.** Aucune adresse n'est perdue : seul un faux `addr:unit` est
+évité. La règle se désactive par `ecarter_logements_douteux = false`
+dans la section `[adresses]` du lieu.
 
 ### Groupe de modifications
 
@@ -288,6 +322,7 @@ discussion = "https://community.openstreetmap.org/t/..."
 supprimer_interpolations = true
 corriger_rue_existante = true
 creer_si_rue_absente = false
+ecarter_logements_douteux = true     # voir « Logements douteux du RQA »
 exclure = [ { municipalite = "80135", rue = "Chemin du Tour-du-Lac", numero = "131", raison = "absent du rôle" } ]
 
 [adresses.positions]                 # facultatif : positions plus précises
@@ -401,10 +436,10 @@ Liste au 17 octobre 2026, par ordre de priorité.
 11. **Interpolations** : ne supprimer une ligne que si sa rue reçoit
     vraiment des adresses (aujourd'hui, une rue « à revoir » peut perdre
     son interpolation sans rien recevoir).
-12. **Anomalies du RQA** : liste automatique, pour les signalements au
-    MRNF, des logements sans lot et des adresses absentes du rôle
-    d'évaluation (comme le logement 9999-2225 chemin du Lac-Gagnon Ouest
-    ou le 34 chemin de la Pointe-à-Baptiste, à Duhamel), à partir du rôle
+12. **Anomalies du RQA** : les logements douteux sont déjà listés (voir
+    « Logements douteux du RQA »). Reste à lister, pour les signalements au MRNF,
+    les adresses absentes du rôle d'évaluation (comme le 34 chemin de la
+    Pointe-à-Baptiste, à Duhamel), à partir du rôle
     géoréférencé du ministère des Affaires municipales et de l'Habitation
     (MAMH), qui a lui aussi donné une [permission explicite pour
     OSM](https://wiki.openstreetmap.org/wiki/FR:Minist%C3%A8re_des_Affaires_municipales_et_de_l%27Habitation).
