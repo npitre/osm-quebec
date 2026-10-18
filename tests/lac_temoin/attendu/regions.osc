@@ -1,0 +1,99 @@
+<?xml version='1.0' encoding='utf-8'?>
+<osmChange version="0.6" generator="osmqc">
+  <create>
+    <node id="-1" version="0" lat="47.0000000" lon="-71.9800000" />
+    <node id="-2" version="0" lat="47.0200000" lon="-71.9800000" />
+    <node id="-3" version="0" lat="47.0200000" lon="-72.0000000" />
+    <node id="-4" version="0" lat="47.0000000" lon="-72.0000000" />
+    <node id="-5" version="0" lat="47.0000000" lon="-71.9600000" />
+    <node id="-6" version="0" lat="47.0200000" lon="-71.9600000" />
+    <way id="-1" version="0">
+      <nd ref="-1" />
+      <nd ref="-2" />
+      <tag k="admin_level" v="8" />
+      <tag k="boundary" v="administrative" />
+    </way>
+    <way id="-2" version="0">
+      <nd ref="-2" />
+      <nd ref="-3" />
+      <nd ref="-4" />
+      <nd ref="-1" />
+      <tag k="admin_level" v="8" />
+      <tag k="boundary" v="administrative" />
+    </way>
+    <way id="-3" version="0">
+      <nd ref="-1" />
+      <nd ref="-5" />
+      <nd ref="-6" />
+      <nd ref="-2" />
+      <tag k="admin_level" v="8" />
+      <tag k="boundary" v="administrative" />
+      <tag k="note" v="Limite à vérifier sur le terrain" />
+    </way>
+    <node id="-7" version="0" lat="47.0080000" lon="-71.9800000" />
+    <node id="-8" version="0" lat="47.0150000" lon="-71.9800000" />
+    <way id="-4" version="0">
+      <nd ref="-7" />
+      <nd ref="11" />
+      <nd ref="12" />
+      <tag k="highway" v="secondary" />
+      <tag k="name" v="Route 999" />
+      <tag k="ref" v="999" />
+    </way>
+    <way id="-5" version="0">
+      <nd ref="-8" />
+      <nd ref="14" />
+      <tag k="highway" v="residential" />
+      <tag k="name" v="Rue Principale" />
+    </way>
+  </create>
+  <modify>
+    <relation id="1001" version="3">
+      <member type="node" ref="7" role="label" />
+      <member type="way" ref="-1" role="outer" />
+      <member type="way" ref="-2" role="outer" />
+      <tag k="admin_level" v="8" />
+      <tag k="boundary" v="administrative" />
+      <tag k="name" v="Lac-Témoin" />
+      <tag k="ref:qc" v="99001" />
+      <tag k="type" v="boundary" />
+    </relation>
+    <relation id="1002" version="3">
+      <member type="way" ref="-1" role="outer" />
+      <member type="way" ref="-3" role="outer" />
+      <tag k="admin_level" v="8" />
+      <tag k="boundary" v="administrative" />
+      <tag k="name" v="Sainte-Vérification" />
+      <tag k="ref:qc" v="99002" />
+      <tag k="type" v="boundary" />
+    </relation>
+    <way id="301" version="2">
+      <nd ref="10" />
+      <nd ref="-7" />
+      <tag k="highway" v="secondary" />
+      <tag k="name" v="Route 999" />
+      <tag k="ref" v="999" />
+    </way>
+    <way id="310" version="2">
+      <nd ref="13" />
+      <nd ref="-8" />
+      <tag k="highway" v="residential" />
+      <tag k="name" v="Rue Principale" />
+    </way>
+    <relation id="700" version="3">
+      <member type="way" ref="300" role="" />
+      <member type="way" ref="301" role="" />
+      <member type="way" ref="-4" role="" />
+      <tag k="network" v="CA:QC" />
+      <tag k="ref" v="999" />
+      <tag k="route" v="road" />
+      <tag k="type" v="route" />
+    </relation>
+  </modify>
+  <delete>
+    <way id="101" version="2" />
+    <way id="105" version="2" />
+    <node id="2" version="1" lat="47.0200000" lon="-72.0000000" />
+    <node id="6" version="1" lat="47.0200000" lon="-71.9600000" />
+  </delete>
+</osmChange>

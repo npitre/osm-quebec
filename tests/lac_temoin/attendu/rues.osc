@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='utf-8'?>
+<osmChange version="0.6" generator="osmqc">
+  <modify>
+    <way id="321" version="2">
+      <nd ref="17" />
+      <nd ref="18" />
+      <tag k="highway" v="residential" />
+      <tag k="name" v="Chemin de La Pointe" />
+    </way>
+    <way id="322" version="2">
+      <nd ref="18" />
+      <nd ref="19" />
+      <tag k="highway" v="footway" />
+      <tag k="name" v="Chemin de La Pointe" />
+    </way>
+    <way id="323" version="2">
+      <nd ref="20" />
+      <nd ref="21" />
+      <tag k="highway" v="residential" />
+      <tag k="name" v="Rue Saint-Jean" />
+    </way>
+    <way id="326" version="2">
+      <nd ref="26" />
+      <nd ref="27" />
+      <tag k="highway" v="residential" />
+      <tag k="name" v="Chemin de la Jetée" />
+      <tag k="old_name" v="Chemin du Quai" />
+    </way>
+    <way id="330" version="2">
+      <nd ref="28" />
+      <nd ref="29" />
+      <tag k="highway" v="residential" />
+      <tag k="name" v="Chemin du Tour-du-Lac" />
+    </way>
+  </modify>
+</osmChange>

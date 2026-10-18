@@ -1,0 +1,166 @@
+<?xml version='1.0' encoding='utf-8'?>
+<osmChange version="0.6" generator="osmqc">
+  <create>
+    <node id="-1" version="0" lat="47.0030000" lon="-71.9936000">
+      <tag k="addr:housenumber" v="10" />
+      <tag k="addr:street" v="Chemin de La Pointe" />
+      <tag k="addr:postcode" v="J0T 1A0" />
+    </node>
+    <node id="-2" version="0" lat="47.0040000" lon="-71.9936000">
+      <tag k="addr:housenumber" v="20" />
+      <tag k="addr:street" v="Chemin de La Pointe" />
+      <tag k="addr:postcode" v="J0T 1A0" />
+    </node>
+    <node id="-3" version="0" lat="47.0110000" lon="-71.9906000">
+      <tag k="addr:housenumber" v="1" />
+      <tag k="addr:street" v="Chemin de la Jetée" />
+      <tag k="addr:postcode" v="J0T 1A0" />
+    </node>
+    <node id="-4" version="0" lat="47.0130000" lon="-71.9906000">
+      <tag k="addr:housenumber" v="3" />
+      <tag k="addr:street" v="Chemin de la Jetée" />
+      <tag k="addr:postcode" v="J0T 1A0" />
+    </node>
+    <node id="-5" version="0" lat="47.0030000" lon="-71.9966000">
+      <tag k="addr:housenumber" v="10" />
+      <tag k="addr:street" v="Chemin du Lac" />
+      <tag k="addr:postcode" v="J0T 1A0" />
+    </node>
+    <node id="-6" version="0" lat="47.0040000" lon="-71.9966000">
+      <tag k="addr:housenumber" v="20" />
+      <tag k="addr:street" v="Chemin du Lac" />
+      <tag k="addr:postcode" v="J0T 1A0" />
+    </node>
+    <node id="-7" version="0" lat="47.0100000" lon="-71.9966000">
+      <tag k="addr:housenumber" v="110" />
+      <tag k="addr:street" v="Chemin du Lac" />
+      <tag k="addr:postcode" v="J0T 1A0" />
+    </node>
+    <node id="-8" version="0" lat="47.0110000" lon="-71.9966000">
+      <tag k="addr:housenumber" v="250" />
+      <tag k="addr:street" v="Chemin du Lac" />
+      <tag k="addr:unit" v="1;2" />
+      <tag k="addr:postcode" v="J0T 1A0" />
+    </node>
+    <node id="-9" version="0" lat="47.0120000" lon="-71.9966000">
+      <tag k="addr:housenumber" v="260" />
+      <tag k="addr:street" v="Chemin du Lac" />
+      <tag k="addr:postcode" v="J0T 1A0" />
+    </node>
+    <node id="-10" version="0" lat="47.0130000" lon="-71.9966000">
+      <tag k="addr:housenumber" v="270;270A" />
+      <tag k="addr:street" v="Chemin du Lac" />
+      <tag k="addr:postcode" v="J0T 1A0" />
+    </node>
+    <node id="-11" version="0" lat="47.0140000" lon="-71.9966000">
+      <tag k="addr:housenumber" v="280" />
+      <tag k="addr:street" v="Chemin du Lac" />
+      <tag k="addr:postcode" v="J0T 1A0" />
+    </node>
+    <node id="-12" version="0" lat="47.0140000" lon="-71.9956000">
+      <tag k="addr:housenumber" v="280B" />
+      <tag k="addr:street" v="Chemin du Lac" />
+      <tag k="addr:postcode" v="J0T 1A0" />
+    </node>
+    <node id="-13" version="0" lat="47.0150000" lon="-71.9966000">
+      <tag k="addr:housenumber" v="290" />
+      <tag k="addr:street" v="Chemin du Lac" />
+      <tag k="addr:unit" v="1" />
+      <tag k="addr:postcode" v="J0T 1A0" />
+    </node>
+    <node id="-14" version="0" lat="47.0160000" lon="-71.9966000">
+      <tag k="addr:housenumber" v="300A;300B" />
+      <tag k="addr:street" v="Chemin du Lac" />
+      <tag k="addr:postcode" v="J0T 1A0" />
+    </node>
+    <node id="-15" version="0" lat="47.0083000" lon="-71.9900000">
+      <tag k="addr:housenumber" v="500" />
+      <tag k="addr:street" v="Route 999" />
+      <tag k="addr:postcode" v="J0T 1A0" />
+    </node>
+    <node id="-16" version="0" lat="47.0153000" lon="-71.9805000">
+      <tag k="addr:housenumber" v="15" />
+      <tag k="addr:street" v="Rue Principale" />
+      <tag k="addr:postcode" v="J0T 1A0" />
+    </node>
+    <node id="-17" version="0" lat="47.0030000" lon="-71.9906000">
+      <tag k="addr:housenumber" v="5" />
+      <tag k="addr:street" v="Rue Saint-Jean" />
+      <tag k="addr:postcode" v="J0T 1A0" />
+    </node>
+    <node id="-18" version="0" lat="47.0040000" lon="-71.9906000">
+      <tag k="addr:housenumber" v="7" />
+      <tag k="addr:street" v="Rue Saint-Jean" />
+      <tag k="addr:postcode" v="J0T 1A0" />
+    </node>
+    <node id="-19" version="0" lat="47.0030000" lon="-71.9696000">
+      <tag k="addr:housenumber" v="100" />
+      <tag k="addr:street" v="Chemin du Tour-du-Lac" />
+      <tag k="addr:postcode" v="J0T 1B0" />
+    </node>
+    <node id="-20" version="0" lat="47.0040000" lon="-71.9696000">
+      <tag k="addr:housenumber" v="200" />
+      <tag k="addr:street" v="Chemin du Tour-du-Lac" />
+      <tag k="addr:postcode" v="J0T 1B0" />
+    </node>
+    <node id="-21" version="0" lat="47.0083000" lon="-71.9700000">
+      <tag k="addr:housenumber" v="600" />
+      <tag k="addr:street" v="Route 999" />
+      <tag k="addr:postcode" v="J0T 1B0" />
+    </node>
+    <node id="-22" version="0" lat="47.0153000" lon="-71.9780000">
+      <tag k="addr:housenumber" v="25" />
+      <tag k="addr:street" v="Rue Principale" />
+      <tag k="addr:postcode" v="J0T 1B0" />
+    </node>
+    <node id="-23" version="0" lat="47.0035000" lon="-71.9650000">
+      <tag k="addr:housenumber" v="10" />
+      <tag k="addr:street" v="Rue des Portes" />
+      <tag k="addr:postcode" v="J0T 1B0" />
+      <tag k="entrance" v="home" />
+    </node>
+    <node id="-24" version="0" lat="47.0055000" lon="-71.9650000">
+      <tag k="addr:housenumber" v="20" />
+      <tag k="addr:street" v="Rue des Portes" />
+      <tag k="addr:postcode" v="J0T 1B0" />
+      <tag k="entrance" v="shop" />
+    </node>
+    <node id="-25" version="0" lat="47.0100000" lon="-71.9651000">
+      <tag k="addr:housenumber" v="30" />
+      <tag k="addr:street" v="Rue des Portes" />
+      <tag k="addr:postcode" v="J0T 1B0" />
+    </node>
+    <node id="-26" version="0" lat="47.0090000" lon="-71.9656000">
+      <tag k="addr:housenumber" v="40" />
+      <tag k="addr:street" v="Rue des Portes" />
+      <tag k="addr:postcode" v="J0T 1B0" />
+    </node>
+    <node id="-27" version="0" lat="47.0110000" lon="-71.9656000">
+      <tag k="addr:housenumber" v="50" />
+      <tag k="addr:street" v="Rue des Portes" />
+      <tag k="addr:postcode" v="J0T 1B0" />
+    </node>
+    <node id="-28" version="0" lat="47.0120000" lon="-71.9656000">
+      <tag k="addr:housenumber" v="52" />
+      <tag k="addr:street" v="Rue des Portes" />
+      <tag k="addr:postcode" v="J0T 1B0" />
+    </node>
+    <node id="-29" version="0" lat="47.0130000" lon="-71.9656000">
+      <tag k="addr:housenumber" v="60" />
+      <tag k="addr:street" v="Rue des Portes" />
+      <tag k="addr:postcode" v="J0T 1B0" />
+    </node>
+  </create>
+  <modify>
+    <node id="32" version="1" lat="47.0050000" lon="-71.9965500">
+      <tag k="addr:housenumber" v="30" />
+      <tag k="addr:postcode" v="J0T 1A0" />
+      <tag k="addr:street" v="Chemin du Lac" />
+    </node>
+  </modify>
+  <delete>
+    <way id="400" version="2" />
+    <node id="38" version="1" lat="47.0090000" lon="-71.9972000" />
+    <node id="39" version="1" lat="47.0120000" lon="-71.9972000" />
+  </delete>
+</osmChange>

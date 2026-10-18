@@ -1,0 +1,43 @@
+# Lac-Témoin : région fictive de test (voir tests/lac_temoin/fabriquer.py).
+# Deux municipalités inventées, Lac-Témoin et Sainte-Vérification.
+
+nom = "Lac-Témoin (région fictive de test)"
+
+[rqa]
+municipalites = ["99001", "99002"]
+
+[regions]
+osm = { "99001" = 1001, "99002" = 1002 }
+
+[regions.groupe]
+comment = "Limites municipales de Lac-Témoin d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+discussion = "https://community.openstreetmap.org/t/0"
+
+[rues]
+
+# Renommage décidé à la main : l'ancien nom passe dans old_name.
+[[rues.modifier]]
+type = "way"
+id = 326
+tags = { name = "Chemin de la Jetée" }
+raison = "nom officiel (renommage décidé à la main)"
+
+[rues.groupe]
+comment = "Noms de rue de Lac-Témoin selon les odonymes officiels"
+source = "Référentiel québécois des adresses (MRNF), version AQ20261001"
+discussion = "https://community.openstreetmap.org/t/0"
+
+[adresses]
+supprimer_interpolations = true
+corriger_rue_existante = true
+creer_si_rue_absente = false
+exclure = [ { municipalite = "99001", rue = "Chemin du Lac", numero = "70", raison = "absent du rôle" } ]
+
+[adresses.positions]
+fichier = "donnees/Lac-Temoin/portes.csv"
+
+[adresses.groupe]
+comment = "Adresses de Lac-Témoin d'après le Référentiel québécois des adresses"
+source = "Référentiel québécois des adresses (MRNF), version AQ20261001"
+discussion = "https://community.openstreetmap.org/t/0"

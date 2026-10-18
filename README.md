@@ -454,9 +454,13 @@ Liste au 17 octobre 2026, par ordre de priorité.
 python3 -m unittest discover tests
 ```
 
-Les tests vérifient les règles sur de petits exemples construits à la
-main, sans données ni accès réseau. `tests/test_readme.py` en compte au
-moins un par règle de ce document, nommé d'après elle :
+Aucun test n'a besoin de données téléchargées ni d'accès réseau.
+
+### Une règle, un test
+
+`tests/test_readme.py` vérifie les règles sur de petits exemples
+construits à la main, au moins un par règle de ce document, nommé
+d'après elle :
 
 | Règle | Tests |
 |---|---|
@@ -465,6 +469,42 @@ moins un par règle de ce document, nommé d'après elle :
 | Rues, 1 à 4 | `test_rues_1_nom_officiel` (dont les abréviations) à `test_rues_4_adresses_apres_renommage` (règle 2 : `old_name` et `alt_name`) |
 | Adresses, 1 à 8 | `test_adresses_1_logements_et_suffixes` à `test_adresses_8_positions_et_entree` |
 | Groupe de modifications | `test_groupe` (`import=yes`, discussion obligatoire pour un envoi réel) |
+
+### Lac-Témoin, région fictive de bout en bout
+
+`tests/test_lac_temoin.py` lance les vraies commandes (`adresses
+extraire`, `adresses osm`, `regions preparer`, `rues preparer`,
+`adresses preparer`) sur Lac-Témoin, une région inventée : deux
+municipalités, Lac-Témoin et Sainte-Vérification, dans une MRC du
+Témoin tout aussi fictive. Ses données sources (extrait du RQA,
+découpages du MRNF, extrait d'OSM, portes de la Chaire Mobilité) sont
+fabriquées par `tests/lac_temoin/fabriquer.py`, qui décrit chaque cas :
+une limite faite d'une rivière, un chemin de limite avec une note, une
+frontière, une route à couper avec sa relation, une relation sans nœud
+de lieu, des rues à renommer (casse, tirets, « St. »), des rues
+absentes ou sans nom, des doublons, des interpolations, des logements
+et des suffixes, un logement douteux, des portes. Le tout tourne en
+mode hors ligne.
+
+Deux vérifications :
+
+- des attentes écrites cas par cas, nommées d'après les règles
+  (`test_regions_7_coupures`, `test_adresses_8_positions_et_entree`,
+  etc.);
+- une sortie de référence, `tests/lac_temoin/attendu/` : les fichiers
+  d'envoi et les rapports. Toute différence fait échouer le test. Après
+  un changement voulu, on régénère la référence et on relit le diff de
+  git, qui montre exactement ce qui change dans la sortie :
+
+```
+OSMQC_REGENERER=1 python3 -m unittest tests.test_lac_temoin
+git diff tests/lac_temoin/attendu
+```
+
+Pour ajouter un cas : le décrire dans `fabriquer.py`, ajouter son
+attente dans `test_lac_temoin.py`, puis régénérer la référence.
+
+### Fonctions de base
 
 `tests/test_regles.py` et `tests/test_rues_coupures.py` vérifient plus
 en détail les fonctions de base :
