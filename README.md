@@ -192,9 +192,11 @@ dans `sortie/LIEU/` (hors du dépôt); les rapports de révision, dans
    douteux (voir « Logements douteux du RQA »). Un suffixe en lettre
    (120A) au même point que son numéro de base est fusionné et ajouté
    à `addr:housenumber` (« 120;120A;120B »); placé à plus de 5 m, il
-   devient une adresse distincte. À valider : un suffixe en lettre que
-   Postes Canada traite comme un logement devrait aller dans
-   `addr:unit` plutôt que dans `addr:housenumber`.
+   devient une adresse distincte. Le numéro de base n'est ajouté que
+   s'il existe au RQA : 120A et 120B sans 120 donnent « 120A;120B ».
+   À valider : un suffixe en lettre que Postes Canada traite comme un
+   logement devrait aller dans `addr:unit` plutôt que dans
+   `addr:housenumber`.
 2. **Adresses terminées** (`date_fin` remplie) : ignorées.
 3. **Exclusions** : une liste explicite, avec la raison, dans le fichier
    du lieu (par exemple une adresse absente du rôle d'évaluation).
@@ -471,7 +473,7 @@ en détail les fonctions de base :
 |---|---|
 | Géométrie | distances; point dans un polygone avec trou; assemblage de segments en anneaux fermés |
 | Noms de rue | nom tiré de la forme recomposée du RQA, sans le discriminant (« Chemin du Gros-Cap »), dans l'ordre usuel (« 4e Rang Sud »); recomposition à partir des parties (« Rue d'Amiens », « Rue Sherbrooke Est »); comparaison insensible à la casse, aux accents et aux tirets |
-| Regroupement des adresses | logements fusionnés au numéro de base; suffixe au même point fusionné; suffixe ailleurs gardé comme adresse distincte (120A); numéro sans adresse principale |
+| Regroupement des adresses | logements fusionnés au numéro de base; suffixe au même point fusionné; suffixe ailleurs gardé comme adresse distincte (120A); suffixes sans numéro de base (« 300A;300B », sans « 300 »); numéro sans adresse principale |
 | Doublons | adresse OSM au même numéro à moins de 30 m, ou bâtiment qui contient le point, reconnue; numéro différent ou trop loin, non reconnue |
 | Limites | trou d'une municipalité occupé par une autre : un seul arc, intérieur pour l'une et extérieur pour l'autre; deux municipalités voisines : un arc commun et un arc propre à chacune |
 | Rues | nom identique déclaré conforme; différence de casse renommée sur toute la rue, segments reliés compris; tirets et accents (« Tour du Lac » devient « Tour-du-Lac »); autre nom signalé sans être renommé; voie sans nom proposée comme candidate; rue absente; chemin réclamé par deux noms officiels mis en conflit |

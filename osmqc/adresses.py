@@ -87,11 +87,15 @@ def _ordre(v):
 def numeros(num, base, autres):
     """Étiquettes de numéro d'une adresse fusionnée : addr:housenumber
     avec les suffixes en lettre (« 120;120A;120B »), et addr:unit avec les
-    logements (« 1;2;3 »), ou None s'il n'y en a pas."""
+    logements (« 1;2;3 »), ou None s'il n'y en a pas. Le numéro de base
+    n'y figure que s'il existe au RQA, ou s'il n'y a pas de suffixe : 120A
+    et 120B sans 120 donnent « 120A;120B »."""
     groupe = [base] + list(autres)
     lettres = sorted({a.numero + a.suffixe for a in groupe if a.suffixe and not a.logement}, key=_ordre)
     logements = sorted({a.logement for a in groupe if a.logement}, key=_ordre)
-    numero = ";".join([num] + [l for l in lettres if l != num])
+    lettres = [l for l in lettres if l != num]
+    tete = [num] if any(a.principale for a in groupe) or not lettres else []
+    numero = ";".join(tete + lettres)
     return numero, ";".join(logements) or None
 
 
@@ -312,7 +316,7 @@ def preparer(adresses, index, conf, positions=None):
                     detail.append("entrance=%s" % tags["entrance"])
             plan.creer.append((tags, point))
             statut = statut or "nouveau"
-        if not a.principale:
+        if not a.principale and num == a.numero:
             detail.append("pas d'adresse principale au RQA, point d'un logement ou d'un suffixe")
         if autres:
             detail.append("%d logement(s) ou suffixe(s) fusionné(s)" % len(autres))

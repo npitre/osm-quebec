@@ -247,6 +247,9 @@ class Adresses(unittest.TestCase):
         self.assertEqual(adresses.numeros("120B", base, autres), ("120B", None))
         p = adresses.preparer([adr("120"), adr("120", suffixe="B", dx=2)], rue_osm(), {})
         self.assertEqual(sorted(t["addr:housenumber"] for t, _ in p.creer), ["120", "120B"])
+        # Des suffixes sans numéro de base : pas de « 300 » inventé.
+        groupe = adresses.regrouper([adr("300", suffixe="A"), adr("300", suffixe="B")])
+        self.assertEqual(adresses.numeros("300", *groupe[("80135", "1", "300")]), ("300A;300B", None))
 
     def test_adresses_1_logements_douteux(self):
         # Logement 2, ni lot ni matricule, sur une maison d'un seul logement
