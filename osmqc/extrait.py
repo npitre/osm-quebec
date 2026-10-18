@@ -167,6 +167,29 @@ def relations(pbf, ids):
     return rels + chemins + noeuds
 
 
+def objets(pbf, genre, ids):
+    """Objets donnés (node, way ou relation), lus dans l'extrait, au
+    format de l'API : pour le mode hors ligne (voir osm.objets)."""
+    ids = list(ids)
+    if not ids:
+        return []
+    entite = {"node": osmium.osm.NODE, "way": osmium.osm.WAY, "relation": osmium.osm.RELATION}[genre]
+    filtre = osmium.filter.IdFilter(ids)
+    filtre.enable_for(entite)
+    res = []
+    for o in osmium.FileProcessor(pbf, entite).with_filter(filtre):
+        if genre == "node":
+            res.append(_noeud(o))
+        elif genre == "way":
+            res.append({"type": "way", "id": o.id, "version": o.version,
+                        "nodes": [n.ref for n in o.nodes], "tags": dict(o.tags)})
+        else:
+            res.append({"type": "relation", "id": o.id, "version": o.version, "tags": dict(o.tags),
+                        "members": [{"type": TYPES[m.type], "ref": m.ref, "role": m.role}
+                                    for m in o.members]})
+    return res
+
+
 def limites_admin(pbf):
     """Relations boundary=administrative qui ont un code ref:qc :
     {code: (id, nom, admin_level)}."""

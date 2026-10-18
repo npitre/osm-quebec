@@ -2,6 +2,7 @@
 # sans authentification).
 
 import json
+import os
 import time
 import urllib.error
 import urllib.request
@@ -11,6 +12,8 @@ AGENT = "osmqc (https://github.com/npitre/osm-quebec)"
 
 
 def lire(url, essais=4):
+    if hors_ligne():
+        raise RuntimeError("mode hors ligne : %s n'est pas demandé à l'API" % url)
     req = urllib.request.Request(url, headers={"User-Agent": AGENT})
     for i in range(essais):
         try:
@@ -60,9 +63,19 @@ def carte_autour(points, marge=0.003, pas=0.05):
     return list(vus.values())
 
 
+def hors_ligne():
+    """Mode hors ligne (OSMQC_HORS_LIGNE=1) : l'API n'est jamais
+    appelée, l'extrait local fait foi. Sert aux tests de bout en bout."""
+    return bool(os.environ.get("OSMQC_HORS_LIGNE"))
+
+
 def objets(genre, ids):
-    """Version actuelle d'objets (node, way, relation), par lots de 100."""
+    """Version actuelle d'objets (node, way, relation), par lots de 100.
+    Hors ligne, lue dans l'extrait local."""
     ids = list(ids)
+    if hors_ligne():
+        from . import extrait
+        return extrait.objets(extrait.chemin(), genre, ids)
     res = []
     for i in range(0, len(ids), 100):
         url = "%s/%ss.json?%ss=%s" % (API, genre, genre, ",".join(map(str, ids[i:i + 100])))

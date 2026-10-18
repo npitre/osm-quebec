@@ -366,7 +366,9 @@ découragent les téléchargements en masse. L'API ne sert plus qu'à de
 petites lectures groupées : la version actuelle des objets à modifier,
 juste avant d'écrire le fichier d'envoi. Sans extrait, l'outil se
 rabat sur l'API pour une très petite zone seulement (au plus 20
-tuiles) et refuse au-delà.
+tuiles) et refuse au-delà. Avec `OSMQC_HORS_LIGNE=1`, l'API n'est
+jamais appelée : même les versions actuelles des objets sont lues dans
+l'extrait (c'est le mode des tests de bout en bout).
 
 Mesures du 17 octobre 2026, avec l'extrait :
 
