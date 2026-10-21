@@ -150,5 +150,22 @@ def osc_regions(plan, actuelles, supp_chemins, supp_noeuds, index, admin_level="
         n = index.noeuds[nid]
         ET.SubElement(supp, "node", id=str(nid), version=str(n["version"]),
                       lat="%.7f" % n["lat"], lon="%.7f" % n["lon"])
+    # Garde-fou : jamais deux fois le même objet dans un envoi.
+    vus = set()
+    for bloc in racine:
+        for e in bloc:
+            cle = (e.tag, e.get("id"))
+            if cle in vus:
+                raise ValueError("%s %s deux fois dans le fichier d'envoi" % cle)
+            vus.add(cle)
+    # Ni aucun objet supprimé encore utilisé par un autre.
+    supprimes = {(e.tag, e.get("id")) for e in supp}
+    for bloc in (cree, modif):
+        for e in bloc:
+            refs = [("node", n.get("ref")) for n in e.iter("nd")]
+            refs += [(m.get("type"), m.get("ref")) for m in e.iter("member")]
+            for r in refs:
+                if r in supprimes:
+                    raise ValueError("%s %s supprimé mais encore utilisé par %s %s" % (r + (e.tag, e.get("id"))))
     ET.indent(racine)
     return racine
