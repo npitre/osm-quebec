@@ -16,7 +16,7 @@ Source : Découpages administratifs du MRNF (1/20 000). Règles : voir le [READM
 | Municipalité | Code | Version | Polygones | Trous | Sommets |
 |---|---|---|---|---|---|
 | Lac-Témoin | 99001 | V2026-09 | 1 | 0 | 5 |
-| Sainte-Vérification | 99002 | V2026-09 | 1 | 0 | 5 |
+| Sainte-Vérification | 99002 | V2026-09 | 1 | 0 | 7 |
 
 ## Adresses : municipalité selon chaque limite
 
@@ -34,7 +34,7 @@ Source : Découpages administratifs du MRNF (1/20 000). Règles : voir le [READM
 
 | Élément | Nombre |
 |---|---|
-| Nœuds créés | 4 |
+| Nœuds créés | 5 |
 | Chemins de limite créés | 4 |
 | Relations modifiées | 2 |
 | Chemins retirés des relations | 5 |
@@ -43,7 +43,7 @@ Source : Découpages administratifs du MRNF (1/20 000). Règles : voir le [READM
 
 - arc de 2 sommets (99001 outer, 99002 outer) : 1 chemin(s) neuf(s)
 - arc de 4 sommets (99001 outer) : 1 chemin(s) neuf(s)
-- arc de 4 sommets (99002 outer) : 2 chemin(s) neuf(s), 1 chemin(s) existant(s) déjà conforme(s)
+- arc de 5 sommets (99002 outer) : 2 chemin(s) neuf(s), 1 chemin(s) existant(s) déjà conforme(s)
 
 Chemins supprimés : [101](https://www.openstreetmap.org/way/101), [105](https://www.openstreetmap.org/way/105).
 

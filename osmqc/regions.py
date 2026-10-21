@@ -304,7 +304,10 @@ def preparer(officiel, relations, exterieur=None, index=None):
             noeuds[p] = -(len(noeuds) + 1)
         return noeuds[p]
 
-    tous = arcs(officiel)
+    # Deux sommets du MRNF à moins de 1e-7 degré l'un de l'autre seraient
+    # le même point dans OSM : un seul nœud.
+    tous = [([p for i, p in enumerate(pts) if i == 0 or arrondi(p) != arrondi(pts[i - 1])], roles)
+            for pts, roles in arcs(officiel)]
     # Un arc extérieur qui fait à lui seul un anneau fermé (une île, par
     # exemple) peut reprendre les chemins de la relation parente. Un arc
     # ouvert, lui, doit se raccorder à ses voisins par les mêmes nœuds :

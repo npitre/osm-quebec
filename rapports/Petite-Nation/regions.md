@@ -102,7 +102,7 @@ Source : Découpages administratifs du MRNF (1/20 000). Règles : voir le [READM
 
 | Élément | Nombre |
 |---|---|
-| Nœuds créés | 8556 |
+| Nœuds créés | 8555 |
 | Chemins de limite créés | 71 |
 | Relations modifiées | 25 |
 | Chemins retirés des relations | 87 |
@@ -118,7 +118,7 @@ Source : Découpages administratifs du MRNF (1/20 000). Règles : voir le [READM
 - arc de 17 sommets (80090 outer, 80135 outer) : 1 chemin(s) neuf(s)
 - arc de 27 sommets (80095 outer, 80135 outer) : 1 chemin(s) neuf(s)
 - arc de 125 sommets (80130 outer, 80135 outer) : 1 chemin(s) neuf(s)
-- arc de 283 sommets (80135 outer) : 1 chemin(s) neuf(s)
+- arc de 282 sommets (80135 outer) : 1 chemin(s) neuf(s)
 - arc de 24 sommets (80103 outer, 80130 outer) : 1 chemin(s) neuf(s)
 - arc de 69 sommets (80125 outer, 80130 outer) : 1 chemin(s) neuf(s)
 - arc de 9 sommets (80115 outer, 80130 outer) : 1 chemin(s) neuf(s)
@@ -410,8 +410,8 @@ Une route nommée est coupée exactement là où elle traverse une limite munici
 | coupure à ajouter | Chemin Périard | [106203507](https://www.openstreetmap.org/way/106203507) | 45.85601, -75.08785 |  |
 | coupure à ajouter | Chemin Richelieu | [488096777](https://www.openstreetmap.org/way/488096777) | 45.66545, -74.96609 |  |
 | coupure à ajouter | Chemin Riopel | [106197671](https://www.openstreetmap.org/way/106197671) | 45.90315, -75.13891 |  |
-| coupure à ajouter | Chemin Saint-Denis | [38270519](https://www.openstreetmap.org/way/38270519) | 45.97186, -75.55386 |  |
-| coupure à ajouter | Chemin Saint-Denis | [38270519](https://www.openstreetmap.org/way/38270519) | 45.97186, -75.55373 |  |
+| coupure à ajouter | Chemin Saint-Denis | [38270519](https://www.openstreetmap.org/way/38270519) | 45.97186, -75.55387 |  |
+| coupure à ajouter | Chemin Saint-Denis | [38270519](https://www.openstreetmap.org/way/38270519) | 45.97186, -75.55372 |  |
 | coupure à ajouter | Chemin Saint-Denis | [38270519](https://www.openstreetmap.org/way/38270519) | 45.97186, -75.55082 |  |
 | coupure à ajouter | Chemin Sinclair | [445252360](https://www.openstreetmap.org/way/445252360) | 45.97201, -74.71215 |  |
 | coupure à ajouter | Chemin Stéphane-Richer | [106203569](https://www.openstreetmap.org/way/106203569) | 45.86100, -75.12296 |  |

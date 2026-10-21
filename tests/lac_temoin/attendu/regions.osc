@@ -5,6 +5,7 @@
     <node id="-2" version="0" lat="47.0200000" lon="-71.9800000" />
     <node id="-3" version="0" lat="47.0200000" lon="-72.0000000" />
     <node id="-4" version="0" lat="47.0000000" lon="-72.0000000" />
+    <node id="-5" version="0" lat="47.0200000" lon="-71.9700000" />
     <way id="-1" version="0">
       <nd ref="-1" />
       <nd ref="-2" />
@@ -28,14 +29,15 @@
     </way>
     <way id="-4" version="0">
       <nd ref="6" />
+      <nd ref="-5" />
       <nd ref="-2" />
       <tag k="admin_level" v="8" />
       <tag k="boundary" v="administrative" />
     </way>
-    <node id="-5" version="0" lat="47.0080000" lon="-71.9800000" />
-    <node id="-6" version="0" lat="47.0150000" lon="-71.9800000" />
+    <node id="-6" version="0" lat="47.0080000" lon="-71.9800000" />
+    <node id="-7" version="0" lat="47.0150000" lon="-71.9800000" />
     <way id="-5" version="0">
-      <nd ref="-5" />
+      <nd ref="-6" />
       <nd ref="11" />
       <nd ref="12" />
       <tag k="highway" v="secondary" />
@@ -43,7 +45,7 @@
       <tag k="ref" v="999" />
     </way>
     <way id="-6" version="0">
-      <nd ref="-6" />
+      <nd ref="-7" />
       <nd ref="14" />
       <tag k="highway" v="residential" />
       <tag k="name" v="Rue Principale" />
@@ -73,14 +75,14 @@
     </relation>
     <way id="301" version="2">
       <nd ref="10" />
-      <nd ref="-5" />
+      <nd ref="-6" />
       <tag k="highway" v="secondary" />
       <tag k="name" v="Route 999" />
       <tag k="ref" v="999" />
     </way>
     <way id="310" version="2">
       <nd ref="13" />
-      <nd ref="-6" />
+      <nd ref="-7" />
       <tag k="highway" v="residential" />
       <tag k="name" v="Rue Principale" />
     </way>

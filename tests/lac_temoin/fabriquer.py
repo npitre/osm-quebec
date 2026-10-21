@@ -43,12 +43,16 @@ def P(x, y):
 
 MUNICIPALITES = {
     "99001": ("Lac-Témoin", [(0, 0), (20, 0), (20, 20), (0, 20), (0, 0)]),
-    "99002": ("Sainte-Vérification", [(20, 0), (40, 0), (40, 20), (20, 20), (20, 0)]),
+    # Deux sommets à moins d'un millimètre l'un de l'autre au nord : un
+    # seul nœud dans OSM, qui ne garde que 7 décimales.
+    "99002": ("Sainte-Vérification", [(20, 0), (40, 0), (40, 20), (30.000005, 20), (30, 20),
+                                      (20, 20), (20, 0)]),
 }
 
 
 def wkb_polygone(anneau):
-    pts = [P(*xy) for xy in anneau]
+    # Coordonnées brutes, non arrondies, comme celles du MRNF.
+    pts = [(X0 + x / 1000, Y0 + y / 1000) for x, y in anneau]
     return struct.pack("<BIII", 1, 3, 1, len(pts)) + b"".join(struct.pack("<dd", *p) for p in pts)
 
 

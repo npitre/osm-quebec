@@ -103,7 +103,9 @@ dans `sortie/LIEU/` (hors du dépôt); les rapports de révision, dans
 ### Régions
 
 1. **Les limites du MRNF ont préséance** sur celles d'OSM (Découpages
-   administratifs, 1/20 000).
+   administratifs, 1/20 000). OSM ne garde que 7 décimales de degré
+   (environ 1 cm) : deux sommets du MRNF confondus à cette précision
+   deviennent un seul nœud.
 2. **Des chemins propres.** Une limite ne partage jamais ses nœuds avec
    le littoral, une route ou un cours d'eau, même quand elle les suit :
    déplacer l'un déplacerait l'autre. Les chemins de limite créés ne

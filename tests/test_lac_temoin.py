@@ -166,6 +166,25 @@ class LacTemoin(unittest.TestCase):
         noeuds = self.crees(self.regions, "node")
         self.assertNotIn(P(40, 0)[0], {o["lon"] for o in noeuds.values()})
 
+    def test_fichiers_d_envoi_valides(self):
+        # Pour les trois fichiers : pas de nœud répété dans un chemin, et
+        # toute référence vise un objet créé, ou existant et non supprimé.
+        existants = {("node", n) for n in self.carte.noeuds} | {("way", w) for w, _, _ in self.carte.chemins}
+        existants |= {("relation", r) for r, _, _ in self.carte.relations}
+        for osc in (self.regions, self.rues, self.adr):
+            crees = {(g, i) for (a, g, i) in osc if a == "create"}
+            supprimes = {(g, i) for (a, g, i) in osc if a == "delete"}
+            for (a, g, i), o in osc.items():
+                if a == "delete":
+                    continue
+                ns = o["nodes"]
+                self.assertFalse([k for k in range(1, len(ns)) if ns[k] == ns[k - 1]], (g, i))
+                if g == "way":
+                    self.assertGreaterEqual(len(set(ns)), 2, (g, i))
+                refs = [("node", n) for n in ns] + [(t, r) for t, r, _ in o["members"]]
+                for ref in refs:
+                    self.assertTrue(ref in crees or (ref in existants and ref not in supprimes), (g, i, ref))
+
     def test_regions_envoi_simule_puis_relance(self):
         # Après l'envoi, plus rien à faire : tout est reconnu comme conforme.
         self.assertEqual([(b.tag, len(b)) for b in self.regions_apres],
