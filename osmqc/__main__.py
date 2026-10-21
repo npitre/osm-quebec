@@ -327,7 +327,9 @@ def routes_autour(lieu, lignes):
     """Données OSM le long des limites (pour les routes qui les
     traversent), gardées dans donnees/LIEU/osm_limites.json."""
     chemin = os.path.join(dossier("donnees", lieu), "osm_limites.json")
-    if not os.path.exists(chemin):
+    pbf = chemin_pbf()
+    # Relu si l'extrait est plus récent (mis à jour, ou envoi appliqué).
+    if not os.path.exists(chemin) or (pbf and os.path.getmtime(pbf) > os.path.getmtime(chemin)):
         pts = []
         for l in lignes:
             pas = max(1, len(l) // 200)

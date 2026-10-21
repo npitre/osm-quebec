@@ -14,6 +14,8 @@
 
 import datetime
 import os
+import tempfile
+import xml.etree.ElementTree as ET
 
 import osmium
 
@@ -188,6 +190,60 @@ def objets(pbf, genre, ids):
                         "members": [{"type": TYPES[m.type], "ref": m.ref, "role": m.role}
                                     for m in o.members]})
     return res
+
+
+def appliquer(pbf, osc, sortie, resultat=None):
+    """Écrit dans « sortie » l'extrait « pbf » auquel on applique le
+    fichier osmChange « osc » (chemin ou élément XML), comme si OSM
+    l'avait accepté. resultat : correspondances renvoyées par l'API après
+    l'envoi, {(type, ancien id): (nouvel id, nouvelle version)}; sans
+    elles (simulation, tests), les objets créés reçoivent des identifiants
+    libres et les versions sont augmentées de 1. Renvoie les
+    correspondances utilisées."""
+    racine = ET.parse(osc).getroot() if isinstance(osc, str) else osc
+    racine = ET.fromstring(ET.tostring(racine))
+    if resultat is None:
+        resultat = {}
+        maxi = {"node": 0, "way": 0, "relation": 0}
+        for o in osmium.FileProcessor(pbf):
+            g = TYPES[o.type_str()]
+            maxi[g] = max(maxi[g], o.id)
+        for bloc in racine:
+            for e in bloc:
+                ident, version = int(e.get("id")), int(e.get("version") or 0)
+                if ident < 0:
+                    maxi[e.tag] += 1
+                    resultat[(e.tag, ident)] = (maxi[e.tag], 1)
+                else:
+                    resultat[(e.tag, ident)] = (ident, version + 1)
+    for bloc in racine:
+        for e in bloc:
+            nouveau, version = resultat[(e.tag, int(e.get("id")))]
+            e.set("id", str(nouveau))
+            e.set("version", str(version))
+            if bloc.tag == "delete":
+                e.set("visible", "false")
+            for r in e.iter("nd"):
+                r.set("ref", str(resultat.get(("node", int(r.get("ref"))), (int(r.get("ref")),))[0]))
+            for m in e.iter("member"):
+                ref = int(m.get("ref"))
+                m.set("ref", str(resultat.get((m.get("type"), ref), (ref,))[0]))
+    with tempfile.NamedTemporaryFile("wb", suffix=".osc", delete=False) as fh:
+        fh.write(ET.tostring(racine, encoding="utf-8"))
+    try:
+        lecteur = osmium.io.Reader(pbf)
+        entete = lecteur.header()
+        if os.path.exists(sortie):
+            os.unlink(sortie)
+        ecrivain = osmium.io.Writer(sortie, entete)
+        fusion = osmium.MergeInputReader()
+        fusion.add_file(fh.name)
+        fusion.apply_to_reader(lecteur, ecrivain, False)
+        ecrivain.close()
+        lecteur.close()
+    finally:
+        os.unlink(fh.name)
+    return resultat
 
 
 def limites_admin(pbf):
