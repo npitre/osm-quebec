@@ -9,7 +9,7 @@ Source : Découpages administratifs du MRNF (1/20 000). Règles : voir le [READM
 | Municipalité | Relation | Anneaux | Chemins qui la forment |
 |---|---|---|---|
 | Lac-Témoin | [1001](https://www.openstreetmap.org/relation/1001) | 1 | limite seule 2, waterway=river 1 |
-| Sainte-Vérification | [1002](https://www.openstreetmap.org/relation/1002) | 1 | waterway=river 1, autre 1, limite seule 1 |
+| Sainte-Vérification | [1002](https://www.openstreetmap.org/relation/1002) | 1 | limite seule 2, waterway=river 1, autre 1 |
 
 ## Limites officielles (MRNF)
 
@@ -34,16 +34,16 @@ Source : Découpages administratifs du MRNF (1/20 000). Règles : voir le [READM
 
 | Élément | Nombre |
 |---|---|
-| Nœuds créés | 6 |
-| Chemins de limite créés | 3 |
+| Nœuds créés | 4 |
+| Chemins de limite créés | 4 |
 | Relations modifiées | 2 |
 | Chemins retirés des relations | 5 |
 | dont supprimés (simples lignes de limite inutilisées) | 2 |
-| Nœuds supprimés | 2 |
+| Nœuds supprimés | 1 |
 
 - arc de 2 sommets (99001 outer, 99002 outer) : 1 chemin(s) neuf(s)
 - arc de 4 sommets (99001 outer) : 1 chemin(s) neuf(s)
-- arc de 4 sommets (99002 outer) : 1 chemin(s) neuf(s)
+- arc de 4 sommets (99002 outer) : 2 chemin(s) neuf(s), 1 chemin(s) existant(s) déjà conforme(s)
 
 Chemins supprimés : [101](https://www.openstreetmap.org/way/101), [105](https://www.openstreetmap.org/way/105).
 

@@ -124,7 +124,7 @@ def reporter_notes(proteges, index, plan):
     """Reporte note, fixme et description des chemins protégés retirés sur
     le chemin neuf le plus proche. Renvoie [(chemin protégé, chemin neuf,
     étiquettes)] et met à jour plan["etiquettes"]."""
-    points = {nid: p for p, nid in plan["noeuds"].items()}
+    points = points_du_plan(plan)
     neufs = [(wid, [points[n] for n in ids]) for wid, ids, _ in plan["chemins"]]
     plan.setdefault("etiquettes", {})
     res = []
@@ -223,20 +223,83 @@ def _ajouter_arc(pts, code, role, vus, res):
     res.append((list(pts), {code: role}))
 
 
-def preparer(officiel, relations, exterieur=None):
+PRECISION = 7           # OSM garde 7 décimales de degré (environ 1 cm)
+
+
+def arrondi(p):
+    return (round(p[0], PRECISION), round(p[1], PRECISION))
+
+
+def candidats_conformes(relations, index):
+    """Chemins de limite existants qui pourraient déjà suivre le tracé du
+    MRNF : les simples lignes de limite des relations du lieu (jamais un
+    littoral, une route ou un cours d'eau). {chemin: [points arrondis]}."""
+    res = {}
+    for rel in relations.values():
+        for w in rel.chemins:
+            e = index.chemins.get(w)
+            if e is None or w in res:
+                continue
+            t = e.get("tags", {})
+            if t.get("boundary") != "administrative" or genre_chemin(t) not in ("limite seule", "autre"):
+                continue
+            if any(n not in index.noeuds for n in e["nodes"]):
+                continue
+            res[w] = [arrondi(index.point(n)) for n in e["nodes"]]
+    return res
+
+
+def reconnaitre(pts, candidats, pris):
+    """Chemins existants qui suivent exactement une portion de l'arc (mêmes
+    sommets, dans un sens ou dans l'autre). Renvoie [(début, fin, chemin)]
+    triés et sans chevauchement, en indices de sommets de l'arc."""
+    R = [arrondi(p) for p in pts]
+    ou = defaultdict(list)
+    for i, p in enumerate(R):
+        ou[p].append(i)
+    trouves = []
+    for w, S in candidats.items():
+        if w in pris or len(S) < 2:
+            continue
+        for i in ou.get(S[0], []):
+            if R[i:i + len(S)] == S:
+                trouves.append((i, i + len(S) - 1, w))
+                break
+            if i - len(S) + 1 >= 0 and R[i - len(S) + 1:i + 1] == S[::-1]:
+                trouves.append((i - len(S) + 1, i, w))
+                break
+    res, fin = [], 0
+    for i, j, w in sorted(trouves):
+        if i >= fin:
+            res.append((i, j, w))
+            fin = j
+    return res
+
+
+def preparer(officiel, relations, exterieur=None, index=None):
     """Plan de remplacement des limites.
     officiel : {code: polygones du MRNF}; relations : {code: Relation};
     exterieur : Relation parente (MRC) dont on réutilise les chemins pour
     un contour extérieur fermé (le large, autour d'îles), au lieu de le
     tracer d'après le MRNF (None : tout d'après le MRNF).
-    Renvoie un dict : nouveaux nœuds et chemins, membres des relations,
-    chemins retirés, rapport."""
-    noeuds = {}           # point -> id négatif
+    index : objets OSM des relations; un chemin de limite existant qui
+    suit déjà exactement le tracé du MRNF est réutilisé tel quel, avec ses
+    nœuds (envoi précédent, ou voisine déjà traitée).
+    Renvoie un dict : nouveaux nœuds et chemins, chemins existants
+    réutilisés et leurs nœuds, membres des relations, chemins retirés,
+    rapport."""
+    noeuds = {}           # point arrondi -> id négatif
+    existants = {}        # id de nœud existant -> point
+    par_point = {}        # point arrondi -> id de nœud existant
+    reutilises = []       # (id, [ids de nœuds], {code: rôle})
     chemins = []          # (id négatif, [ids de nœuds], {code: rôle})
     membres = defaultdict(list)   # code -> [(type, id, rôle)]
     rapport = []
 
     def noeud(p):
+        p = arrondi(p)
+        if p in par_point:
+            return par_point[p]
         if p not in noeuds:
             noeuds[p] = -(len(noeuds) + 1)
         return noeuds[p]
@@ -254,6 +317,26 @@ def preparer(officiel, relations, exterieur=None):
             milieu = ligne[len(ligne) // 2]
             k = min(fermes, key=lambda k: geo.distance_ligne(milieu, tous[k][0]))
             reprendre.setdefault(k, []).append(w)
+    # Chemins existants déjà conformes au MRNF : d'abord les reconnaître
+    # tous, pour que les chemins neufs se raccordent à leurs nœuds.
+    candidats = candidats_conformes(relations, index) if index is not None else {}
+    pris = set()
+    conformes = {}
+    for k, (pts, roles) in enumerate(tous):
+        if k in reprendre or not candidats:
+            continue
+        if pts[0] == pts[-1]:
+            # Anneau fermé : le faire commencer au bout d'un chemin existant.
+            R = [arrondi(p) for p in pts]
+            debut = next((R.index(S[0]) for w, S in candidats.items() if w not in pris and S[0] in R), 0)
+            pts = pts[debut:-1] + pts[:debut + 1]
+            tous[k] = (pts, roles)
+        conformes[k] = reconnaitre(pts, candidats, pris)
+        for _, _, w in conformes[k]:
+            pris.add(w)
+            for n in index.chemins[w]["nodes"]:
+                existants[n] = index.point(n)
+                par_point[arrondi(existants[n])] = n
     for k, (pts, roles) in enumerate(tous):
         if k in reprendre:
             (code, role), = roles.items()
@@ -263,16 +346,35 @@ def preparer(officiel, relations, exterieur=None):
                            % (len(pts), code, len(reprendre[k]), exterieur.id))
             continue
         ids = [noeud(p) for p in pts]
-        nb = 0
-        for i in range(0, len(ids) - 1, MAX_NOEUDS - 1):
-            morceau = ids[i:i + MAX_NOEUDS]
-            wid = -(len(chemins) + 1)
-            chemins.append((wid, morceau, dict(roles)))
-            nb += 1
-            for code, role in roles.items():
-                membres[code].append(("way", wid, role))
-        rapport.append("arc de %d sommets (%s) : %d chemin(s) neuf(s)" % (
-            len(pts), ", ".join("%s %s" % kv for kv in sorted(roles.items())), nb))
+        # Portions : chemins existants conformes, et trous à tracer.
+        portions, i = [], 0
+        for a, b, w in conformes.get(k, []):
+            if a > i:
+                portions.append((i, a, None))
+            portions.append((a, b, w))
+            i = b
+        if i < len(ids) - 1:
+            portions.append((i, len(ids) - 1, None))
+        nb = nb_existants = 0
+        for a, b, w in portions:
+            if w is not None:
+                reutilises.append((w, index.chemins[w]["nodes"], dict(roles)))
+                nb_existants += 1
+                for code, role in roles.items():
+                    membres[code].append(("way", w, role))
+                continue
+            for i in range(a, b, MAX_NOEUDS - 1):
+                morceau = ids[i:min(i + MAX_NOEUDS, b + 1)]
+                wid = -(len(chemins) + 1)
+                chemins.append((wid, morceau, dict(roles)))
+                nb += 1
+                for code, role in roles.items():
+                    membres[code].append(("way", wid, role))
+        rapport.append("arc de %d sommets (%s) : %s" % (
+            len(pts), ", ".join("%s %s" % kv for kv in sorted(roles.items())),
+            ", ".join(x for x in ("%d chemin(s) neuf(s)" % nb if nb else "",
+                                  "%d chemin(s) existant(s) déjà conforme(s)" % nb_existants
+                                  if nb_existants else "") if x)))
 
     # Membres des relations : les chemins sont remplacés, les autres
     # membres (label, admin_centre) sont gardés.
@@ -284,8 +386,22 @@ def preparer(officiel, relations, exterieur=None):
         nouvelles[code] = autres + [{"type": t, "ref": i, "role": r} for t, i, r in membres[code]]
     gardes = {i for lst in membres.values() for t, i, r in lst if i > 0}
     retires = sorted(anciens - gardes)
-    return {"noeuds": noeuds, "chemins": chemins, "membres": nouvelles,
-            "retires": retires, "rapport": rapport}
+    modifiees = sorted(c for c, rel in relations.items()
+                       if cles_membres(rel.rel["members"]) != cles_membres(nouvelles[c]))
+    return {"noeuds": noeuds, "existants": existants, "chemins": chemins, "reutilises": reutilises,
+            "membres": nouvelles, "modifiees": modifiees, "retires": retires, "rapport": rapport}
+
+
+def cles_membres(membres):
+    """Membres d'une relation, sans tenir compte de leur ordre."""
+    return sorted((m["type"], m["ref"], m["role"]) for m in membres)
+
+
+def points_du_plan(plan):
+    """Position de chaque nœud des chemins du plan : neufs et existants."""
+    points = {nid: p for p, nid in plan["noeuds"].items()}
+    points.update(plan.get("existants", {}))
+    return points
 
 
 def relations_du_chemin(wid):
@@ -366,8 +482,8 @@ def geojson(officiel, osm_rel, ecarts, noms, coupures=None):
 def anneaux_proposes(plan, exterieur):
     """Anneaux des relations après le remplacement, pour vérifier que
     chaque adresse tombe dans la bonne municipalité. {code: anneaux}."""
-    points = {nid: p for p, nid in plan["noeuds"].items()}
-    chemins = {wid: ids for wid, ids, _ in plan["chemins"]}
+    points = points_du_plan(plan)
+    chemins = {wid: ids for wid, ids, _ in plan["chemins"] + plan.get("reutilises", [])}
     if exterieur is not None:
         for w in exterieur.chemins:
             chemins[w] = exterieur.index.chemins[w]["nodes"]
@@ -385,8 +501,8 @@ COUPURE_M = 25          # une route coupée à moins de 25 m d'une limite y est 
 
 def lignes_limites(plan, exterieur=None):
     """Polylignes des limites proposées (chemins neufs et réutilisés)."""
-    points = {nid: p for p, nid in plan["noeuds"].items()}
-    lignes = [[points[n] for n in ids] for _, ids, _ in plan["chemins"]]
+    points = points_du_plan(plan)
+    lignes = [[points[n] for n in ids] for _, ids, _ in plan["chemins"] + plan.get("reutilises", [])]
     if exterieur is not None:
         reutilises = {m["ref"] for lst in plan["membres"].values() for m in lst
                       if m["type"] == "way" and m["ref"] > 0}

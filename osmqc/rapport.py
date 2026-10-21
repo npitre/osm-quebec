@@ -152,7 +152,7 @@ def regions(lieu, conf, officiel, rels, compte, ecarts, plan, supp):
         s += tableau(["Élément", "Nombre"], [
             ["Nœuds créés", len(plan["noeuds"])],
             ["Chemins de limite créés", len(plan["chemins"])],
-            ["Relations modifiées", len(plan["membres"])],
+            ["Relations modifiées", len(plan["modifiees"])],
             ["Chemins retirés des relations", len(plan["retires"])],
             ["dont supprimés (simples lignes de limite inutilisées)", len(supp[0])],
             ["Nœuds supprimés", len(supp[1])],

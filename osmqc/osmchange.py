@@ -6,6 +6,8 @@ import json
 import xml.etree.ElementTree as ET
 from dataclasses import asdict
 
+from .regions import cles_membres
+
 
 def element_xml(e, tags):
     """Objet OSM (dict de l'API JSON) en XML, avec ses étiquettes mises à jour."""
@@ -124,8 +126,12 @@ def osc_regions(plan, actuelles, supp_chemins, supp_noeuds, index, admin_level="
         for k in sorted(tags):
             ET.SubElement(w, "tag", k=k, v=tags[k])
     modif = ET.SubElement(racine, "modify")
-    # Les étiquettes des relations ne changent jamais : seulement leurs membres.
+    # Les étiquettes des relations ne changent jamais : seulement leurs
+    # membres. Une relation dont les membres ne changent pas (à l'ordre
+    # près) n'est pas envoyée.
     for code, rel in sorted(actuelles.items()):
+        if cles_membres(rel["members"]) == cles_membres(plan["membres"][code]):
+            continue
         r = dict(rel)
         r["members"] = plan["membres"][code]
         modif.append(element_xml(r, {}))

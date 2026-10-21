@@ -249,9 +249,9 @@ def regions_comparer(lieu, conf, preparer=False):
             print("Lien avec le nœud de lieu, %s : %s (%s)" % (rels[c].tags.get("name"), statut, detail))
     if preparer:
         ext = regions.Relation(int(cr["exterieur"]), pbf, commun) if cr.get("exterieur") else None
-        plan = regions.preparer(polys, rels, ext)
-        plan["liens"] = liens
         index = commun or osm.Index([e for r in rels.values() for e in r.index.tous()])
+        plan = regions.preparer(polys, rels, ext, index)
+        plan["liens"] = liens
         supp = regions.supprimables(plan["retires"], index, [r.id for r in rels.values()], pbf)
         # Chemins protégés (note, fixme, description, disputed*) : jamais
         # supprimés; leur note passe au chemin neuf le plus proche.
@@ -278,7 +278,7 @@ def regions_comparer(lieu, conf, preparer=False):
             print("  " + ligne)
         print("Remplacement : %d nœuds et %d chemins créés, %d relations modifiées, "
               "%d chemins retirés dont %d supprimés; %d chemins protégés; %d routes coupées." % (
-                  len(plan["noeuds"]), len(plan["chemins"]), len(plan["membres"]),
+                  len(plan["noeuds"]), len(plan["chemins"]), len(plan["modifiees"]),
                   len(plan["retires"]), len(supp[0]), len(plan["proteges"]),
                   len(plan["decoupe"]["modifies"])))
         print("Envoi : %s/regions.osc" % out)

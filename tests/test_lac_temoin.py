@@ -21,7 +21,9 @@ import xml.etree.ElementTree as ET
 ICI = os.path.dirname(os.path.abspath(__file__))
 DEPOT = os.path.dirname(ICI)
 sys.path.insert(0, os.path.join(ICI, "lac_temoin"))
+sys.path.insert(0, DEPOT)
 import fabriquer  # noqa: E402
+from osmqc import extrait  # noqa: E402
 
 LIEU = "Lac-Temoin"
 ETAPES = ["adresses extraire", "adresses osm", "regions preparer", "rues preparer",
@@ -49,6 +51,27 @@ def lire_osc(chemin):
     return res
 
 
+def lancer(dossier, etapes):
+    env = dict(os.environ, PYTHONPATH=DEPOT, OSMQC_HORS_LIGNE="1",
+               OSMQC_RQA=os.path.join(dossier, "RQA_CSV.zip"),
+               OSMQC_SDA=os.path.join(dossier, "SDA.gpkg"),
+               OSMQC_PBF=os.path.join(dossier, "lac-temoin.osm.pbf"))
+    for etape in etapes:
+        r = subprocess.run([sys.executable, "-m", "osmqc"] + etape.split() + ["lieux/%s.toml" % LIEU],
+                           cwd=dossier, env=env, capture_output=True, text=True)
+        if r.returncode:
+            raise AssertionError("« %s » a échoué :\n%s%s" % (etape, r.stdout, r.stderr))
+
+
+def envoi_simule(dossier, section):
+    """Applique sortie/LIEU/SECTION.osc à l'extrait, comme si OSM l'avait
+    accepté."""
+    pbf = os.path.join(dossier, "lac-temoin.osm.pbf")
+    neuf = os.path.join(dossier, "neuf.osm.pbf")
+    extrait.appliquer(pbf, os.path.join(dossier, "sortie", LIEU, section + ".osc"), neuf)
+    os.replace(neuf, pbf)
+
+
 class LacTemoin(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -56,15 +79,14 @@ class LacTemoin(unittest.TestCase):
         fabriquer.fabriquer(cls.dossier)
         os.makedirs(os.path.join(cls.dossier, "lieux"))
         shutil.copy(os.path.join(ICI, "lac_temoin", LIEU + ".toml"), os.path.join(cls.dossier, "lieux"))
-        env = dict(os.environ, PYTHONPATH=DEPOT, OSMQC_HORS_LIGNE="1",
-                   OSMQC_RQA=os.path.join(cls.dossier, "RQA_CSV.zip"),
-                   OSMQC_SDA=os.path.join(cls.dossier, "SDA.gpkg"),
-                   OSMQC_PBF=os.path.join(cls.dossier, "lac-temoin.osm.pbf"))
-        for etape in ETAPES:
-            r = subprocess.run([sys.executable, "-m", "osmqc"] + etape.split() + ["lieux/%s.toml" % LIEU],
-                               cwd=cls.dossier, env=env, capture_output=True, text=True)
-            if r.returncode:
-                raise AssertionError("« %s » a échoué :\n%s%s" % (etape, r.stdout, r.stderr))
+        lancer(cls.dossier, ETAPES)
+        # Second passage, sur une copie : après l'envoi simulé des limites,
+        # la même préparation ne doit plus rien produire.
+        cls.apres = cls.dossier + "-apres"
+        shutil.copytree(cls.dossier, cls.apres)
+        envoi_simule(cls.apres, "regions")
+        lancer(cls.apres, ["regions preparer"])
+        cls.regions_apres = ET.parse(os.path.join(cls.apres, "sortie", LIEU, "regions.osc")).getroot()
         cls.carte = fabriquer.carte()
         sortie = os.path.join(cls.dossier, "sortie", LIEU)
         cls.regions = lire_osc(os.path.join(sortie, "regions.osc"))
@@ -76,6 +98,7 @@ class LacTemoin(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         shutil.rmtree(cls.dossier)
+        shutil.rmtree(cls.apres)
 
     # Outils
 
@@ -106,14 +129,18 @@ class LacTemoin(unittest.TestCase):
     # Régions
 
     def test_regions_1_trace_du_mrnf(self):
-        noeuds = self.crees(self.regions, "node")
+        lon = {i: o["lon"] for i, o in self.crees(self.regions, "node").items()}
+        lon.update({n: p[0] for n, (p, _) in self.carte.noeuds.items()})
         commune = [o for o in self.nouveaux_chemins_limite().values()
-                   if all(noeuds[n]["lon"] == P(20, 0)[0] for n in o["nodes"] if n in noeuds)]
+                   if all(lon[n] == P(20, 0)[0] for n in o["nodes"])]
         self.assertEqual(len(commune), 1)       # la limite commune, à x = 20 comme au MRNF
 
     def test_regions_2_chemins_propres(self):
+        # Nœuds neufs, ou ceux du chemin de limite déjà conforme (106);
+        # jamais ceux d'une route, d'une rivière ou d'un autre chemin.
+        conforme = {n for w, ns, _ in self.carte.chemins if w == 106 for n in ns}
         for o in self.nouveaux_chemins_limite().values():
-            self.assertTrue(all(n < 0 for n in o["nodes"]))
+            self.assertTrue(all(n < 0 or n in conforme for n in o["nodes"]))
             self.assertLessEqual(set(o["tags"]), {"boundary", "admin_level", "note"})
 
     def test_regions_3_limite_commune(self):
@@ -124,11 +151,25 @@ class LacTemoin(unittest.TestCase):
     def test_regions_5_ce_qui_sort(self):
         supprimes = {(g, i) for (a, g, i) in self.regions if a == "delete"}
         self.assertEqual({i for g, i in supprimes if g == "way"}, {101, 105})   # lignes de limite seules
-        self.assertEqual({i for g, i in supprimes if g == "node"}, {self.noeud(0, 20), self.noeud(40, 20)})
+        # (40, 20) sert encore au chemin conforme 106 : gardé.
+        self.assertEqual({i for g, i in supprimes if g == "node"}, {self.noeud(0, 20)})
         # Frontière (102), rivière (103) et chemin avec note (104) : retirés, pas supprimés.
         for rel in (1001, 1002):
             refs = {r for _, r, _ in self.regions[("modify", "relation", rel)]["members"]}
             self.assertFalse(refs & {101, 102, 103, 104, 105})
+
+    def test_regions_chemin_deja_conforme(self):
+        # Le côté est de Sainte-Vérification suivait déjà le MRNF : gardé
+        # tel quel, et les chemins neufs se raccordent à ses nœuds.
+        self.assertIn(("way", 106, "outer"), self.regions[("modify", "relation", 1002)]["members"])
+        self.assertFalse([k for k in self.regions if k[1:] == ("way", 106)])
+        noeuds = self.crees(self.regions, "node")
+        self.assertNotIn(P(40, 0)[0], {o["lon"] for o in noeuds.values()})
+
+    def test_regions_envoi_simule_puis_relance(self):
+        # Après l'envoi, plus rien à faire : tout est reconnu comme conforme.
+        self.assertEqual([(b.tag, len(b)) for b in self.regions_apres],
+                         [("create", 0), ("modify", 0), ("delete", 0)])
 
     def test_regions_5_note_reportee(self):
         notes = [o for o in self.nouveaux_chemins_limite().values() if "note" in o["tags"]]

@@ -13,7 +13,8 @@
 #    0   +-----------+--+------------------+
 #
 # Selon le MRNF, la limite commune est à x = 20. Dans OSM, elle est à
-# x = 19 et c'est une rivière. Chaque objet ci-dessous illustre un cas
+# x = 19 et c'est une rivière; le côté est de Sainte-Vérification, lui,
+# suit déjà exactement le MRNF. Chaque objet ci-dessous illustre un cas
 # d'une règle du README; tests/test_lac_temoin.py vérifie le résultat.
 #
 # Usage : python3 fabriquer.py DOSSIER
@@ -121,14 +122,18 @@ def carte():
     c.chemin(102, [(0, 0), (19, 0)], {"boundary": "administrative", "admin_level": "4"})   # frontière
     c.chemin(103, [(19, 0), (19, 20)], {"waterway": "river", "name": "Rivière Témoin"})
     c.chemin(104, [(19, 0), (40, 0)], dict(LIMITE, note="Limite à vérifier sur le terrain"))
-    c.chemin(105, [(40, 0), (40, 20), (19, 20)], dict(LIMITE))
+    c.chemin(105, [(40, 20), (19, 20)], dict(LIMITE))
+    # Le côté est de Sainte-Vérification suit déjà exactement le MRNF
+    # (tracé à la main par quelqu'un) : il est réutilisé tel quel.
+    c.chemin(106, [(40, 0), (40, 20)], dict(LIMITE))
     lieu = c.noeud(8, 12, {"place": "village", "name": "Lac-Témoin"})
     c.relations.append((1001, [("w", 101, "outer"), ("w", 102, "outer"), ("w", 103, "outer"),
                                ("n", lieu, "label")],
                         {"type": "boundary", "boundary": "administrative", "admin_level": "8",
                          "name": "Lac-Témoin", "ref:qc": "99001"}))
     # Sainte-Vérification n'a pas de membre label (règle 8).
-    c.relations.append((1002, [("w", 103, "outer"), ("w", 104, "outer"), ("w", 105, "outer")],
+    c.relations.append((1002, [("w", 103, "outer"), ("w", 104, "outer"), ("w", 106, "outer"),
+                               ("w", 105, "outer")],
                         {"type": "boundary", "boundary": "administrative", "admin_level": "8",
                          "name": "Sainte-Vérification", "ref:qc": "99002"}))
 

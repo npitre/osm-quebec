@@ -153,6 +153,14 @@ dans `sortie/LIEU/` (hors du dépôt); les rapports de révision, dans
    OsmAnd n'utilise pas la limite pour attribuer les adresses. Les
    membres existants sont conservés; le rapport signale les relations
    sans lien ou dont les noms diffèrent.
+9. **Chemins déjà conformes** : un chemin de limite existant (une simple
+   ligne de limite, jamais un littoral, une route ou un cours d'eau)
+   qui suit exactement le tracé du MRNF, mêmes sommets au 1e-7 degré
+   près (la précision d'OSM), est gardé tel quel avec ses nœuds; les
+   chemins neufs s'y raccordent. Une relation dont les membres ne
+   changent pas n'est pas envoyée. Ainsi, relancer la préparation après
+   un envoi ne produit plus rien : on peut reprendre un envoi
+   interrompu, et vérifier qu'un envoi est bien passé.
 
 ### Rues
 

@@ -184,6 +184,30 @@ class Regions(unittest.TestCase):
         self.assertEqual(regions.lien_lieu(rel(3), idx)[0], "lien sans place")
         self.assertEqual(regions.lien_lieu(rel(None), idx)[0], "sans lien")
 
+    def test_regions_9_chemins_deja_conformes(self):
+        # La limite commune existe déjà, exactement au tracé du MRNF.
+        idx = index({1: ((10, 0), {}), 2: ((10, 10), {}), 3: ((9, 0), {}), 4: ((9, 10), {})},
+                    [(600, [1, 2], {"boundary": "administrative", "admin_level": "8"}),
+                     (601, [3, 4], {"boundary": "administrative", "admin_level": "8"})])
+        rels = {"A": Rel(100, [600]), "B": Rel(200, [600, 601])}
+        plan = regions.preparer(self.officiel, rels, None, idx)
+        self.assertEqual([w for w, _, _ in plan["reutilises"]], [600])
+        for code in ("A", "B"):
+            self.assertIn({"type": "way", "ref": 600, "role": "outer"}, plan["membres"][code])
+        self.assertEqual(plan["retires"], [601])        # décalé d'un millième : remplacé
+        # Les chemins neufs se raccordent aux nœuds 1 et 2.
+        bouts = {n for _, ids, _ in plan["chemins"] for n in (ids[0], ids[-1])}
+        self.assertEqual(bouts, {1, 2})
+        # Relancé avec tout déjà conforme : aucune relation à modifier.
+        idx2 = index({n: (xy, {}) for n, xy in enumerate([(0, 0), (10, 0), (10, 10), (0, 10),
+                                                          (20, 0), (20, 10)], 1)},
+                     [(600, [2, 3], {"boundary": "administrative"}),
+                      (602, [2, 1, 4, 3], {"boundary": "administrative"}),
+                      (603, [2, 5, 6, 3], {"boundary": "administrative"})])
+        rels2 = {"A": Rel(100, [600, 602]), "B": Rel(200, [600, 603])}
+        plan = regions.preparer(self.officiel, rels2, None, idx2)
+        self.assertEqual((plan["chemins"], plan["retires"], plan["modifiees"]), ([], [], []))
+
 
 # Rues
 
