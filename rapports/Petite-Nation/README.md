@@ -36,12 +36,26 @@ extrait OSM de Geofabrik du 16 octobre 2026.
 
 ### Remplacement proposé
 
-- 71 chemins de limite neufs, d'après le MRNF (8 556 nœuds) : une limite
+- 84 chemins de limite neufs, d'après le MRNF (8 542 nœuds) : une limite
   commune à deux municipalités est un seul chemin, membre des deux
-  relations.
-- 25 relations modifiées; 87 chemins retirés des relations, dont 51
+  relations. Cela vaut aussi pour les limites avec les municipalités
+  voisines, hors de la MRC (règle 10 des régions).
+- 12 voisines hors de la MRC (Grenville-sur-la-Rouge, Harrington,
+  Huberdeau, Amherst, La Minerve, Notre-Dame-du-Laus, Lac-Ernest,
+  Gatineau, L'Ange-Gardien, Val-des-Monts, Denholm, Lac-Sainte-Marie)
+  sont modifiées en partie : l'arc commun entre dans leur relation, leurs
+  anciens chemins le long de la MRC en sortent, 7 chemins de limite sont
+  coupés au bout de la partie gardée, et 17 courts raccords provisoires
+  relient l'arc commun à leurs anciens points triples. Ils disparaîtront
+  quand ces voisines seront traitées. Deux autres voisines n'ont pas de
+  relation dans OSM (TNO aquatiques).
+- 37 relations modifiées; 85 chemins retirés des relations, dont 53
   simples lignes de limite devenues inutiles, supprimées. Les rivières ne
   sont pas touchées.
+- Essai : le fichier d'envoi a été appliqué à une copie de l'extrait du
+  Québec, comme si OSM l'avait accepté. Les 66 relations touchées forment
+  toutes des anneaux fermés, et relancer la préparation ne produit plus
+  rien.
 - Vérification : avec les limites proposées, les 20 659 adresses tombent
   dans la bonne municipalité.
 - Lien avec le nœud de lieu : 16 relations sur 25 ont leur membre
@@ -71,12 +85,10 @@ segments neufs, et 19 relations de route mises à jour (détail dans
 
 ### Questions en suspens
 
-1. **Contour de la MRC.** Ici, les limites extérieures (avec les MRC
-   voisines et l'Ontario) sont aussi tracées d'après le MRNF. Les
-   municipalités voisines, hors de la MRC, gardent pour l'instant leurs
-   anciens chemins : il y aura des tracés doubles le long du contour tant
-   qu'elles ne sont pas traitées. Faut-il traiter la MRC voisine en même
-   temps, ou mettre à jour aussi la relation de la MRC (7572164)?
+1. **Relation de la MRC** (7572164) : les voisines n'ont plus de tracé
+   double, mais la relation de la MRC garde ses anciens chemins le long
+   du contour. La reconstruire à partir des limites extérieures de ses
+   municipalités?
 2. **Notre-Dame-de-la-Salette** : corriger son rattachement à la MRC de
    Papineau dans OSM?
 3. **TNO aquatique** : créer sa relation, ou laisser la rivière hors des

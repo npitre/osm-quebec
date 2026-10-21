@@ -80,6 +80,14 @@ def genre_chemin(t):
     return "autre"
 
 
+def ligne_de_limite(t):
+    """Chemin qui n'est qu'une limite : sans étiquette (la relation lui
+    donne son sens) ou étiqueté boundary=administrative, mais jamais un
+    littoral, une route, un cours d'eau ou une voie ferrée."""
+    g = genre_chemin(t)
+    return g == "limite seule" or (g == "autre" and t.get("boundary") == "administrative")
+
+
 A_REPORTER = ("note", "fixme", "description")
 
 
@@ -125,7 +133,8 @@ def reporter_notes(proteges, index, plan):
     le chemin neuf le plus proche. Renvoie [(chemin protégé, chemin neuf,
     étiquettes)] et met à jour plan["etiquettes"]."""
     points = points_du_plan(plan)
-    neufs = [(wid, [points[n] for n in ids]) for wid, ids, _ in plan["chemins"]]
+    neufs = [(wid, [points[n] for n in ids]) for wid, ids, _ in plan["chemins"]
+             if wid not in plan.get("provisoires", ())]
     plan.setdefault("etiquettes", {})
     res = []
     for w in proteges:
@@ -240,8 +249,7 @@ def candidats_conformes(relations, index):
             e = index.chemins.get(w)
             if e is None or w in res:
                 continue
-            t = e.get("tags", {})
-            if t.get("boundary") != "administrative" or genre_chemin(t) not in ("limite seule", "autre"):
+            if not ligne_de_limite(e.get("tags", {})):
                 continue
             if any(n not in index.noeuds for n in e["nodes"]):
                 continue
@@ -276,7 +284,8 @@ def reconnaitre(pts, candidats, pris):
     return res
 
 
-def preparer(officiel, relations, exterieur=None, index=None):
+def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rels_voisines=None,
+             usages=None, chemins_des_noeuds=None):
     """Plan de remplacement des limites.
     officiel : {code: polygones du MRNF}; relations : {code: Relation};
     exterieur : Relation parente (MRC) dont on réutilise les chemins pour
@@ -285,9 +294,17 @@ def preparer(officiel, relations, exterieur=None, index=None):
     index : objets OSM des relations; un chemin de limite existant qui
     suit déjà exactement le tracé du MRNF est réutilisé tel quel, avec ses
     nœuds (envoi précédent, ou voisine déjà traitée).
+    voisines : {code: polygones du MRNF} des municipalités hors du lot qui
+    le touchent; rels_voisines : {code: Relation} de celles qui ont une
+    relation dans OSM. L'arc commun avec une voisine devient membre de sa
+    relation, modifiée en partie (voir osmqc/voisines.py). usages :
+    fonction {chemin: {relations}} pour les chemins donnés (tout OSM);
+    chemins_des_noeuds : fonction {nœud: {chemins}} (tout OSM). Un nœud
+    existant pile au bout d'un arc du MRNF (un point triple déjà juste)
+    est réutilisé s'il ne sert qu'à des chemins de limite.
     Renvoie un dict : nouveaux nœuds et chemins, chemins existants
     réutilisés et leurs nœuds, membres des relations, chemins retirés,
-    rapport."""
+    modifications des voisines, rapport."""
     noeuds = {}           # point arrondi -> id négatif
     existants = {}        # id de nœud existant -> point
     par_point = {}        # point arrondi -> id de nœud existant
@@ -295,6 +312,13 @@ def preparer(officiel, relations, exterieur=None, index=None):
     chemins = []          # (id négatif, [ids de nœuds], {code: rôle})
     membres = defaultdict(list)   # code -> [(type, id, rôle)]
     rapport = []
+    voisines = voisines or {}
+    rels_voisines = rels_voisines or {}
+    compteur = [0]
+
+    def nouveau_chemin():
+        compteur[0] -= 1
+        return compteur[0]
 
     def noeud(p):
         p = arrondi(p)
@@ -306,8 +330,19 @@ def preparer(officiel, relations, exterieur=None, index=None):
 
     # Deux sommets du MRNF à moins de 1e-7 degré l'un de l'autre seraient
     # le même point dans OSM : un seul nœud.
-    tous = [([p for i, p in enumerate(pts) if i == 0 or arrondi(p) != arrondi(pts[i - 1])], roles)
-            for pts, roles in arcs(officiel)]
+    # Les arcs sont calculés avec les voisines, pour savoir qui borde
+    # chaque arc; on ne garde que ceux qui touchent le lot. Une voisine
+    # sans relation dans OSM (un TNO aquatique, souvent) est ignorée : elle
+    # ne découpe pas les arcs.
+    voisines = {c: p for c, p in voisines.items() if c in rels_voisines}
+    tous, reste = [], defaultdict(list)
+    for pts, roles in arcs(dict(officiel, **voisines)):
+        pts = [p for i, p in enumerate(pts) if i == 0 or arrondi(p) != arrondi(pts[i - 1])]
+        if not set(roles) & set(officiel):
+            for c in roles:
+                reste[c].append(pts)
+            continue
+        tous.append((pts, {c: r for c, r in roles.items() if c in officiel or c in rels_voisines}))
     # Un arc extérieur qui fait à lui seul un anneau fermé (une île, par
     # exemple) peut reprendre les chemins de la relation parente. Un arc
     # ouvert, lui, doit se raccorder à ses voisins par les mêmes nœuds :
@@ -320,9 +355,28 @@ def preparer(officiel, relations, exterieur=None, index=None):
             milieu = ligne[len(ligne) // 2]
             k = min(fermes, key=lambda k: geo.distance_ligne(milieu, tous[k][0]))
             reprendre.setdefault(k, []).append(w)
+    # Nœuds existants pile aux bouts des arcs (points triples déjà justes) :
+    # réutilisés s'ils ne servent qu'à des lignes de limite, pour que la
+    # voisine se raccorde sans chemin de longueur nulle.
+    if index is not None and chemins_des_noeuds is not None:
+        bouts = {arrondi(pts[k]) for pts, _ in tous for k in (0, -1)}
+        ici = {}
+        for rel in list(relations.values()) + list(rels_voisines.values()):
+            for w in rel.chemins:
+                for n in index.chemins.get(w, {}).get("nodes", []):
+                    if n in index.noeuds and arrondi(index.point(n)) in bouts:
+                        ici[n] = arrondi(index.point(n))
+        if ici:
+            usage = chemins_des_noeuds(sorted(ici))
+            for n, p in ici.items():
+                ws = usage.get(n, set())
+                if not index.noeuds[n].get("tags") and ws and all(
+                        w in index.chemins and ligne_de_limite(index.chemins[w].get("tags", {})) for w in ws):
+                    par_point.setdefault(p, n)
+                    existants[n] = index.point(n)
     # Chemins existants déjà conformes au MRNF : d'abord les reconnaître
     # tous, pour que les chemins neufs se raccordent à leurs nœuds.
-    candidats = candidats_conformes(relations, index) if index is not None else {}
+    candidats = candidats_conformes(dict(relations, **rels_voisines), index) if index is not None else {}
     pris = set()
     conformes = {}
     for k, (pts, roles) in enumerate(tous):
@@ -368,7 +422,7 @@ def preparer(officiel, relations, exterieur=None, index=None):
                 continue
             for i in range(a, b, MAX_NOEUDS - 1):
                 morceau = ids[i:min(i + MAX_NOEUDS, b + 1)]
-                wid = -(len(chemins) + 1)
+                wid = nouveau_chemin()
                 chemins.append((wid, morceau, dict(roles)))
                 nb += 1
                 for code, role in roles.items():
@@ -387,12 +441,83 @@ def preparer(officiel, relations, exterieur=None, index=None):
         autres = [m for m in rel.rel["members"] if m["type"] != "way"]
         anciens.update(rel.chemins)
         nouvelles[code] = autres + [{"type": t, "ref": i, "role": r} for t, i, r in membres[code]]
-    gardes = {i for lst in membres.values() for t, i, r in lst if i > 0}
+
+    # Voisines : modification partielle de leur relation.
+    positions = {nid: p for p, nid in noeuds.items()}
+    positions.update(existants)
+
+    def point(n):
+        return positions[n] if n in positions else index.point(n)
+
+    def noeud_neuf(p):
+        n = noeud(p)
+        positions.setdefault(n, arrondi(p))
+        return n
+    from . import voisines as vois
+    modif_voisines = {"modifies": {}, "neufs": {}, "relations": {}, "liberes": set()}
+    provisoires = set()
+    lot = [r.id for r in relations.values()]
+    # Usage de tous les chemins des voisines, en une seule lecture.
+    tous_usages = (usages or (lambda ws: {}))(sorted({w for r in rels_voisines.values() for w in r.chemins}))
+    for code, rel in sorted(rels_voisines.items()):
+        if not membres[code]:
+            continue
+        lignes = {w: ids for w, ids, _ in chemins + reutilises}
+        communs = [(i, lignes[i], r) for t, i, r in membres[code]]
+        res, raison = vois.modifier(rel, index, communs, reste.get(code, []), point, noeud_neuf,
+                                    nouveau_chemin, lambda ws: {w: tous_usages.get(w, set()) for w in ws}, lot)
+        if res is None:
+            rapport.append("voisine %s non modifiée : %s" % (rel.tags.get("name", code), raison))
+            for _, _, roles in chemins + reutilises:
+                roles.pop(code, None)
+            continue
+        deja = set(res["modifies"]) & set(modif_voisines["modifies"])
+        if deja:
+            rapport.append("voisine %s non modifiée : chemin %s déjà coupé pour une autre voisine"
+                           % (rel.tags.get("name", code), ", ".join(map(str, sorted(deja)))))
+            for _, _, roles in chemins + reutilises:
+                roles.pop(code, None)
+            continue
+        nouvelles[code] = res["membres"]
+        anciens.update(rel.chemins)
+        for w, ids, role in res["chemins"]:
+            chemins.append((w, ids, {code: role}))
+            provisoires.add(w)
+        modif_voisines["modifies"].update(res["modifies"])
+        modif_voisines["neufs"].update(res["neufs"])
+        for rid, coupes in res["relations"].items():
+            modif_voisines["relations"].setdefault(rid, []).extend(coupes)
+        modif_voisines["liberes"] |= res["liberes"]
+        rapport += res["rapport"]
+    # Un chemin coupé chez une voisine peut servir à une autre relation que
+    # l'on modifie déjà (autre voisine, ou lot) : ses morceaux entrent
+    # dans ses nouveaux membres, juste après lui, au lieu d'un second envoi
+    # de la même relation.
+    par_id = {r.id: c for c, r in dict(relations, **rels_voisines).items() if c in nouvelles}
+    for rid in list(modif_voisines["relations"]):
+        if rid not in par_id:
+            continue
+        code = par_id[rid]
+        for w, morceaux in modif_voisines["relations"].pop(rid):
+            res_m = []
+            for m in nouvelles[code]:
+                res_m.append(m)
+                if m["type"] == "way" and m["ref"] == w:
+                    res_m += [{"type": "way", "ref": n, "role": m["role"]} for n in morceaux]
+            nouvelles[code] = res_m
+    # Nœuds existants auxquels s'accrochent raccords et copies.
+    for _, ids, _ in chemins:
+        for n in ids:
+            if n > 0 and n not in existants:
+                existants[n] = index.point(n)
+    gardes = {m["ref"] for lst in nouvelles.values() for m in lst if m["type"] == "way" and m["ref"] > 0}
     retires = sorted(anciens - gardes)
-    modifiees = sorted(c for c, rel in relations.items()
+    toutes = dict(relations, **{c: r for c, r in rels_voisines.items() if c in nouvelles})
+    modifiees = sorted(c for c, rel in toutes.items()
                        if cles_membres(rel.rel["members"]) != cles_membres(nouvelles[c]))
     return {"noeuds": noeuds, "existants": existants, "chemins": chemins, "reutilises": reutilises,
-            "membres": nouvelles, "modifiees": modifiees, "retires": retires, "rapport": rapport}
+            "membres": nouvelles, "modifiees": modifiees, "retires": retires, "rapport": rapport,
+            "lot": sorted(relations), "voisines": modif_voisines, "provisoires": provisoires}
 
 
 def cles_membres(membres):
@@ -493,6 +618,8 @@ def anneaux_proposes(plan, exterieur):
         points.update({n: exterieur.index.point(n) for n in exterieur.index.noeuds})
     res = {}
     for code, membres in plan["membres"].items():
+        if code not in plan.get("lot", plan["membres"]):
+            continue
         segs = [chemins[m["ref"]] for m in membres if m["type"] == "way"]
         anneaux, _ = geo.assembler(segs)
         res[code] = [[points[n] for n in a] for a in anneaux]

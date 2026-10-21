@@ -102,33 +102,39 @@ Source : Découpages administratifs du MRNF (1/20 000). Règles : voir le [READM
 
 | Élément | Nombre |
 |---|---|
-| Nœuds créés | 8555 |
-| Chemins de limite créés | 71 |
-| Relations modifiées | 25 |
-| Chemins retirés des relations | 87 |
-| dont supprimés (simples lignes de limite inutilisées) | 51 |
-| Nœuds supprimés | 3428 |
+| Nœuds créés | 8542 |
+| Chemins de limite créés | 101 |
+| Relations modifiées | 37 |
+| Chemins retirés des relations | 85 |
+| dont supprimés (simples lignes de limite inutilisées) | 53 |
+| Nœuds supprimés | 3615 |
 
-- arc de 35 sommets (80005 outer) : 1 chemin(s) neuf(s)
+- arc de 21 sommets (80005 outer) : 1 chemin(s) neuf(s)
+- arc de 15 sommets (76052 outer, 80005 outer) : 1 chemin(s) neuf(s)
 - arc de 118 sommets (80005 outer, 80015 outer) : 1 chemin(s) neuf(s)
 - arc de 19 sommets (80010 outer, 80037 outer) : 1 chemin(s) neuf(s)
 - arc de 18 sommets (80010 outer) : 1 chemin(s) neuf(s)
 - arc de 139 sommets (80010 outer, 80015 outer) : 1 chemin(s) neuf(s)
+- arc de 161 sommets (79924 outer, 80135 outer) : 1 chemin(s) neuf(s)
+- arc de 36 sommets (79005 outer, 80135 outer) : 1 chemin(s) neuf(s)
 - arc de 4 sommets (80135 outer, 80140 outer) : 1 chemin(s) neuf(s)
 - arc de 17 sommets (80090 outer, 80135 outer) : 1 chemin(s) neuf(s)
 - arc de 27 sommets (80095 outer, 80135 outer) : 1 chemin(s) neuf(s)
 - arc de 125 sommets (80130 outer, 80135 outer) : 1 chemin(s) neuf(s)
-- arc de 282 sommets (80135 outer) : 1 chemin(s) neuf(s)
+- arc de 87 sommets (78130 outer, 80135 outer) : 1 chemin(s) neuf(s)
 - arc de 24 sommets (80103 outer, 80130 outer) : 1 chemin(s) neuf(s)
 - arc de 69 sommets (80125 outer, 80130 outer) : 1 chemin(s) neuf(s)
 - arc de 9 sommets (80115 outer, 80130 outer) : 1 chemin(s) neuf(s)
-- arc de 583 sommets (80130 outer) : 1 chemin(s) neuf(s)
-- arc de 45 sommets (80065 outer) : 1 chemin(s) neuf(s)
+- arc de 537 sommets (78070 outer, 80130 outer) : 1 chemin(s) neuf(s)
+- arc de 47 sommets (78130 outer, 80130 outer) : 1 chemin(s) neuf(s)
+- arc de 45 sommets (80065 outer, 82005 outer) : 1 chemin(s) neuf(s)
 - arc de 70 sommets (80060 outer, 80065 outer) : 1 chemin(s) neuf(s)
 - arc de 19 sommets (80055 outer, 80065 outer) : 1 chemin(s) neuf(s)
 - arc de 53 sommets (80065 outer, 80070 outer) : 1 chemin(s) neuf(s)
 - arc de 54 sommets (80065 outer, 80085 outer) : 1 chemin(s) neuf(s)
-- arc de 242 sommets (80060 outer) : 1 chemin(s) neuf(s)
+- arc de 26 sommets (80060 outer, 82005 outer) : 1 chemin(s) neuf(s)
+- arc de 25 sommets (80060 outer, 81017 outer) : 1 chemin(s) neuf(s)
+- arc de 193 sommets (80060 outer) : 1 chemin(s) neuf(s)
 - arc de 12 sommets (80050 outer, 80060 outer) : 1 chemin(s) neuf(s)
 - arc de 17 sommets (80055 outer, 80060 outer) : 1 chemin(s) neuf(s)
 - arc de 46 sommets (80078 outer, 80090 outer) : 1 chemin(s) neuf(s)
@@ -149,28 +155,34 @@ Source : Découpages administratifs du MRNF (1/20 000). Règles : voir le [READM
 - arc de 185 sommets (80087 outer, 80140 outer) : 1 chemin(s) neuf(s)
 - arc de 76 sommets (80085 outer, 80140 outer) : 1 chemin(s) neuf(s)
 - arc de 17 sommets (80090 outer, 80140 outer) : 1 chemin(s) neuf(s)
-- arc de 89 sommets (80140 outer) : 1 chemin(s) neuf(s)
+- arc de 89 sommets (79005 outer, 80140 outer) : 1 chemin(s) neuf(s)
 - arc de 2 sommets (80015 outer, 80110 outer) : 1 chemin(s) neuf(s)
 - arc de 103 sommets (80015 outer, 80020 outer) : 1 chemin(s) neuf(s)
 - arc de 136 sommets (80015 outer, 80037 outer) : 1 chemin(s) neuf(s)
 - arc de 13 sommets (80015 outer) : 1 chemin(s) neuf(s)
-- arc de 165 sommets (80015 outer) : 1 chemin(s) neuf(s)
+- arc de 119 sommets (76052 outer, 80015 outer) : 1 chemin(s) neuf(s)
+- arc de 47 sommets (76065 outer, 80015 outer) : 1 chemin(s) neuf(s)
 - arc de 103 sommets (80015 outer, 80115 outer) : 1 chemin(s) neuf(s)
 - arc de 92 sommets (80110 outer, 80125 outer) : 1 chemin(s) neuf(s)
 - arc de 19 sommets (80103 outer, 80110 outer) : 1 chemin(s) neuf(s)
 - arc de 19 sommets (80020 outer, 80110 outer) : 1 chemin(s) neuf(s)
 - arc de 58 sommets (80110 outer, 80115 outer) : 1 chemin(s) neuf(s)
 - arc de 35 sommets (80115 outer, 80125 outer) : 1 chemin(s) neuf(s)
-- arc de 202 sommets (80115 outer) : 1 chemin(s) neuf(s)
+- arc de 76 sommets (76065 outer, 80115 outer) : 1 chemin(s) neuf(s)
+- arc de 22 sommets (78065 outer, 80115 outer) : 1 chemin(s) neuf(s)
+- arc de 106 sommets (78070 outer, 80115 outer) : 1 chemin(s) neuf(s)
 - arc de 465 sommets (80095 outer, 80103 outer) : 1 chemin(s) neuf(s)
 - arc de 23 sommets (80020 outer, 80103 outer) : 1 chemin(s) neuf(s)
 - arc de 11 sommets (80103 outer, 80125 outer) : 1 chemin(s) neuf(s)
 - arc de 19 sommets (80020 outer, 80037 outer) : 1 chemin(s) neuf(s)
 - arc de 69 sommets (80085 outer, 80087 outer) : 1 chemin(s) neuf(s)
-- arc de 57 sommets (80085 outer) : 1 chemin(s) neuf(s)
+- arc de 57 sommets (80085 outer, 82005 outer) : 1 chemin(s) neuf(s)
 - arc de 121 sommets (80085 outer, 80090 outer) : 1 chemin(s) neuf(s)
+- arc de 701 sommets (80145 outer, 83020 outer) : 1 chemin(s) neuf(s)
+- arc de 58 sommets (80145 outer, 83005 outer) : 1 chemin(s) neuf(s)
+- arc de 19 sommets (80145 outer, 82015 outer) : 1 chemin(s) neuf(s)
 - arc de 4 sommets (80087 outer, 80145 outer) : 1 chemin(s) neuf(s)
-- arc de 830 sommets (80145 outer) : 1 chemin(s) neuf(s)
+- arc de 55 sommets (79005 outer, 80145 outer) : 1 chemin(s) neuf(s)
 - arc de 108 sommets (80090 outer, 80095 outer) : 1 chemin(s) neuf(s)
 - arc de 361 sommets (80050 outer, 80055 outer) : 1 chemin(s) neuf(s)
 - arc de 86 sommets (80055 outer) : 1 chemin(s) neuf(s)
@@ -178,10 +190,23 @@ Source : Découpages administratifs du MRNF (1/20 000). Règles : voir le [READM
 - arc de 436 sommets (80045 outer) : 1 chemin(s) neuf(s)
 - arc de 52 sommets (80037 outer, 80045 outer) : 1 chemin(s) neuf(s)
 - arc de 53 sommets (80050 outer) : 1 chemin(s) neuf(s)
-- arc de 228 sommets (80087 outer) : 1 chemin(s) neuf(s)
+- arc de 193 sommets (80087 outer, 82015 outer) : 1 chemin(s) neuf(s)
+- arc de 36 sommets (80087 outer, 82005 outer) : 1 chemin(s) neuf(s)
 - arc de 39 sommets (80037 outer) : 1 chemin(s) neuf(s)
+- Grenville-sur-la-Rouge : 2 chemin(s) retiré(s), 2 raccord(s), 0 copie(s), 0 chemin(s) coupé(s)
+- Harrington : 2 chemin(s) retiré(s), 2 raccord(s), 0 copie(s), 2 chemin(s) coupé(s)
+- Huberdeau : 1 chemin(s) retiré(s), 1 raccord(s), 0 copie(s), 0 chemin(s) coupé(s)
+- Amherst : 2 chemin(s) retiré(s), 1 raccord(s), 0 copie(s), 0 chemin(s) coupé(s)
+- La Minerve : 2 chemin(s) retiré(s), 2 raccord(s), 0 copie(s), 0 chemin(s) coupé(s)
+- Notre-Dame-du-Laus : 2 chemin(s) retiré(s), 1 raccord(s), 0 copie(s), 1 chemin(s) coupé(s)
+- Lac-Ernest : 0 chemin(s) retiré(s), 1 raccord(s), 0 copie(s), 2 chemin(s) coupé(s)
+- Gatineau : 1 chemin(s) retiré(s), 2 raccord(s), 0 copie(s), 1 chemin(s) coupé(s)
+- L'Ange-Gardien : 4 chemin(s) retiré(s), 1 raccord(s), 0 copie(s), 0 chemin(s) coupé(s)
+- Val-des-Monts : 2 chemin(s) retiré(s), 1 raccord(s), 0 copie(s), 0 chemin(s) coupé(s)
+- Denholm : 1 chemin(s) retiré(s), 2 raccord(s), 0 copie(s), 1 chemin(s) coupé(s)
+- Lac-Sainte-Marie : 1 chemin(s) retiré(s), 1 raccord(s), 0 copie(s), 0 chemin(s) coupé(s)
 
-Chemins supprimés : [503796693](https://www.openstreetmap.org/way/503796693), [503796695](https://www.openstreetmap.org/way/503796695), [503796696](https://www.openstreetmap.org/way/503796696), [503797449](https://www.openstreetmap.org/way/503797449), [503810617](https://www.openstreetmap.org/way/503810617), [503810618](https://www.openstreetmap.org/way/503810618), [503810619](https://www.openstreetmap.org/way/503810619), [503817502](https://www.openstreetmap.org/way/503817502), [503817503](https://www.openstreetmap.org/way/503817503), [503817505](https://www.openstreetmap.org/way/503817505), [503839588](https://www.openstreetmap.org/way/503839588), [521684885](https://www.openstreetmap.org/way/521684885), [521684886](https://www.openstreetmap.org/way/521684886), [521684887](https://www.openstreetmap.org/way/521684887), [521684888](https://www.openstreetmap.org/way/521684888), [521684889](https://www.openstreetmap.org/way/521684889), [521684890](https://www.openstreetmap.org/way/521684890), [521684894](https://www.openstreetmap.org/way/521684894), [521966225](https://www.openstreetmap.org/way/521966225), [521966226](https://www.openstreetmap.org/way/521966226), [521966227](https://www.openstreetmap.org/way/521966227), [521966228](https://www.openstreetmap.org/way/521966228), [521966230](https://www.openstreetmap.org/way/521966230), [521966232](https://www.openstreetmap.org/way/521966232), [521966233](https://www.openstreetmap.org/way/521966233), [521966234](https://www.openstreetmap.org/way/521966234), [521966236](https://www.openstreetmap.org/way/521966236), [524431155](https://www.openstreetmap.org/way/524431155), [524431157](https://www.openstreetmap.org/way/524431157), [524431161](https://www.openstreetmap.org/way/524431161), [524431164](https://www.openstreetmap.org/way/524431164), [524431165](https://www.openstreetmap.org/way/524431165), [524431166](https://www.openstreetmap.org/way/524431166), [524431167](https://www.openstreetmap.org/way/524431167), [524431168](https://www.openstreetmap.org/way/524431168), [524431169](https://www.openstreetmap.org/way/524431169), [524431170](https://www.openstreetmap.org/way/524431170), [524431171](https://www.openstreetmap.org/way/524431171), [524431172](https://www.openstreetmap.org/way/524431172), [524431173](https://www.openstreetmap.org/way/524431173), [524431174](https://www.openstreetmap.org/way/524431174), [524431175](https://www.openstreetmap.org/way/524431175), [524431176](https://www.openstreetmap.org/way/524431176), [524431177](https://www.openstreetmap.org/way/524431177), [524431178](https://www.openstreetmap.org/way/524431178), [524431179](https://www.openstreetmap.org/way/524431179), [524431180](https://www.openstreetmap.org/way/524431180), [524431182](https://www.openstreetmap.org/way/524431182), [524431183](https://www.openstreetmap.org/way/524431183), [524431184](https://www.openstreetmap.org/way/524431184), [524431186](https://www.openstreetmap.org/way/524431186).
+Chemins supprimés : [478883674](https://www.openstreetmap.org/way/478883674), [503796693](https://www.openstreetmap.org/way/503796693), [503796695](https://www.openstreetmap.org/way/503796695), [503796696](https://www.openstreetmap.org/way/503796696), [503797449](https://www.openstreetmap.org/way/503797449), [503810617](https://www.openstreetmap.org/way/503810617), [503810618](https://www.openstreetmap.org/way/503810618), [503810619](https://www.openstreetmap.org/way/503810619), [503817502](https://www.openstreetmap.org/way/503817502), [503817503](https://www.openstreetmap.org/way/503817503), [503817505](https://www.openstreetmap.org/way/503817505), [503839588](https://www.openstreetmap.org/way/503839588), [521684885](https://www.openstreetmap.org/way/521684885), [521684886](https://www.openstreetmap.org/way/521684886), [521684887](https://www.openstreetmap.org/way/521684887), [521684888](https://www.openstreetmap.org/way/521684888), [521684889](https://www.openstreetmap.org/way/521684889), [521684890](https://www.openstreetmap.org/way/521684890), [521684894](https://www.openstreetmap.org/way/521684894), [521684896](https://www.openstreetmap.org/way/521684896), [521966225](https://www.openstreetmap.org/way/521966225), [521966226](https://www.openstreetmap.org/way/521966226), [521966227](https://www.openstreetmap.org/way/521966227), [521966228](https://www.openstreetmap.org/way/521966228), [521966230](https://www.openstreetmap.org/way/521966230), [521966232](https://www.openstreetmap.org/way/521966232), [521966233](https://www.openstreetmap.org/way/521966233), [521966234](https://www.openstreetmap.org/way/521966234), [521966236](https://www.openstreetmap.org/way/521966236), [524431155](https://www.openstreetmap.org/way/524431155), [524431157](https://www.openstreetmap.org/way/524431157), [524431161](https://www.openstreetmap.org/way/524431161), [524431164](https://www.openstreetmap.org/way/524431164), [524431165](https://www.openstreetmap.org/way/524431165), [524431166](https://www.openstreetmap.org/way/524431166), [524431167](https://www.openstreetmap.org/way/524431167), [524431168](https://www.openstreetmap.org/way/524431168), [524431169](https://www.openstreetmap.org/way/524431169), [524431170](https://www.openstreetmap.org/way/524431170), [524431171](https://www.openstreetmap.org/way/524431171), [524431172](https://www.openstreetmap.org/way/524431172), [524431173](https://www.openstreetmap.org/way/524431173), [524431174](https://www.openstreetmap.org/way/524431174), [524431175](https://www.openstreetmap.org/way/524431175), [524431176](https://www.openstreetmap.org/way/524431176), [524431177](https://www.openstreetmap.org/way/524431177), [524431178](https://www.openstreetmap.org/way/524431178), [524431179](https://www.openstreetmap.org/way/524431179), [524431180](https://www.openstreetmap.org/way/524431180), [524431182](https://www.openstreetmap.org/way/524431182), [524431183](https://www.openstreetmap.org/way/524431183), [524431184](https://www.openstreetmap.org/way/524431184), [524431186](https://www.openstreetmap.org/way/524431186).
 
 Le littoral et les autres objets retirés des relations ne sont pas modifiés : seule leur appartenance aux limites change.
 

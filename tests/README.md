@@ -17,7 +17,7 @@ construits à la main, au moins un par règle du
 | Règle | Tests |
 |---|---|
 | Ordre des étapes, 2 | `test_rues_4_adresses_apres_renommage`, `test_adresses_4_rue_dans_osm` |
-| Régions, 1 à 9 | `test_regions_1_trace_du_mrnf` à `test_regions_9_chemins_deja_conformes` (règle 5 : suppression, chemins protégés, report de la note, étiquettes des relations; règle 7 : nœud ajouté au croisement, chemin coupé, relation de route mise à jour) |
+| Régions, 1 à 10 | `test_regions_1_trace_du_mrnf` à `test_regions_10_voisine_hors_du_lot` (règle 5 : suppression, chemins protégés, report de la note, étiquettes des relations; règle 7 : nœud ajouté au croisement, chemin coupé, relation de route mise à jour) |
 | Rues, 1 à 4 | `test_rues_1_nom_officiel` (dont les abréviations) à `test_rues_4_adresses_apres_renommage` (règle 2 : `old_name` et `alt_name`) |
 | Adresses, 1 à 8 | `test_adresses_1_logements_et_suffixes` à `test_adresses_8_positions_et_entree` |
 | Groupe de modifications | `test_groupe` (`import=yes`, discussion obligatoire pour un envoi réel) |
@@ -26,9 +26,9 @@ construits à la main, au moins un par règle du
 
 `tests/test_lac_temoin.py` lance les vraies commandes (`adresses
 extraire`, `adresses osm`, `regions preparer`, `rues preparer`,
-`adresses preparer`) sur Lac-Témoin, une région inventée : deux
-municipalités, Lac-Témoin et Sainte-Vérification, dans une MRC du
-Témoin tout aussi fictive. Ses données sources (extrait du RQA,
+`adresses preparer`) sur Lac-Témoin, une région inventée : trois
+municipalités, Lac-Témoin, Sainte-Vérification et Rivière-Contrôle, dans
+une MRC du Témoin tout aussi fictive. Ses données sources (extrait du RQA,
 découpages du MRNF, extrait d'OSM, portes de la Chaire Mobilité) sont
 fabriquées par `tests/lac_temoin/fabriquer.py`, qui décrit chaque cas :
 une limite faite d'une rivière, un chemin de limite avec une note, une
@@ -36,11 +36,21 @@ frontière, une route à couper avec sa relation, une relation sans nœud
 de lieu, des rues à renommer (casse, tirets, « St. »), des rues
 absentes ou sans nom, des doublons, des interpolations, des logements
 et des suffixes, un logement douteux, des portes, un bout de limite
-qui suit déjà le MRNF. Le tout tourne en mode hors ligne.
+qui suit déjà le MRNF, deux sommets du MRNF confondus, et une voisine
+hors du lot (Rivière-Contrôle) dont l'ancienne limite double celle du
+lot, faite en partie d'un ruisseau et d'un chemin partagé avec une aire
+protégée. Le tout tourne en mode hors ligne.
 
-Le test simule aussi l'envoi des limites : il applique le fichier
-d'envoi à l'extrait (`extrait.appliquer`, comme si OSM l'avait accepté),
-relance la préparation et vérifie qu'elle ne produit plus rien.
+Le test enchaîne aussi deux lots, comme on enverra une région par
+bouchées : le premier (Lac-Témoin et Sainte-Vérification, fichier
+`tests/lac_temoin/Lac-Temoin.toml`) modifie Rivière-Contrôle en partie;
+son envoi est simulé (`extrait.appliquer` applique le fichier d'envoi à
+l'extrait, comme si OSM l'avait accepté); le second lot
+(`Riviere-Controle.toml`) traite Rivière-Contrôle, et son envoi est
+simulé à son tour. Après chaque envoi, toutes les relations de limite
+doivent former des anneaux fermés; à la fin, raccords et copies ont
+disparu, la réserve est restée entière, et relancer les deux lots ne
+produit plus rien.
 
 Deux vérifications :
 

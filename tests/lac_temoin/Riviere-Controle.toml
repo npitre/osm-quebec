@@ -1,0 +1,15 @@
+# Rivière-Contrôle : second lot de la région fictive de test (voir
+# tests/lac_temoin/fabriquer.py), traité après Lac-Témoin.
+
+nom = "Rivière-Contrôle (région fictive de test)"
+
+[rqa]
+municipalites = ["99003"]
+
+[regions]
+osm = { "99003" = 1003 }
+
+[regions.groupe]
+comment = "Limites municipales de Rivière-Contrôle d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+discussion = "https://community.openstreetmap.org/t/0"

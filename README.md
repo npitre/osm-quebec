@@ -162,7 +162,35 @@ dans `sortie/LIEU/` (hors du dépôt); les rapports de révision, dans
    chemins neufs s'y raccordent. Une relation dont les membres ne
    changent pas n'est pas envoyée. Ainsi, relancer la préparation après
    un envoi ne produit plus rien : on peut reprendre un envoi
-   interrompu, et vérifier qu'un envoi est bien passé.
+   interrompu, et vérifier qu'un envoi est bien passé. Un nœud existant
+   pile au bout d'un arc du MRNF (un point triple déjà juste) est
+   réutilisé s'il ne sert qu'à des lignes de limite.
+10. **Voisines hors du lot** : les limites sont envoyées par lots, et
+    chaque envoi doit laisser OSM valide. Une municipalité hors du lot
+    qui le touche (une voisine, trouvée dans le MRNF, et sa relation par
+    `ref:qc` ou par `[regions] voisines` dans le fichier du lieu) est
+    donc modifiée en partie :
+    - l'arc commun du MRNF devient un seul chemin, membre des deux
+      relations;
+    - les anciens chemins de la voisine qui longent le lot en sont
+      retirés (supprimés s'ils ne servent plus à rien, règle 5);
+    - un ancien chemin de limite qui ne longe le lot qu'en partie est
+      coupé au dernier sommet gardé : raccourci s'il ne sert qu'à la
+      voisine, sinon coupé en deux pour que ses autres relations (une
+      aire protégée, par exemple) ne changent pas;
+    - un littoral, une route ou un cours d'eau n'est jamais coupé ni
+      modifié : la partie gardée en est recopiée dans un chemin de
+      limite distinct (règle 2), et il est retiré de la voisine;
+    - l'arc commun s'arrête au point triple du MRNF, la partie gardée
+      de la voisine à l'ancien point triple d'OSM : un court chemin de
+      raccord, membre de la voisine seule, les relie.
+
+    Raccords et copies sont provisoires : quand la voisine est traitée
+    à son tour, ses arcs avec le lot précédent sont reconnus comme
+    conformes (règle 9), et raccords et copies, devenus de simples
+    lignes de limite inutilisées, sont supprimés. Si l'anneau d'une
+    voisine ne se refermerait pas, elle n'est pas touchée et le cas est
+    signalé dans le rapport.
 
 ### Rues
 
@@ -408,18 +436,22 @@ pyosmium-up-to-date donnees/quebec-latest.osm.pbf
 
 ## À automatiser
 
-Liste au 17 octobre 2026, par ordre de priorité.
+Liste au 21 octobre 2026, par ordre de priorité.
 
 ### Avant tout envoi
 
 1. **Découper les gros envois.** L'API d'OSM refuse un groupe de
    modifications de plus de 10 000 objets; celui des adresses de la
    Petite-Nation en compte environ 72 000 (créations et suppressions
-   d'interpolations). Découper, par exemple par municipalité, avec la
-   même discussion inscrite sur chaque groupe.
-2. **Reprise en cas d'échec.** Savoir ce qui est passé après un envoi
-   interrompu ou refusé pour un conflit de version, pour ne rien envoyer
-   deux fois.
+   d'interpolations). Pour les limites : une région administrative comme
+   lieu, envoyée par bouchées de municipalités voisines, chacune
+   laissant OSM valide (règle 10 des régions). Même chose pour les
+   adresses, avec la même discussion inscrite sur chaque groupe.
+2. **Enchaîner les bouchées.** Après chaque envoi, appliquer à
+   l'extrait local ce qui vient d'être envoyé, avec les identifiants et
+   versions renvoyés par l'API (`extrait.appliquer` est prêt), puis
+   préparer la bouchée suivante. Une relance ne prépare déjà que ce qui
+   reste (règle 9), ce qui règle la reprise après un envoi interrompu.
 3. **Fraîcheur de l'extrait.** Lancer `pyosmium-up-to-date`
    automatiquement, ou refuser de préparer un envoi à partir d'un extrait
    trop vieux.
@@ -436,27 +468,34 @@ Liste au 17 octobre 2026, par ordre de priorité.
    membre de la bonne MRC (Notre-Dame-de-la-Salette).
 7. **Anciennes municipalités** (niveau 9 ou 10) : simple à coder, mais il
    manque une source autorisée pour les tracés.
+8. **Route qui finit sur la limite** : classée « coupure à ajouter »
+   alors qu'il n'y a rien à couper (chemin des Joyeux-Sportifs, dans la
+   Petite-Nation).
+9. **Durée** : la préparation des limites de la Petite-Nation lit
+   l'extrait du Québec en entier plusieurs fois (voisines, usage des
+   chemins et des nœuds) et prend environ 5 minutes; tout lire en un
+   seul passage.
 
 ### Rues
 
-8. **Nommer les voies sans nom** quand une seule voie dessert toutes les
-   adresses d'une rue, si la communauté accepte la règle.
-9. **`addr:place`** pour les adresses sans rue (Île du Canard-Blanc).
+10. **Nommer les voies sans nom** quand une seule voie dessert toutes les
+    adresses d'une rue, si la communauté accepte la règle.
+11. **`addr:place`** pour les adresses sans rue (Île du Canard-Blanc).
 
 ### Adresses
 
-10. **Portes d'entrée** de la Chaire Mobilité : l'outil lit son CSV, il
+12. **Portes d'entrée** de la Chaire Mobilité : l'outil lit son CSV, il
     manque les données.
-11. **Interpolations** : ne supprimer une ligne que si sa rue reçoit
+13. **Interpolations** : ne supprimer une ligne que si sa rue reçoit
     vraiment des adresses (aujourd'hui, une rue « à revoir » peut perdre
     son interpolation sans rien recevoir).
-12. **Anomalies du RQA** : les logements douteux sont déjà listés (voir
-    « Logements douteux du RQA »). Reste à lister, pour les signalements au MRNF,
-    les adresses absentes du rôle d'évaluation (comme le 34 chemin de la
-    Pointe-à-Baptiste, à Duhamel), à partir du rôle
-    géoréférencé du ministère des Affaires municipales et de l'Habitation
-    (MAMH), qui a lui aussi donné une [permission explicite pour
-    OSM](https://wiki.openstreetmap.org/wiki/FR:Minist%C3%A8re_des_Affaires_municipales_et_de_l%27Habitation).
+14. **Anomalies du RQA** : les logements douteux sont déjà listés (voir
+    « Logements douteux du RQA »). Reste à lister, pour les
+    signalements au MRNF, les adresses absentes du rôle d'évaluation
+    (comme le 34 chemin de la Pointe-à-Baptiste, à Duhamel), à partir
+    du rôle géoréférencé du ministère des Affaires municipales et de
+    l'Habitation (MAMH), qui a lui aussi donné une [permission
+    explicite pour OSM](https://wiki.openstreetmap.org/wiki/FR:Minist%C3%A8re_des_Affaires_municipales_et_de_l%27Habitation).
 
 ## Tests
 

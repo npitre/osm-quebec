@@ -10,6 +10,7 @@
 #       OSMQC_REGENERER=1 python3 -m unittest tests.test_lac_temoin
 
 import csv
+import math
 import os
 import shutil
 import subprocess
@@ -23,9 +24,11 @@ DEPOT = os.path.dirname(ICI)
 sys.path.insert(0, os.path.join(ICI, "lac_temoin"))
 sys.path.insert(0, DEPOT)
 import fabriquer  # noqa: E402
-from osmqc import extrait  # noqa: E402
+import osmium  # noqa: E402
+from osmqc import extrait, geo  # noqa: E402
 
 LIEU = "Lac-Temoin"
+LOT2 = "Riviere-Controle"
 ETAPES = ["adresses extraire", "adresses osm", "regions preparer", "rues preparer",
           "adresses preparer"]
 REFERENCE = ["sortie/regions.osc", "sortie/rues.osc", "sortie/adresses.osc",
@@ -51,25 +54,42 @@ def lire_osc(chemin):
     return res
 
 
-def lancer(dossier, etapes):
+def lancer(dossier, etapes, lieu=LIEU):
     env = dict(os.environ, PYTHONPATH=DEPOT, OSMQC_HORS_LIGNE="1",
                OSMQC_RQA=os.path.join(dossier, "RQA_CSV.zip"),
                OSMQC_SDA=os.path.join(dossier, "SDA.gpkg"),
                OSMQC_PBF=os.path.join(dossier, "lac-temoin.osm.pbf"))
     for etape in etapes:
-        r = subprocess.run([sys.executable, "-m", "osmqc"] + etape.split() + ["lieux/%s.toml" % LIEU],
+        r = subprocess.run([sys.executable, "-m", "osmqc"] + etape.split() + ["lieux/%s.toml" % lieu],
                            cwd=dossier, env=env, capture_output=True, text=True)
         if r.returncode:
             raise AssertionError("« %s » a échoué :\n%s%s" % (etape, r.stdout, r.stderr))
 
 
-def envoi_simule(dossier, section):
+def envoi_simule(dossier, section, lieu=LIEU):
     """Applique sortie/LIEU/SECTION.osc à l'extrait, comme si OSM l'avait
     accepté."""
     pbf = os.path.join(dossier, "lac-temoin.osm.pbf")
     neuf = os.path.join(dossier, "neuf.osm.pbf")
-    extrait.appliquer(pbf, os.path.join(dossier, "sortie", LIEU, section + ".osc"), neuf)
+    extrait.appliquer(pbf, os.path.join(dossier, "sortie", lieu, section + ".osc"), neuf)
     os.replace(neuf, pbf)
+
+
+def lire_extrait(dossier):
+    """(positions des nœuds, chemins, relations) de l'extrait."""
+    pos, chemins, rels = {}, {}, {}
+    for o in osmium.FileProcessor(os.path.join(dossier, "lac-temoin.osm.pbf")):
+        if o.is_node():
+            pos[o.id] = (o.location.lon, o.location.lat)
+        elif o.is_way():
+            chemins[o.id] = ([n.ref for n in o.nodes], dict(o.tags))
+        else:
+            rels[o.id] = ([(m.type, m.ref, m.role) for m in o.members], dict(o.tags))
+    return pos, chemins, rels
+
+
+def vide(chemin):
+    return [len(b) for b in ET.parse(chemin).getroot()] == [0, 0, 0]
 
 
 class LacTemoin(unittest.TestCase):
@@ -78,16 +98,27 @@ class LacTemoin(unittest.TestCase):
         cls.dossier = tempfile.mkdtemp(prefix="lac-temoin-")
         fabriquer.fabriquer(cls.dossier)
         os.makedirs(os.path.join(cls.dossier, "lieux"))
-        shutil.copy(os.path.join(ICI, "lac_temoin", LIEU + ".toml"), os.path.join(cls.dossier, "lieux"))
+        for lieu in (LIEU, LOT2):
+            shutil.copy(os.path.join(ICI, "lac_temoin", lieu + ".toml"), os.path.join(cls.dossier, "lieux"))
         lancer(cls.dossier, ETAPES)
-        # Second passage, sur une copie : après l'envoi simulé des limites,
-        # la même préparation ne doit plus rien produire.
+        # Suite, sur une copie : envoi simulé du premier lot, relance (qui
+        # ne doit plus rien produire), second lot, son envoi, et relance
+        # des deux lots. L'extrait est lu après chaque envoi.
         cls.apres = cls.dossier + "-apres"
         shutil.copytree(cls.dossier, cls.apres)
         envoi_simule(cls.apres, "regions")
+        cls.extrait_lot1 = lire_extrait(cls.apres)
         lancer(cls.apres, ["regions preparer"])
         cls.regions_apres = ET.parse(os.path.join(cls.apres, "sortie", LIEU, "regions.osc")).getroot()
+        lancer(cls.apres, ["adresses extraire", "regions preparer"], LOT2)
+        cls.lot2 = lire_osc(os.path.join(cls.apres, "sortie", LOT2, "regions.osc"))
+        envoi_simule(cls.apres, "regions", LOT2)
+        cls.extrait_lot2 = lire_extrait(cls.apres)
+        lancer(cls.apres, ["regions preparer"])
+        lancer(cls.apres, ["regions preparer"], LOT2)
+        cls.relances = [vide(os.path.join(cls.apres, "sortie", l, "regions.osc")) for l in (LIEU, LOT2)]
         cls.carte = fabriquer.carte()
+        cls.carte_tags = {w: t for w, _, t in cls.carte.chemins}
         sortie = os.path.join(cls.dossier, "sortie", LIEU)
         cls.regions = lire_osc(os.path.join(sortie, "regions.osc"))
         cls.rues = lire_osc(os.path.join(sortie, "rues.osc"))
@@ -136,11 +167,13 @@ class LacTemoin(unittest.TestCase):
         self.assertEqual(len(commune), 1)       # la limite commune, à x = 20 comme au MRNF
 
     def test_regions_2_chemins_propres(self):
-        # Nœuds neufs, ou ceux du chemin de limite déjà conforme (106);
-        # jamais ceux d'une route, d'une rivière ou d'un autre chemin.
-        conforme = {n for w, ns, _ in self.carte.chemins if w == 106 for n in ns}
+        # Nœuds neufs, ou nœuds d'un chemin de limite existant (le chemin
+        # conforme 106, les limites gardées de la voisine); jamais un nœud
+        # qui ne sert qu'à une route, une rivière ou un autre objet.
+        de_limite = {n for w, ns, t in self.carte.chemins if t.get("boundary") == "administrative"
+                     for n in ns}
         for o in self.nouveaux_chemins_limite().values():
-            self.assertTrue(all(n < 0 or n in conforme for n in o["nodes"]))
+            self.assertTrue(all(n < 0 or n in de_limite for n in o["nodes"]), o["nodes"])
             self.assertLessEqual(set(o["tags"]), {"boundary", "admin_level", "note"})
 
     def test_regions_3_limite_commune(self):
@@ -150,9 +183,12 @@ class LacTemoin(unittest.TestCase):
 
     def test_regions_5_ce_qui_sort(self):
         supprimes = {(g, i) for (a, g, i) in self.regions if a == "delete"}
-        self.assertEqual({i for g, i in supprimes if g == "way"}, {101, 105})   # lignes de limite seules
-        # (40, 20) sert encore au chemin conforme 106 : gardé.
-        self.assertEqual({i for g, i in supprimes if g == "node"}, {self.noeud(0, 20)})
+        self.assertEqual({i for g, i in supprimes if g == "way"}, {101, 105, 120})   # lignes de limite seules
+        # (40, 20) sert encore au chemin conforme 106; (0, 20), pile au
+        # point triple du MRNF, est réutilisé par les chemins neufs.
+        self.assertEqual({i for g, i in supprimes if g == "node"}, set())
+        neufs = [o["nodes"] for o in self.nouveaux_chemins_limite().values()]
+        self.assertTrue([ns for ns in neufs if self.noeud(0, 20) in ns])
         # Frontière (102), rivière (103) et chemin avec note (104) : retirés, pas supprimés.
         for rel in (1001, 1002):
             refs = {r for _, r, _ in self.regions[("modify", "relation", rel)]["members"]}
@@ -189,6 +225,69 @@ class LacTemoin(unittest.TestCase):
         # Après l'envoi, plus rien à faire : tout est reconnu comme conforme.
         self.assertEqual([(b.tag, len(b)) for b in self.regions_apres],
                          [("create", 0), ("modify", 0), ("delete", 0)])
+
+    # Voisines et lots successifs
+
+    def test_voisine_modifiee_en_partie(self):
+        rc = self.regions[("modify", "relation", 1003)]["members"]
+        refs = {r for t, r, _ in rc if t == "way"}
+        # Les arcs communs avec le lot (y = 20) sont membres de la voisine.
+        communs = {r for _, r, _ in self.regions[("modify", "relation", 1001)]["members"]} | \
+                  {r for _, r, _ in self.regions[("modify", "relation", 1002)]["members"]}
+        self.assertEqual(len(refs & communs), 2)
+        # Ancienne limite sud supprimée; ruisseau retiré sans être touché.
+        self.assertIn(("delete", "way", 120), self.regions)
+        self.assertFalse(refs & {110, 120})
+        self.assertFalse([k for k in self.regions if k[1:] == ("way", 110)])
+        # Côté est raccourci; l'aire protégée garde ses deux morceaux.
+        reste = self.regions[("modify", "way", 122)]["nodes"]
+        self.assertEqual(len(reste), 2)
+        aire = [r for t, r, _ in self.regions[("modify", "relation", 1004)]["members"]]
+        self.assertEqual(aire[0], 122)
+        self.assertLess(aire[1], 0)
+        self.assertEqual(aire[2], 123)
+        # Deux raccords et une copie du ruisseau, membres de la voisine seule.
+        provisoires = [r for r in refs if r < 0 and r not in communs]
+        self.assertEqual(len(provisoires), 3)
+
+    def test_aucun_cours_d_eau_modifie(self):
+        # Règle 2 : une rivière ou un ruisseau n'est jamais modifié ni
+        # supprimé, même quand il formait une limite.
+        for osc in (self.regions, self.lot2):
+            for (a, g, i), o in osc.items():
+                if a != "create" and g == "way":
+                    self.assertNotIn("waterway", self.carte_tags.get(i, {}), (a, i))
+
+    def anneaux_fermes(self, extrait_):
+        pos, chemins, rels = extrait_
+        for rid, (membres, tags) in rels.items():
+            if tags.get("type") != "boundary":
+                continue
+            _, ouverts = geo.assembler([chemins[r][0] for t, r, _ in membres if t == "w"])
+            self.assertEqual(ouverts, 0, (rid, tags.get("name")))
+
+    def test_anneaux_fermes_apres_chaque_envoi(self):
+        self.anneaux_fermes(self.extrait_lot1)
+        self.anneaux_fermes(self.extrait_lot2)
+
+    def test_second_lot(self):
+        # Lac-Témoin et Sainte-Vérification ne changent pas : leurs arcs
+        # avec Rivière-Contrôle sont déjà conformes.
+        self.assertFalse([k for k in self.lot2 if k[1] == "relation" and k[2] in (1001, 1002)])
+        self.assertIn(("modify", "relation", 1003), self.lot2)
+        # Après son envoi, Rivière-Contrôle ne garde que des chemins sur le
+        # tracé du MRNF : raccords et copie ont disparu.
+        pos, chemins, rels = self.extrait_lot2
+        anneau = [P(x, y) for x, y in fabriquer.MUNICIPALITES["99003"][1]]
+        for t, r, _ in rels[1003][0]:
+            if t == "w":
+                for n in chemins[r][0]:
+                    self.assertLess(geo.distance_ligne(pos[n], anneau), 0.01, r)
+        # La réserve, elle, est restée entière.
+        self.assertEqual(len([m for m in rels[1004][0] if m[0] == "w"]), 3)
+
+    def test_relance_apres_les_deux_lots(self):
+        self.assertEqual(self.relances, [True, True])
 
     def test_regions_5_note_reportee(self):
         notes = [o for o in self.nouveaux_chemins_limite().values() if "note" in o["tags"]]

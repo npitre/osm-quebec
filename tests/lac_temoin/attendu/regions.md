@@ -35,17 +35,20 @@ Source : Découpages administratifs du MRNF (1/20 000). Règles : voir le [READM
 | Élément | Nombre |
 |---|---|
 | Nœuds créés | 5 |
-| Chemins de limite créés | 4 |
-| Relations modifiées | 2 |
-| Chemins retirés des relations | 5 |
-| dont supprimés (simples lignes de limite inutilisées) | 2 |
-| Nœuds supprimés | 1 |
+| Chemins de limite créés | 8 |
+| Relations modifiées | 3 |
+| Chemins retirés des relations | 7 |
+| dont supprimés (simples lignes de limite inutilisées) | 3 |
+| Nœuds supprimés | 0 |
 
 - arc de 2 sommets (99001 outer, 99002 outer) : 1 chemin(s) neuf(s)
-- arc de 4 sommets (99001 outer) : 1 chemin(s) neuf(s)
-- arc de 5 sommets (99002 outer) : 2 chemin(s) neuf(s), 1 chemin(s) existant(s) déjà conforme(s)
+- arc de 2 sommets (99001 outer, 99003 outer) : 1 chemin(s) neuf(s)
+- arc de 3 sommets (99001 outer) : 1 chemin(s) neuf(s)
+- arc de 3 sommets (99002 outer) : 1 chemin(s) neuf(s), 1 chemin(s) existant(s) déjà conforme(s)
+- arc de 3 sommets (99002 outer, 99003 outer) : 1 chemin(s) neuf(s)
+- Rivière-Contrôle : 2 chemin(s) retiré(s), 2 raccord(s), 1 copie(s), 1 chemin(s) coupé(s)
 
-Chemins supprimés : [101](https://www.openstreetmap.org/way/101), [105](https://www.openstreetmap.org/way/105).
+Chemins supprimés : [101](https://www.openstreetmap.org/way/101), [105](https://www.openstreetmap.org/way/105), [120](https://www.openstreetmap.org/way/120).
 
 Le littoral et les autres objets retirés des relations ne sont pas modifiés : seule leur appartenance aux limites change.
 
@@ -62,7 +65,7 @@ Ces chemins portent une note, un fixme, une description ou une étiquette disput
 
 | Chemin | Étiquettes | Note reportée sur |
 |---|---|---|
-| [104](https://www.openstreetmap.org/way/104) | note=Limite à vérifier sur le terrain | chemin neuf -3 |
+| [104](https://www.openstreetmap.org/way/104) | note=Limite à vérifier sur le terrain | chemin neuf -4 |
 
 ## Lien avec le nœud de lieu
 

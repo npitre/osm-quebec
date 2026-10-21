@@ -208,6 +208,33 @@ class Regions(unittest.TestCase):
         plan = regions.preparer(self.officiel, rels2, None, idx2)
         self.assertEqual((plan["chemins"], plan["retires"], plan["modifiees"]), ([], [], []))
 
+    def test_regions_10_voisine_hors_du_lot(self):
+        # Lot : A seule. B, voisine, a son ancienne limite ouest à x = 11
+        # (76 m de l'arc commun du MRNF, à x = 10).
+        idx = index({1: ((11, 0), {}), 2: ((11, 5), {}), 3: ((11, 10), {}), 4: ((15, 10), {}),
+                     5: ((20, 10), {}), 6: ((20, 0), {}), 7: ((0, 0), {}), 8: ((10, 0), {}),
+                     9: ((10, 10), {}), 10: ((0, 10), {})},
+                    [(700, [1, 2, 3, 4], {}), (701, [4, 5, 6, 1], {}),
+                     (710, [8, 9, 10, 7, 8], {})])
+        rels = {"A": Rel(100, [710])}
+        b = Rel(200, [700, 701])
+        b.tags = {"name": "B"}
+        plan = regions.preparer({"A": self.officiel["A"]}, rels, None, idx,
+                                {"B": self.officiel["B"]}, {"B": b}, lambda ws: {})
+        commun = [w for w, ids, roles in plan["chemins"] if set(roles) == {"A", "B"}]
+        self.assertEqual(len(commun), 1)
+        membres = {m["ref"] for m in plan["membres"]["B"]}
+        self.assertTrue(set(commun) <= membres)
+        # 700 longe A en partie : raccourci à (11, 10)-(15, 10); 701 gardé.
+        self.assertEqual(plan["voisines"]["modifies"], {700: [3, 4]})
+        self.assertIn(701, membres)
+        self.assertEqual(plan["voisines"]["liberes"], {1, 2})
+        # Deux raccords, de l'arc commun (x = 10) à la partie gardée.
+        raccords = [ids for w, ids, roles in plan["chemins"] if w in plan["provisoires"]]
+        self.assertEqual(len(raccords), 2)
+        self.assertEqual({n for r in raccords for n in r if n > 0}, {1, 3})
+        self.assertIn("B", plan["modifiees"])
+
 
 # Rues
 

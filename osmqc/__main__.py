@@ -28,7 +28,7 @@ import tomllib
 import xml.etree.ElementTree as ET
 from collections import Counter
 
-from . import adresses, envoi, extrait, osm, osmchange, positions, rapport, regions, rqa, rues
+from . import adresses, envoi, extrait, osm, osmchange, positions, rapport, regions, rqa, rues, voisines
 
 
 def lire_lieu(chemin):
@@ -227,8 +227,21 @@ def regions_comparer(lieu, conf, preparer=False):
     if pbf:
         extrait.verifier_fraicheur(pbf)
     ids = [int(r) for r in cr["osm"].values()] + ([int(cr["exterieur"])] if cr.get("exterieur") else [])
+    # Voisines du lot (municipalités hors du lot qui le touchent) et leur
+    # relation dans OSM : [regions] voisines, sinon trouvée par ref:qc.
+    vois, ids_voisines = {}, {}
+    if preparer:
+        vois = {c: v[2] for c, v in voisines.voisines(chemin_sda(), list(cr["osm"])).items()}
+        if vois:
+            connues = dict(cr.get("voisines", {}))
+            manquantes = [c for c in vois if c not in connues]
+            if manquantes and pbf:
+                trouvees = extrait.limites_admin(pbf)
+                connues.update({c: trouvees[c][0] for c in manquantes if c in trouvees})
+            ids_voisines = {c: int(connues[c]) for c in vois if c in connues}
+            print("Voisines : %d, dont %d avec une relation dans OSM." % (len(vois), len(ids_voisines)))
     # Toutes les relations en un seul passage dans l'extrait.
-    commun = osm.Index(extrait.relations(pbf, ids)) if pbf else None
+    commun = osm.Index(extrait.relations(pbf, ids + list(ids_voisines.values()))) if pbf else None
     rels = {code: regions.Relation(int(r), pbf, commun) for code, r in cr["osm"].items()}
     officiel = regions.sda(chemin_sda(), list(rels))
     for code, r in sorted(rels.items()):
@@ -249,15 +262,33 @@ def regions_comparer(lieu, conf, preparer=False):
             print("Lien avec le nœud de lieu, %s : %s (%s)" % (rels[c].tags.get("name"), statut, detail))
     if preparer:
         ext = regions.Relation(int(cr["exterieur"]), pbf, commun) if cr.get("exterieur") else None
-        index = commun or osm.Index([e for r in rels.values() for e in r.index.tous()])
-        plan = regions.preparer(polys, rels, ext, index)
+        rels_voisines = {c: regions.Relation(i, pbf, commun) for c, i in ids_voisines.items()}
+        index = commun or osm.Index([e for r in list(rels.values()) + list(rels_voisines.values())
+                                     for e in r.index.tous()])
+
+        def usages(wids):
+            if pbf:
+                return extrait.usages(pbf, [], wids)[2]
+            return {w: set(regions.relations_du_chemin(w)) for w in wids}
+        def chemins_des_noeuds(nids):
+            if pbf:
+                return extrait.usages(pbf, nids, [])[0]
+            return regions._usages_api(nids)[0]
+        plan = regions.preparer(polys, rels, ext, index, vois, rels_voisines, usages, chemins_des_noeuds)
         plan["liens"] = liens
-        supp = regions.supprimables(plan["retires"], index, [r.id for r in rels.values()], pbf)
+        toutes = dict(rels, **rels_voisines)
+        traitees = [toutes[c].id for c in plan["modifiees"]] + [r.id for r in rels.values()]
+        supp = regions.supprimables(plan["retires"], index, traitees, pbf)
+        supp = (supp[0], sorted(set(supp[1]) | noeuds_liberes(plan, index, supp[0], pbf)))
+        # Un nœud réutilisé par un chemin neuf n'est jamais supprimé.
+        utilises = {n for _, ids, _ in plan["chemins"] for n in ids if n > 0}
+        supp = (supp[0], [n for n in supp[1] if n not in utilises])
+        preparer_voisines(plan)
         # Chemins protégés (note, fixme, description, disputed*) : jamais
         # supprimés; leur note passe au chemin neuf le plus proche.
         proteges = [w for w in plan["retires"] if regions.protege(index.chemins[w].get("tags", {}))]
         plan["proteges"] = regions.reporter_notes(proteges, index, plan)
-        actuelles = {c: osm.objets("relation", [r.id])[0] for c, r in rels.items()}
+        actuelles = {c: osm.objets("relation", [toutes[c].id])[0] for c in sorted(set(rels) | set(plan["modifiees"]))}
         apres, _ = regions.comparer(charger_adresses(lieu), polys, regions.anneaux_proposes(plan, ext))
         plan["verification"] = apres
         print("Limites proposées : %d adresses dans la bonne municipalité, %d non" % (
@@ -291,6 +322,40 @@ def regions_comparer(lieu, conf, preparer=False):
     print("Révision : rapports/%s/regions.md" % lieu)
 
 
+def noeuds_liberes(plan, index, chemins_supprimes, pbf):
+    """Nœuds retirés d'un chemin de limite raccourci (voisine) qui ne
+    servent plus à rien : sans étiquette, dans aucun autre chemin ni
+    aucune relation."""
+    liberes = sorted(n for n in plan["voisines"]["liberes"] if not index.noeuds[n].get("tags"))
+    if not liberes:
+        return set()
+    if pbf:
+        par_noeud, membres, _ = extrait.usages(pbf, liberes, [])
+    else:
+        par_noeud, membres = regions._usages_api(liberes)
+    raccourcis = set(plan["voisines"]["modifies"]) | set(chemins_supprimes)
+    return {n for n in liberes if not (par_noeud.get(n, set()) - raccourcis) and n not in membres}
+
+
+def preparer_voisines(plan):
+    """Versions actuelles des chemins de limite raccourcis ou coupés chez
+    les voisines, et des autres relations où entrent leurs morceaux."""
+    v = plan["voisines"]
+    v["actuels"] = {e["id"]: e for e in osm.objets("way", sorted(v["modifies"]))}
+    v["rels_actuelles"] = {e["id"]: e for e in osm.objets("relation", sorted(v["relations"]))}
+    v["membres_relations"] = {}
+    for rid, coupes in v["relations"].items():
+        membres = list(v["rels_actuelles"][rid]["members"])
+        for w, morceaux in coupes:
+            res = []
+            for m in membres:
+                res.append(m)
+                if m["type"] == "way" and m["ref"] == w:
+                    res += [{"type": "way", "ref": n, "role": m["role"]} for n in morceaux]
+            membres = res
+        v["membres_relations"][rid] = membres
+
+
 def couper_routes(plan, idx_routes, pbf):
     """Coupe les routes aux limites proposées, à partir de leur version
     actuelle dans OSM. Une route modifiée depuis l'extrait est laissée de
@@ -315,7 +380,7 @@ def couper_routes(plan, idx_routes, pbf):
     for w, e in actuels.items():
         idx_routes.chemins[w] = e
     prochain_noeud = min([-1] + list(plan["noeuds"].values())) - 1
-    prochain_chemin = min([-1] + [w for w, _, _ in plan["chemins"]]) - 1
+    prochain_chemin = min([-1] + [w for w, _, _ in plan["chemins"]] + list(plan["voisines"]["neufs"])) - 1
     d = regions.decouper(idx_routes, plan["coupures"], rels_actuelles, prochain_noeud, prochain_chemin)
     d["rapport"] += ["way %d laissé de côté : modifié depuis l'extrait" % w for w in ignores]
     d["actuels"] = actuels

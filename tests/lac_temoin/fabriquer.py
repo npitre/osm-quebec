@@ -1,16 +1,23 @@
 # Lac-Témoin : région fictive de test, fabriquée de toutes pièces pour
 # essayer le pipeline de bout en bout (tests/test_lac_temoin.py).
 #
-# Deux municipalités côte à côte, Lac-Témoin (99001) à l'ouest et
-# Sainte-Vérification (99002) à l'est, dans la MRC du Témoin (99). Les
-# coordonnées sont en millièmes de degré autour de 72° O, 47° N (un
-# millième vaut environ 76 m d'est en ouest et 111 m du sud au nord).
+# Trois municipalités, dans la MRC du Témoin (99) : Lac-Témoin (99001)
+# au sud-ouest, Sainte-Vérification (99002) au sud-est, et
+# Rivière-Contrôle (99003) au nord. Les coordonnées sont en millièmes de
+# degré autour de 72° O, 47° N (un millième vaut environ 76 m d'est en
+# ouest et 111 m du sud au nord).
 #
 #        0          19 20                 40
+#   30   +---------------------------------+
+#        |        Rivière-Contrôle         |
 #   20   +-----------+--+------------------+
 #        | Lac-Témoin   |  Sainte-Vérification
 #        |           |  |                  |
 #    0   +-----------+--+------------------+
+#
+# Le premier lot (Lac-Témoin.toml) traite les deux municipalités du sud;
+# Rivière-Contrôle, voisine hors du lot, est modifiée en partie. Le
+# second lot (Riviere-Controle.toml) la traite ensuite.
 #
 # Selon le MRNF, la limite commune est à x = 20. Dans OSM, elle est à
 # x = 19 et c'est une rivière; le côté est de Sainte-Vérification, lui,
@@ -47,6 +54,8 @@ MUNICIPALITES = {
     # seul nœud dans OSM, qui ne garde que 7 décimales.
     "99002": ("Sainte-Vérification", [(20, 0), (40, 0), (40, 20), (30.000005, 20), (30, 20),
                                       (20, 20), (20, 0)]),
+    "99003": ("Rivière-Contrôle", [(0, 20), (20, 20), (30, 20), (30.000005, 20), (40, 20),
+                                   (40, 30), (0, 30), (0, 20)]),
 }
 
 
@@ -141,6 +150,27 @@ def carte():
                         {"type": "boundary", "boundary": "administrative", "admin_level": "8",
                          "name": "Sainte-Vérification", "ref:qc": "99002"}))
 
+    # Rivière-Contrôle, voisine du premier lot. Son ancienne limite sud
+    # double celle du lot, 67 m plus au nord (y = 20,6) : des tracés
+    # parallèles, comme on en voit entre deux municipalités traitées
+    # séparément.
+    c.chemin(120, [(36, 20.6), (10, 20.6)], dict(LIMITE))                  # longe le lot : supprimée
+    # Un ruisseau fait à la fois une partie de la limite sud et le bas de la
+    # limite ouest : jamais coupé; sa partie ouest est recopiée.
+    c.chemin(110, [(10, 20.6), (0, 20.6), (0, 26)], {"waterway": "stream", "name": "Ruisseau Contrôle"})
+    c.chemin(121, [(0, 26), (0, 30), (40, 30)], dict(LIMITE))
+    # Le côté est sert aussi à une aire protégée : coupé en deux, l'aire
+    # garde ses deux morceaux.
+    c.chemin(122, [(40, 30), (40, 20.6), (36, 20.6)], dict(LIMITE))
+    c.chemin(123, [(36, 20.6), (36, 32), (40, 32), (40, 30)], {"boundary": "protected_area"})
+    lieu_rc = c.noeud(20, 25, {"place": "hamlet", "name": "Rivière-Contrôle"})
+    c.relations.append((1003, [("w", 120, "outer"), ("w", 110, "outer"), ("w", 121, "outer"),
+                               ("w", 122, "outer"), ("n", lieu_rc, "label")],
+                        {"type": "boundary", "boundary": "administrative", "admin_level": "8",
+                         "name": "Rivière-Contrôle", "ref:qc": "99003"}))
+    c.relations.append((1004, [("w", 122, "outer"), ("w", 123, "outer")],
+                        {"type": "boundary", "boundary": "protected_area", "name": "Réserve du Contrôle"}))
+
     # Routes qui traversent les limites (règle 7 des régions).
     route = {"highway": "secondary", "name": "Route 999", "ref": "999"}
     c.chemin(300, [(5, 8), (12, 8), (19, 8)], dict(route))      # coupée sur l'ancienne limite
@@ -210,8 +240,9 @@ RUES = {    # nom officiel : (seqodo, municipalité)
     "Rue Principale": ("9", None),
     "Chemin du Tour-du-Lac": ("10", "99002"),
     "Rue des Portes": ("11", "99002"),
+    "Chemin du Nord": ("12", "99003"),
 }
-POSTAL = {"99001": "J0T1A0", "99002": "J0T1B0"}
+POSTAL = {"99001": "J0T1A0", "99002": "J0T1B0", "99003": "J0T1C0"}
 
 
 def matricule(n):
@@ -264,6 +295,7 @@ ADRESSES = [
     ("Rue des Portes", "50", 34.4, 11, {"matricule_unite_evaluation": matricule(50)}),
     ("Rue des Portes", "52", 34.4, 12, {"matricule_unite_evaluation": matricule(50)}),
     ("Rue des Portes", "60", 34.4, 13, {}),
+    ("Chemin du Nord", "1", 20, 25.3, {}),
 ]
 
 # Portes de la Chaire Mobilité (CSV du rôle corrigé), par matricule :
