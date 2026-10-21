@@ -147,8 +147,15 @@ dans `sortie/LIEU/` (hors du dépôt); les rapports de révision, dans
    inutile (sur l'ancienne limite, entre deux segments aux étiquettes
    identiques). Une coupure à ajouter ou à déplacer est faite, et le
    nouveau segment prend place à côté de l'ancien dans les relations de
-   route qui le contiennent; l'ancienne coupure, devenue inutile, est
-   seulement signalée.
+   route qui le contiennent. Une coupure sur une ancienne limite qui ne
+   sert plus (devenue inutile, ou remplacée par une coupure déplacée)
+   est fusionnée : les deux segments deviennent un seul chemin, le plus
+   ancien, et l'autre est supprimé et retiré de ses relations. Seulement
+   si les deux segments ont les mêmes étiquettes et les mêmes relations
+   (une ligne d'autobus ou un sentier qui ne suit qu'un côté empêche la
+   fusion), et sans jamais retourner un chemin à sens unique; un refus
+   est signalé dans le rapport. Une route modifiée dans OSM depuis
+   l'extrait est laissée de côté.
 8. **Lien avec le nœud de lieu** : chaque relation municipale doit avoir
    un membre `label` (ou `admin_centre`) qui pointe vers un nœud `place`
    portant exactement le même `name` que la relation. Sans ce lien,
@@ -458,38 +465,36 @@ Liste au 21 octobre 2026, par ordre de priorité.
 
 ### Régions
 
-4. **Coupures devenues inutiles** : fusionner les deux segments d'une
-   route coupée sur l'ancienne limite (aujourd'hui seulement signalées).
-5. **Relation de la MRC** : la reconstruire à partir des limites
+4. **Relation de la MRC** : la reconstruire à partir des limites
    extérieures de ses municipalités, pour éviter les tracés doubles le
    long du contour.
-6. **Relations manquantes ou mal rattachées** : créer celles qui
+5. **Relations manquantes ou mal rattachées** : créer celles qui
    n'existent pas (TNO aquatique), vérifier que chaque municipalité est
    membre de la bonne MRC (Notre-Dame-de-la-Salette).
-7. **Anciennes municipalités** (niveau 9 ou 10) : simple à coder, mais il
+6. **Anciennes municipalités** (niveau 9 ou 10) : simple à coder, mais il
    manque une source autorisée pour les tracés.
-8. **Route qui finit sur la limite** : classée « coupure à ajouter »
+7. **Route qui finit sur la limite** : classée « coupure à ajouter »
    alors qu'il n'y a rien à couper (chemin des Joyeux-Sportifs, dans la
    Petite-Nation).
-9. **Durée** : la préparation des limites de la Petite-Nation lit
+8. **Durée** : la préparation des limites de la Petite-Nation lit
    l'extrait du Québec en entier plusieurs fois (voisines, usage des
    chemins et des nœuds) et prend environ 5 minutes; tout lire en un
    seul passage.
 
 ### Rues
 
-10. **Nommer les voies sans nom** quand une seule voie dessert toutes les
-    adresses d'une rue, si la communauté accepte la règle.
-11. **`addr:place`** pour les adresses sans rue (Île du Canard-Blanc).
+9. **Nommer les voies sans nom** quand une seule voie dessert toutes les
+   adresses d'une rue, si la communauté accepte la règle.
+10. **`addr:place`** pour les adresses sans rue (Île du Canard-Blanc).
 
 ### Adresses
 
-12. **Portes d'entrée** de la Chaire Mobilité : l'outil lit son CSV, il
+11. **Portes d'entrée** de la Chaire Mobilité : l'outil lit son CSV, il
     manque les données.
-13. **Interpolations** : ne supprimer une ligne que si sa rue reçoit
+12. **Interpolations** : ne supprimer une ligne que si sa rue reçoit
     vraiment des adresses (aujourd'hui, une rue « à revoir » peut perdre
     son interpolation sans rien recevoir).
-14. **Anomalies du RQA** : les logements douteux sont déjà listés (voir
+13. **Anomalies du RQA** : les logements douteux sont déjà listés (voir
     « Logements douteux du RQA »). Reste à lister, pour les
     signalements au MRNF, les adresses absentes du rôle d'évaluation
     (comme le 34 chemin de la Pointe-à-Baptiste, à Duhamel), à partir

@@ -39,7 +39,9 @@ et des suffixes, un logement douteux, des portes, un bout de limite
 qui suit déjà le MRNF, deux sommets du MRNF confondus, et une voisine
 hors du lot (Rivière-Contrôle) dont l'ancienne limite double celle du
 lot, faite en partie d'un ruisseau et d'un chemin partagé avec une aire
-protégée. Le tout tourne en mode hors ligne.
+protégée, et une ancienne limite en bosse où deux routes ont gardé une
+coupure (l'une fusionnée, l'autre non : un sentier de motoneige ne suit
+qu'un de ses deux segments). Le tout tourne en mode hors ligne.
 
 Le test enchaîne aussi deux lots, comme on enverra une région par
 bouchées : le premier (Lac-Témoin et Sainte-Vérification, fichier

@@ -160,6 +160,9 @@ def osc_regions(plan, actuelles, supp_chemins, supp_noeuds, index, admin_level="
         r["members"] = membres
         modif.append(element_xml(r, {}))
     supp = ET.SubElement(racine, "delete")
+    # Routes fusionnées : le second chemin de chaque coupure inutile.
+    for wid in sorted(d.get("supprimes", [])):
+        ET.SubElement(supp, "way", id=str(wid), version=str(d["actuels"][wid]["version"]))
     for wid in supp_chemins:
         ET.SubElement(supp, "way", id=str(wid), version=str(index.chemins[wid]["version"]))
     for nid in supp_noeuds:

@@ -300,7 +300,7 @@ def regions_comparer(lieu, conf, preparer=False):
         plan["coupures"] = regions.coupures(idx_routes, nouvelles, anciennes)
         print("Coupures de routes : %s" % ", ".join(
             "%s %d" % kv for kv in Counter(c[0] for c in plan["coupures"]).most_common()))
-        plan["decoupe"] = couper_routes(plan, idx_routes, pbf)
+        plan["decoupe"] = couper_routes(plan, idx_routes, pbf, anciennes)
         out = dossier("sortie", lieu)
         osmchange.ecrire_osc(osmchange.osc_regions(plan, actuelles, supp[0], supp[1], index,
                                                    str(cr.get("admin_level", "8"))),
@@ -308,10 +308,12 @@ def regions_comparer(lieu, conf, preparer=False):
         for ligne in plan["rapport"]:
             print("  " + ligne)
         print("Remplacement : %d nœuds et %d chemins créés, %d relations modifiées, "
-              "%d chemins retirés dont %d supprimés; %d chemins protégés; %d routes coupées." % (
+              "%d chemins retirés dont %d supprimés; %d chemins protégés; %d routes coupées, "
+              "%d coupures fusionnées." % (
                   len(plan["noeuds"]), len(plan["chemins"]), len(plan["modifiees"]),
                   len(plan["retires"]), len(supp[0]), len(plan["proteges"]),
-                  len(plan["decoupe"]["modifies"])))
+                  len(plan["decoupe"].get("coupes", [])),
+                  len(plan["decoupe"]["supprimes"])))
         print("Envoi : %s/regions.osc" % out)
     noms = {c: v[0] for c, v in officiel.items()}
     rapport.ecrire_geojson_compact(regions.geojson(polys, anneaux, ecarts, noms,
@@ -356,15 +358,18 @@ def preparer_voisines(plan):
         v["membres_relations"][rid] = membres
 
 
-def couper_routes(plan, idx_routes, pbf):
-    """Coupe les routes aux limites proposées, à partir de leur version
+def couper_routes(plan, idx_routes, pbf, anciennes):
+    """Coupe les routes aux limites proposées, et fusionne les coupures
+    devenues inutiles sur les anciennes limites, à partir de leur version
     actuelle dans OSM. Une route modifiée depuis l'extrait est laissée de
     côté et signalée."""
-    wids = sorted({c[5] for c in plan["coupures"]
-                   if c[0] in ("coupure à ajouter", "coupure à déplacer")})
+    coupes = sorted({c[5] for c in plan["coupures"]
+                     if c[0] in ("coupure à ajouter", "coupure à déplacer")})
+    candidats = regions.fusions_possibles(idx_routes, plan["coupures"], anciennes)
+    wids = sorted(set(coupes) | {w for _, a, b in candidats for w in (a, b)})
     if not wids:
         return {"noeuds": {}, "chemins": {}, "modifies": {}, "relations": {}, "rapport": [],
-                "actuels": {}, "rels_actuelles": {}}
+                "actuels": {}, "rels_actuelles": {}, "supprimes": [], "fusions": []}
     actuels = {e["id"]: e for e in osm.objets("way", wids)}
     ignores = []
     for w in wids:
@@ -373,15 +378,20 @@ def couper_routes(plan, idx_routes, pbf):
             ignores.append(w)
             actuels.pop(w, None)
     if pbf:
-        rels_ids = sorted({r for rs in extrait.usages(pbf, [], list(actuels))[2].values() for r in rs})
+        par_chemin = extrait.usages(pbf, [], list(actuels))[2]
     else:
-        rels_ids = sorted({r for w in actuels for r in regions.relations_du_chemin(w)})
+        par_chemin = {w: set(regions.relations_du_chemin(w)) for w in actuels}
+    rels_ids = sorted({r for rs in par_chemin.values() for r in rs})
     rels_actuelles = {e["id"]: e for e in osm.objets("relation", rels_ids)}
     for w, e in actuels.items():
         idx_routes.chemins[w] = e
     prochain_noeud = min([-1] + list(plan["noeuds"].values())) - 1
     prochain_chemin = min([-1] + [w for w, _, _ in plan["chemins"]] + list(plan["voisines"]["neufs"])) - 1
-    d = regions.decouper(idx_routes, plan["coupures"], rels_actuelles, prochain_noeud, prochain_chemin)
+    # Seules les routes inchangées depuis l'extrait sont coupées.
+    d = regions.decouper(idx_routes, [c for c in plan["coupures"] if c[5] in actuels],
+                         rels_actuelles, prochain_noeud, prochain_chemin)
+    regions.fusionner(idx_routes, [c for c in candidats if c[1] in actuels and c[2] in actuels],
+                      d, par_chemin, rels_actuelles)
     d["rapport"] += ["way %d laissé de côté : modifié depuis l'extrait" % w for w in ignores]
     d["actuels"] = actuels
     d["rels_actuelles"] = rels_actuelles

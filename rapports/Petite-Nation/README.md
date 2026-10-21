@@ -81,7 +81,10 @@ du Lac-Gagnon Est (4), routes 309, 315 et 323. Liste complète dans
 Les coupures à ajouter et à déplacer sont faites dans le fichier
 d'envoi : 143 chemins coupés, 163 nœuds ajoutés sur les routes, 178
 segments neufs, et 19 relations de route mises à jour (détail dans
-[regions.md](regions.md#routes-coupées)).
+[regions.md](regions.md#routes-coupées)). Deux anciennes coupures
+devenues inutiles sont fusionnées (chemin du Marais, chemin Ivall);
+les autres anciennes coupures séparent des segments aux étiquettes
+différentes (un pont, un changement de revêtement) et sont gardées.
 
 ### Questions en suspens
 

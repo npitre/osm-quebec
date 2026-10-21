@@ -168,8 +168,13 @@ def regions(lieu, conf, officiel, rels, compte, ecarts, plan, supp):
         s += "\n## Routes coupées\n\n"
         s += ("%d routes coupées, %d nœuds de coupure ajoutés sur les routes, %d morceaux neufs, "
               "%d relations de route mises à jour.\n\n" % (
-                  len(d["modifies"]), len(d["noeuds"]), len(d["chemins"]), len(d["relations"])))
+                  len(d.get("coupes", d["modifies"])), len(d["noeuds"]), len(d["chemins"]), len(d["relations"])))
         s += "\n".join("- " + r for r in d["rapport"]) + "\n"
+        if d.get("fusions"):
+            s += ("\n### Coupures inutiles fusionnées\n\n"
+                  "Sur une ancienne limite, deux segments d'une même route aux étiquettes et aux "
+                  "relations identiques sont réunis en un seul chemin.\n\n")
+            s += "\n".join("- " + r for r in d["fusions"]) + "\n"
     if plan and plan.get("proteges"):
         s += "\n## Chemins protégés\n\n"
         s += ("Ces chemins portent une note, un fixme, une description ou une étiquette "
@@ -194,7 +199,8 @@ def regions(lieu, conf, officiel, rels, compte, ecarts, plan, supp):
               "municipale (à moins de %d m), même si ses étiquettes sont identiques des deux "
               "côtés : Nominatim et Photon rattachent chaque segment de rue à une seule "
               "municipalité. Les coupures « à ajouter » et « à déplacer » sont faites dans le "
-              "fichier d'envoi; une coupure « devenue inutile » est seulement signalée.\n\n" % 25)
+              "fichier d'envoi; une coupure « devenue inutile », et l'ancienne coupure d'une "
+              "coupure déplacée, sont fusionnées quand c'est possible (voir plus haut).\n\n" % 25)
         s += tableau(["Situation", "Nombre"], [[k, n[k]] for k in (
             "déjà coupée", "coupure à déplacer", "coupure à ajouter", "coupure devenue inutile")])
         autres = [x for x in c if x[0] != "déjà coupée"]

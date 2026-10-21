@@ -61,10 +61,12 @@ que chaque côté garde son nom. Avec les limites proposées :
   et une ligne d'autobus);
 - le chemin de La Grave a une coupure au bord de l'ancienne limite (le
   littoral), entre deux segments aux étiquettes identiques : **coupure
-  devenue inutile**, les deux segments pourraient être fusionnés.
+  devenue inutile**. Elle n'est pas fusionnée, car la Route verte 1 ne
+  suit qu'un des deux segments (les deux sont dans la relation de la
+  route 199) : la fusion changerait le tracé de la Route verte.
 
-L'ancienne coupure de la route 199 et celle du chemin de La Grave sont
-seulement signalées, pas fusionnées.
+L'ancienne coupure de la route 199 n'est pas sur l'ancienne limite
+(elle est à 355 m) : elle est gardée.
 
 ### Questions en suspens
 

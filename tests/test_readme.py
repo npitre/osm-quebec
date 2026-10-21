@@ -173,6 +173,29 @@ class Regions(unittest.TestCase):
         self.assertEqual(tags["name"], "Route 315")
         self.assertEqual([m["ref"] for m in d["relations"][70]], [10, wid])
 
+    def test_regions_7_fusion(self):
+        # Deux segments d'une rue, coupés au nœud 2 sur l'ancienne limite.
+        def essai(n10, n11, tags10, tags11=None, rels=None):
+            idx = index({1: ((0, 0), {}), 2: ((5, 0), {}), 3: ((10, 0), {})},
+                        [(10, n10, tags10), (11, n11, tags11 or tags10)])
+            rels = rels or {}
+            d = {"modifies": {}, "relations": {}}
+            regions.fusionner(idx, [(2, 10, 11)], d, {w: set(r) for w, r in rels.items()},
+                              {70: {"members": [{"type": "way", "ref": 11, "role": ""}]}})
+            return d
+        rue = {"highway": "residential", "name": "Rue A"}
+        d = essai([1, 2], [2, 3], rue)
+        self.assertEqual((d["modifies"], d["supprimes"]), ({10: [1, 2, 3]}, [11]))
+        d = essai([1, 2], [3, 2], rue)                          # sens contraire : retourné
+        self.assertEqual(d["modifies"], {10: [1, 2, 3]})
+        d = essai([1, 2], [3, 2], dict(rue, oneway="yes"))      # sens unique : refusé
+        self.assertEqual(d["supprimes"], [])
+        self.assertIn("sens unique", d["fusions"][0])
+        d = essai([1, 2], [2, 3], rue, dict(rue, bridge="yes"))  # un pont : refusé
+        self.assertIn("étiquettes différentes", d["fusions"][0])
+        d = essai([1, 2], [2, 3], rue, rels={11: [70]})          # autobus d'un seul côté
+        self.assertIn("relations différentes", d["fusions"][0])
+
     def test_regions_8_lien_lieu(self):
         idx = index({1: ((0, 0), {"place": "village", "name": "Duhamel"}),
                      2: ((0, 0), {"place": "village", "name": "Duhamel (village)"}),

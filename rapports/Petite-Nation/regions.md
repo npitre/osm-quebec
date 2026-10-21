@@ -358,6 +358,13 @@ Le littoral et les autres objets retirés des relations ne sont pas modifiés : 
 - way 1498879703 (Autoroute Guy-Lafleur) coupé en 2 morceaux
 - way 1498879704 (Autoroute Guy-Lafleur) coupé en 3 morceaux
 
+### Coupures inutiles fusionnées
+
+Sur une ancienne limite, deux segments d'une même route aux étiquettes et aux relations identiques sont réunis en un seul chemin.
+
+- way 106187751 et way 106188558 (Chemin du Marais) fusionnés : way 106188558 supprimé
+- way 190501172 et way 190501173 (Chemin Ivall) fusionnés : way 190501173 supprimé
+
 ## Lien avec le nœud de lieu
 
 OsmAnd n'utilise une limite que si sa relation a un membre label ou admin_centre vers un nœud place portant exactement le même nom. Les membres existants sont gardés; les cas à régler sont signalés.
@@ -392,7 +399,7 @@ OsmAnd n'utilise une limite que si sa relation a un membre label ou admin_centre
 
 ## Routes qui traversent les limites
 
-Une route nommée est coupée exactement là où elle traverse une limite municipale (à moins de 25 m), même si ses étiquettes sont identiques des deux côtés : Nominatim et Photon rattachent chaque segment de rue à une seule municipalité. Les coupures « à ajouter » et « à déplacer » sont faites dans le fichier d'envoi; une coupure « devenue inutile » est seulement signalée.
+Une route nommée est coupée exactement là où elle traverse une limite municipale (à moins de 25 m), même si ses étiquettes sont identiques des deux côtés : Nominatim et Photon rattachent chaque segment de rue à une seule municipalité. Les coupures « à ajouter » et « à déplacer » sont faites dans le fichier d'envoi; une coupure « devenue inutile », et l'ancienne coupure d'une coupure déplacée, sont fusionnées quand c'est possible (voir plus haut).
 
 | Situation | Nombre |
 |---|---|

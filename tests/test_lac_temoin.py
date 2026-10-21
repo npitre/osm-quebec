@@ -183,10 +183,13 @@ class LacTemoin(unittest.TestCase):
 
     def test_regions_5_ce_qui_sort(self):
         supprimes = {(g, i) for (a, g, i) in self.regions if a == "delete"}
-        self.assertEqual({i for g, i in supprimes if g == "way"}, {101, 105, 120})   # lignes de limite seules
-        # (40, 20) sert encore au chemin conforme 106; (0, 20), pile au
-        # point triple du MRNF, est réutilisé par les chemins neufs.
-        self.assertEqual({i for g, i in supprimes if g == "node"}, set())
+        limites = {i for g, i in supprimes if g == "way" and "highway" not in self.carte_tags[i]}
+        self.assertEqual(limites, {101, 105, 120})   # lignes de limite seules
+        # Les nœuds de la bosse de 101 partent avec elle. (40, 20) sert
+        # encore au chemin conforme 106; (0, 20), pile au point triple du
+        # MRNF, est réutilisé par les chemins neufs.
+        self.assertEqual({i for g, i in supprimes if g == "node"},
+                         {self.noeud(x, y) for x, y in ((5, 20), (5, 17), (1, 17), (1, 20))})
         neufs = [o["nodes"] for o in self.nouveaux_chemins_limite().values()]
         self.assertTrue([ns for ns in neufs if self.noeud(0, 20) in ns])
         # Frontière (102), rivière (103) et chemin avec note (104) : retirés, pas supprimés.
@@ -304,15 +307,29 @@ class LacTemoin(unittest.TestCase):
 
     def test_regions_7_coupures(self):
         noeuds = self.crees(self.regions, "node")
-        for route in (301, 310):
+        # Route 999 : coupée à x = 20, et son ancienne coupure à x = 19
+        # fusionnée (300 prolongé jusqu'à la nouvelle limite, 301 supprimé).
+        # Rue Principale : coupée à x = 20.
+        for route in (300, 310):
             fin = self.regions[("modify", "way", route)]["nodes"][-1]
-            self.assertEqual(noeuds[fin]["lon"], P(20, 0)[0])     # coupée à x = 20
+            self.assertEqual(noeuds[fin]["lon"], P(20, 0)[0])
+        self.assertIn(("delete", "way", 301), self.regions)
         neufs = {i for i, o in self.crees(self.regions, "way").items() if "highway" in o["tags"]}
         self.assertEqual(len(neufs), 2)
         membres = [r for _, r, _ in self.regions[("modify", "relation", 700)]["members"]]
-        self.assertEqual(membres[:2], [300, 301])
-        self.assertIn(membres[2], neufs)        # le nouveau segment suit l'ancien
+        self.assertEqual(membres[0], 300)
+        self.assertIn(membres[1], neufs)        # le nouveau segment suit l'ancien
+        self.assertEqual(len(membres), 2)
         self.assertEqual(self.regions[("modify", "relation", 700)]["tags"]["ref"], "999")
+
+    def test_regions_7_fusion_des_coupures_inutiles(self):
+        # Chemin du Lac : coupé sur l'ancienne limite, loin de la nouvelle.
+        self.assertEqual(self.regions[("modify", "way", 320)]["nodes"][-1], self.noeud(3, 18))
+        self.assertIn(("delete", "way", 328), self.regions)
+        # Allée du Témoin : le sentier de motoneige ne suit qu'un bout.
+        self.assertFalse([k for k in self.regions if k[2] in (332, 333, 703)])
+        self.assertIn("way 332 et way 333 (Allée du Témoin) : fusion refusée, relations différentes",
+                      self.rapport("regions.md"))
 
     def test_regions_8_lien_lieu(self):
         r = self.rapport("regions.md")

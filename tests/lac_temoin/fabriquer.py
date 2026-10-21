@@ -104,6 +104,7 @@ class Carte:
         return n
 
     def chemin(self, ident, points, tags, partage=True):
+        assert ident not in {w for w, _, _ in self.chemins}, "chemin %d déjà pris" % ident
         ids = [self.noeud(x, y, partage=partage) for x, y in points]
         self.chemins.append((ident, ids, tags))
         return ids
@@ -131,7 +132,9 @@ def carte():
     c = Carte()
 
     # Limites actuelles d'OSM (règles 2 et 5 des régions).
-    c.chemin(101, [(19, 20), (0, 20), (0, 0)], dict(LIMITE))                   # ligne de limite seule
+    # Ligne de limite seule, avec une bosse 333 m au sud du MRNF (y = 17,
+    # de x = 1 à 5), où deux routes ont gardé une coupure.
+    c.chemin(101, [(19, 20), (5, 20), (5, 17), (1, 17), (1, 20), (0, 20), (0, 0)], dict(LIMITE))
     c.chemin(102, [(0, 0), (19, 0)], {"boundary": "administrative", "admin_level": "4"})   # frontière
     c.chemin(103, [(19, 0), (19, 20)], {"waterway": "river", "name": "Rivière Témoin"})
     c.chemin(104, [(19, 0), (40, 0)], dict(LIMITE, note="Limite à vérifier sur le terrain"))
@@ -180,7 +183,15 @@ def carte():
     c.chemin(310, [(16, 15), (24, 15)], {"highway": "residential", "name": "Rue Principale"})
 
     # Rues de Lac-Témoin (règles des rues).
-    c.chemin(320, [(3, 2), (3, 18)], {"highway": "residential", "name": "Chemin du Lac"})
+    # Coupé sur la bosse de l'ancienne limite : coupure à fusionner.
+    c.chemin(320, [(3, 2), (3, 17)], {"highway": "residential", "name": "Chemin du Lac"})
+    c.chemin(328, [(3, 17), (3, 18)], {"highway": "residential", "name": "Chemin du Lac"})
+    # Coupée aussi sur la bosse, mais un sentier de motoneige ne suit que
+    # le bout nord : la fusion est refusée.
+    c.chemin(332, [(4.5, 15), (4.5, 17)], {"highway": "residential", "name": "Allée du Témoin"})
+    c.chemin(333, [(4.5, 17), (4.5, 19)], {"highway": "residential", "name": "Allée du Témoin"})
+    c.relations.append((703, [("w", 333, "")], {"type": "route", "route": "snowmobile",
+                                               "name": "Sentier du Témoin"}))
     c.chemin(321, [(6, 2), (6, 18)], {"highway": "residential", "name": "Chemin de la Pointe"})
     c.chemin(322, [(6, 18), (10, 19)], {"highway": "footway", "name": "Chemin de la Pointe"})
     c.chemin(323, [(9, 2), (9, 6)], {"highway": "residential", "name": "Rue St. Jean"})

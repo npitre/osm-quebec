@@ -708,7 +708,7 @@ def decouper(index, coupures_, relations_routes, prochain_noeud, prochain_chemin
     for action, nom, _, p, _, wid in coupures_:
         if action in ("coupure à ajouter", "coupure à déplacer") and wid in index.chemins:
             a_couper[wid].append(p)
-    res = {"noeuds": {}, "chemins": {}, "modifies": {}, "relations": {}, "rapport": []}
+    res = {"noeuds": {}, "chemins": {}, "modifies": {}, "relations": {}, "rapport": [], "coupes": []}
     nid, wnid = prochain_noeud, prochain_chemin
     for wid, points in sorted(a_couper.items()):
         w = index.chemins[wid]
@@ -750,6 +750,95 @@ def decouper(index, coupures_, relations_routes, prochain_noeud, prochain_chemin
                     nouveaux += [{"type": "way", "ref": n, "role": m["role"]} for n in neufs]
             if nouveaux != membres:
                 res["relations"][rid] = nouveaux
+        res["coupes"].append(wid)
         res["rapport"].append("way %d (%s) coupé en %d morceaux" % (
             wid, w.get("tags", {}).get("name", ""), len(morceaux)))
     return res
+
+
+SENS = ("oneway", "forward", "backward", "incline", "direction", "turn")
+
+
+def fusions_possibles(index, coupures_, anciennes):
+    """Coupures d'une route sur une ancienne limite qui ne servent plus :
+    celles « devenues inutiles », et l'ancienne coupure d'une « coupure à
+    déplacer ». Une coupure entre deux segments aux étiquettes différentes
+    (un pont, un changement de revêtement) sert à quelque chose : elle
+    n'est pas retenue. Renvoie [(nœud, chemin, chemin)] : les deux chemins
+    du même nom qui s'y rejoignent."""
+    grille_a = geo.Grille([l for l in anciennes if len(l) > 1])
+    par_noeud = defaultdict(list)
+    for w in index.chemins.values():
+        t = w.get("tags", {})
+        if "highway" in t and "name" in t:
+            for n in {w["nodes"][0], w["nodes"][-1]}:
+                par_noeud[n].append(w["id"])
+    res, vus = [], set()
+    for action, nom, wid, p, _, _ in coupures_:
+        if action not in ("coupure devenue inutile", "coupure à déplacer") or wid not in index.chemins:
+            continue
+        bouts = [n for n in (index.chemins[wid]["nodes"][0], index.chemins[wid]["nodes"][-1])
+                 if n in index.noeuds and len([x for x in par_noeud[n]
+                                               if index.chemins[x]["tags"].get("name") == nom]) == 2]
+        if not bouts:
+            continue
+        n = min(bouts, key=lambda b: geo.distance(index.point(b), p))
+        da = grille_a.distance(index.point(n))
+        if n in vus or da is None or da >= COUPURE_M:
+            continue
+        vus.add(n)
+        a, b = sorted(x for x in par_noeud[n] if index.chemins[x]["tags"].get("name") == nom)
+        if index.chemins[a].get("tags") != index.chemins[b].get("tags"):
+            continue
+        res.append((n, a, b))
+    return res
+
+
+def fusionner(index, candidats, decoupe, rels_par_chemin, rels_actuelles):
+    """Fusionne les deux chemins de chaque coupure inutile, après les
+    coupures neuves (decoupe, modifié sur place). Le chemin le plus ancien
+    est gardé, l'autre supprimé et retiré de ses relations. Refusé si les
+    étiquettes ou les relations diffèrent (une ligne d'autobus qui ne
+    couvre qu'un côté, par exemple), ou s'il faudrait retourner un chemin
+    à sens unique."""
+    decoupe.setdefault("supprimes", [])
+    decoupe.setdefault("fusions", [])
+    for n, a, b in candidats:
+        if a in decoupe["supprimes"] or b in decoupe["supprimes"]:
+            continue
+        nom = index.chemins[a]["tags"].get("name", "")
+        na = decoupe["modifies"].get(a, index.chemins[a]["nodes"])
+        nb = decoupe["modifies"].get(b, index.chemins[b]["nodes"])
+        ta, tb = index.chemins[a].get("tags", {}), index.chemins[b].get("tags", {})
+        raison = None
+        if ta != tb:
+            raison = "étiquettes différentes"
+        elif rels_par_chemin.get(a, set()) != rels_par_chemin.get(b, set()):
+            raison = "relations différentes"
+        elif any(sorted(m["role"] for m in rels_actuelles[r]["members"] if m["type"] == "way" and m["ref"] == a) !=
+                 sorted(m["role"] for m in rels_actuelles[r]["members"] if m["type"] == "way" and m["ref"] == b)
+                 for r in rels_par_chemin.get(a, set())):
+            raison = "rôles différents"
+        if raison is None:
+            if na[-1] == n and nb[0] == n:
+                noeuds = na + nb[1:]
+            elif na[0] == n and nb[-1] == n:
+                noeuds = nb + na[1:]
+            elif any(s in k for k in ta for s in SENS):
+                raison = "sens opposés sur un chemin à sens unique"
+            elif na[-1] == n and nb[-1] == n:
+                noeuds = na + nb[::-1][1:]
+            else:
+                noeuds = nb[::-1] + na[1:]
+        if raison is None and (noeuds[0] == noeuds[-1] or len(set(noeuds)) != len(noeuds)):
+            raison = "le chemin fusionné ferait une boucle"
+        if raison:
+            decoupe["fusions"].append("way %d et way %d (%s) : fusion refusée, %s" % (a, b, nom, raison))
+            continue
+        decoupe["modifies"][a] = noeuds
+        decoupe["modifies"].pop(b, None)
+        decoupe["supprimes"].append(b)
+        for r in rels_par_chemin.get(b, set()):
+            membres = decoupe["relations"].get(r, rels_actuelles[r]["members"])
+            decoupe["relations"][r] = [m for m in membres if not (m["type"] == "way" and m["ref"] == b)]
+        decoupe["fusions"].append("way %d et way %d (%s) fusionnés : way %d supprimé" % (a, b, nom, b))
