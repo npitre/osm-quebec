@@ -49,20 +49,33 @@ actuels de la relation du Québec, au lieu de tracer le MRNF par-dessus.
     de 200 m pour 10 % des points. Dans OSM, la frontière est sur un
     tiers de sa longueur l'axe même de la rivière (57 chemins
     `waterway=river`), ailleurs une ligne tracée à la main près de lui.
-  - Sur la ligne terrestre, du lac Témiscamingue à la baie James, le
-    tracé d'OSM s'écarte progressivement vers l'est, jusqu'à 80 m au
-    51e parallèle. L'écart n'est pas constant : ce n'est pas une
-    différence de système de référence. Près de la baie James, les
-    tracés s'écartent de 0,6 à 2 km.
   - Ces écarts ne viennent pas d'OSM : sa frontière avec l'Ontario est,
     à quelques exceptions près, exactement le tracé officiel de
     l'Ontario (jeu « Province » de Géospatial Ontario, tenu par le
     bureau de l'arpenteur général; 94 % des nœuds d'OSM à moins de 5 m).
     C'est entre les deux gouvernements que le tracé diffère : 60 m en
-    médiane entre l'Ontario et le MRNF, et la même dérive vers l'est sur
-    la ligne terrestre, alors que l'Ontario y a un sommet tous les
-    900 m environ. L'Ontario annonce une précision « à 100 m près », à
-    partir de sources diverses.
+    médiane entre l'Ontario et le MRNF. L'Ontario annonce une précision
+    « à 100 m près », à partir de sources diverses.
+  - La ligne terrestre, du lac Témiscamingue à la baie James, suit le
+    méridien 79°31′ O. Aucun des tracés n'est exactement sur ce méridien
+    mathématique :
+    - le MRNF est de 70 à 87 m à l'ouest, de façon presque constante
+      sur 400 km;
+    - l'Ontario (et OSM, qui le suit) passe progressivement de 65 m à
+      l'ouest, au 48e parallèle, à 8 m à l'est, au 51e.
+
+    Un décalage constant est ce qu'on attendrait d'une ligne bornée sur
+    le terrain au début du XXe siècle : les arpenteurs fixaient la
+    longitude par l'astronomie, et cette longitude diffère de la
+    longitude moderne (NAD83) de quelques dizaines de mètres, parce que
+    la verticale locale n'est pas exactement perpendiculaire à
+    l'ellipsoïde. Une fois bornée, la ligne légale est celle des bornes,
+    pas le chiffre 79°31′. Le tracé ontarien, qui pivote régulièrement,
+    ressemble plutôt à une ligne tracée entre quelques points éloignés.
+    C'est une hypothèse, à vérifier avec la position de quelques bornes
+    du méridien.
+  - Près de la baie James, les tracés s'écartent de 0,6 à 2 km : les
+    sources ne traitent pas la côte de la même façon.
 - **Labrador** : le cas le plus délicat. Le long du 52e parallèle, la
   concordance est bonne (14 m en médiane), sauf par endroits (7 % des
   points à plus de 1 km). Le long de la ligne de partage des eaux, les
@@ -109,9 +122,10 @@ Conséquences :
   du centre géométrique.
 - En pratique, le tracé de référence de l'Outaouais est celui des cartes
   topographiques nationales, dont celui du MRNF vient très probablement.
-- Le méridien 79°31′ est borné sur le terrain, mais le tracé du MRNF et
-  celui de l'Ontario (repris par OSM) s'écartent jusqu'à 85 m l'un de
-  l'autre : au moins l'un des deux ne suit pas exactement ces bornes.
+- Le méridien 79°31′ est borné sur le terrain : la ligne légale est
+  celle des bornes. Le tracé du MRNF, décalé de façon constante du
+  méridien mathématique, est compatible avec une ligne bornée; celui de
+  l'Ontario, qui pivote, l'est moins (voir plus haut).
 
 Ces deux documents sont anciens; le texte de la convention de 1980 et
 d'éventuelles ententes plus récentes sur les îles de l'Outaouais restent
@@ -125,16 +139,19 @@ d'éventuelles ententes plus récentes sur les îles de l'Outaouais restent
 ### Questions en suspens
 
 1. **Ontario** : OSM suit le tracé officiel de l'Ontario, qui diffère
-   de celui du Québec. Lequel suit les bornes et les textes légaux?
-   Remplacer la frontière par le tracé du MRNF voudrait dire préférer la
-   version québécoise : à discuter avec les contributeurs ontariens,
-   puisque la relation de l'Ontario partage ces chemins. Et faut-il que frontière et rivière
-   partagent la même ligne? La règle 2 des régions (décidée à la
-   rencontre du 16 octobre) dit non : l'axe de la rivière est un tracé
-   approximatif de l'écoulement, corrigé au fil des améliorations, alors
-   que la frontière est le milieu du chenal principal, une ligne
-   officielle fixe (voir ci-dessus); ici, les deux sont à 76 m l'une de
-   l'autre en médiane. La question mérite toutefois d'être reposée.
+   de celui du Québec. Lequel suit les bornes et les textes légaux? Sur
+   la ligne terrestre, la position de quelques bornes du méridien
+   (levés de l'arpenteur général, repères géodésiques de RNCan)
+   permettrait de trancher. Remplacer la frontière par le tracé du MRNF
+   voudrait dire préférer la version québécoise : à discuter avec les
+   contributeurs ontariens, puisque la relation de l'Ontario partage ces
+   chemins. Et faut-il que frontière et rivière partagent la même
+   ligne? La règle 2 des régions (décidée à la rencontre du 16 octobre)
+   dit non : l'axe de la rivière est un tracé approximatif de
+   l'écoulement, corrigé au fil des améliorations, alors que la
+   frontière est le milieu du chenal principal, une ligne officielle
+   fixe (voir ci-dessus); ici, les deux sont à 76 m l'une de l'autre en
+   médiane. La question mérite toutefois d'être reposée.
 2. **Nouveau-Brunswick** : même question, mais les écarts sont faibles;
    seul l'estuaire de la Ristigouche mérite un examen.
 3. **Labrador** : garder le tracé actuel d'OSM; faut-il y ajouter une

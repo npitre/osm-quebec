@@ -12,9 +12,9 @@
 #   https://ws.gisetl.lrc.gov.on.ca/fmedatadownload/Packages/PROVINCE.zip
 # décompressé dans donnees/ontario/ (le fichier PROVINCE.shp y est cherché).
 
-import bisect
 import collections
 import glob
+import math
 import os
 import re
 import sqlite3
@@ -198,29 +198,10 @@ def main():
                   "portent pas son nom dans OSM (lacs, élargissements).\n")
         print(typ, "rivière faite", flush=True)
 
-    # Ontario, ligne terrestre au nord du 48e parallèle : écart est-ouest.
-    m = sorted((p for l in mrnf["FROONT"] for p in l if p[1] > 48.0), key=lambda p: p[1])
-    lats = [p[1] for p in m]
-    lon_m = statistics.median(p[0] for p in m)
-
-    def lon_mrnf(lat):
-        i = min(max(bisect.bisect(lats, lat), 1), len(m) - 1)
-        a, b = m[i - 1], m[i]
-        t = 0 if b[1] == a[1] else (lat - a[1]) / (b[1] - a[1])
-        return a[0] + t * (b[0] - a[0])
-    par = collections.defaultdict(list)
-    for w in chemins:
-        for p in lignes_osm[w]:
-            if lats[0] <= p[1] <= lats[-1] and abs(p[0] - lon_m) < 0.05:
-                d = geo.distance(p, (lon_mrnf(p[1]), p[1]))
-                par[int(p[1] * 2) / 2].append(d if p[0] > lon_m else -d)
-    s += ("\n## Ontario : ligne terrestre au nord du 48e parallèle\n\n"
-          "Ligne presque nord-sud, du lac Témiscamingue à la baie James : %d sommets au MRNF. "
-          "Écart est-ouest des nœuds d'OSM (positif : OSM plus à l'est).\n\n" % len(m))
-    s += rapport.tableau(["Latitude", "Nœuds d'OSM", "Écart médian"],
-                         [[("%.1f" % k).replace(".", ","), len(v), "%+.0f m" % statistics.median(v)]
-                          for k, v in sorted(par.items())])
-    s += ontario(mrnf["FROONT"], [lignes_osm[w] for w in chemins], lon_mrnf, lats, lon_m)
+    contour_on = contour_ontario()
+    s += meridien(mrnf["FROONT"], [p for w in chemins for p in lignes_osm[w]], contour_on)
+    if contour_on:
+        s += ontario(contour_on, mrnf["FROONT"], [lignes_osm[w] for w in chemins])
     rapport.ecrire(os.path.join(DOSSIER, "frontieres.md"), s)
     rapport.ecrire_geojson_compact({"type": "FeatureCollection", "features": [
         {"type": "Feature", "geometry": {"type": "Point", "coordinates": list(p)},
@@ -241,12 +222,44 @@ def polygone_shp(chemin):
     return [struct.unpack("<2d", b[q + 16 * i:q + 16 * i + 16]) for i in range(nb_pts)]
 
 
-def ontario(lignes_mrnf, lignes_osm, lon_mrnf, lats, lon_m):
-    """Frontière Québec-Ontario selon l'Ontario, comparée au MRNF et à OSM."""
+MERIDIEN = -(79 + 31 / 60)       # 79°31' O
+
+
+def contour_ontario():
+    """Contour officiel de l'Ontario, s'il a été téléchargé, sinon None."""
     shp = glob.glob(os.path.join("donnees", "ontario", "**", "PROVINCE.shp"), recursive=True)
-    if not shp:
-        return ""
-    on = polygone_shp(shp[0])
+    return polygone_shp(shp[0]) if shp else None
+
+
+def meridien(lignes_mrnf, points_osm, contour_on):
+    """Ligne terrestre Québec-Ontario, du lac Témiscamingue à la baie
+    James : écart de chaque tracé au méridien 79°31', par demi-degré de
+    latitude."""
+    sources = [("MRNF", [p for l in lignes_mrnf for p in l])]
+    if contour_on:
+        sources.append(("Ontario", contour_on))
+    sources.append(("OSM", points_osm))
+    par = {nom: collections.defaultdict(list) for nom, _ in sources}
+    nord = max(p[1] for _, p in [(0, q) for q in sources[0][1]])     # bout nord de la frontière
+    for nom, pts in sources:
+        for p in pts:
+            if 48.0 < p[1] <= nord and abs(p[0] - MERIDIEN) < 0.05:
+                d = (p[0] - MERIDIEN) * 111320 * math.cos(math.radians(p[1]))
+                par[nom][int(p[1] * 2) / 2].append(d)
+    tranches = sorted({k for v in par.values() for k in v})
+    s = ("\n## Ontario : ligne terrestre du lac Témiscamingue à la baie James\n\n"
+         "La frontière y suit le méridien 79°31' O, borné sur le terrain. Écart de chaque tracé au "
+         "méridien mathématique (positif : à l'est), médiane des sommets ou nœuds par demi-degré de "
+         "latitude.\n\n")
+    s += rapport.tableau(["Latitude"] + [nom for nom, _ in sources], [
+        [("%.1f" % k).replace(".", ",")] + ["%+.0f m (%d)" % (statistics.median(par[nom][k]), len(par[nom][k]))
+                                             if par[nom][k] else "" for nom, _ in sources]
+        for k in tranches])
+    return s
+
+
+def ontario(on, lignes_mrnf, lignes_osm):
+    """Frontière Québec-Ontario selon l'Ontario, comparée au MRNF et à OSM."""
     g_on, g_m = geo.Grille([on], pas=0.02), geo.Grille(lignes_mrnf, pas=0.02)
     osm_qc = [l for l in lignes_osm if any((g_m.distance(p, 0.02) or 1e9) < EAU_M for p in l[::5])]
     g_osm = geo.Grille(osm_qc, pas=0.02)
@@ -264,18 +277,7 @@ def ontario(lignes_mrnf, lignes_osm, lon_mrnf, lats, lon_m):
         ["Ontario", "OSM"] + resume(distances(pts_on, g_osm)),
         ["MRNF", "Ontario"] + resume(distances(pts_m, g_on)),
         ["Ontario", "MRNF"] + resume(distances(pts_on, g_m))])
-    par = collections.defaultdict(list)
-    for p in on:
-        if lats[0] <= p[1] <= lats[-1] and abs(p[0] - lon_m) < 0.05:
-            d = geo.distance(p, (lon_mrnf(p[1]), p[1]))
-            par[int(p[1] * 2) / 2].append(d if p[0] > lon_m else -d)
-    s += ("\nLigne terrestre au nord du 48e parallèle : écart est-ouest des sommets de l'Ontario "
-          "par rapport au MRNF (positif : Ontario plus à l'est).\n\n")
-    s += rapport.tableau(["Latitude", "Sommets de l'Ontario", "Écart médian"],
-                         [[("%.1f" % k).replace(".", ","), len(v), "%+.0f m" % statistics.median(v)]
-                          for k, v in sorted(par.items())])
     return s
-
 
 DESIGNATIONS = {"M": "Municipalité", "V": "Ville", "P": "Paroisse", "VL": "Village", "CT": "Canton",
                 "CU": "Cantons unis", "G": "Territoire aquatique (TNO aquatique)", "R": "Réserve indienne",

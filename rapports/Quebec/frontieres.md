@@ -44,20 +44,20 @@ Chemins de la relation du Québec le long de cette frontière : limite seule 33,
 | OSM | en rivière | la rive | 531 | 20 m | 181 m | 50 % | 11 % | 5 % |
 | OSM | ailleurs | l'autre tracé | 2208 | 11 m | 40 m | 27 % | 3 % | 1 % |
 
-## Ontario : ligne terrestre au nord du 48e parallèle
+## Ontario : ligne terrestre du lac Témiscamingue à la baie James
 
-Ligne presque nord-sud, du lac Témiscamingue à la baie James : 697 sommets au MRNF. Écart est-ouest des nœuds d'OSM (positif : OSM plus à l'est).
+La frontière y suit le méridien 79°31' O, borné sur le terrain. Écart de chaque tracé au méridien mathématique (positif : à l'est), médiane des sommets ou nœuds par demi-degré de latitude.
 
-| Latitude | Nœuds d'OSM | Écart médian |
-|---|---|---|
-| 48,0 | 53 | +12 m |
-| 48,5 | 19 | +13 m |
-| 49,0 | 7 | +45 m |
-| 49,5 | 5 | +54 m |
-| 50,0 | 5 | +69 m |
-| 50,5 | 6 | +81 m |
-| 51,0 | 21 | -1 m |
-| 51,5 | 70 | -660 m |
+| Latitude | MRNF | Ontario | OSM |
+|---|---|---|---|
+| 48,0 | -72 m (143) | -65 m (60) | -63 m (53) |
+| 48,5 | -68 m (120) | -53 m (60) | -55 m (19) |
+| 49,0 | -87 m (122) | -40 m (60) | -42 m (7) |
+| 49,5 | -80 m (103) | -27 m (60) | -25 m (5) |
+| 50,0 | -79 m (75) | -11 m (60) | -10 m (5) |
+| 50,5 | -78 m (67) | +1 m (60) | +3 m (6) |
+| 51,0 | -78 m (65) | +8 m (91) | -78 m (21) |
+| 51,5 | -127 m (2) |  | -780 m (70) |
 
 ## Ontario : tracé officiel de l'Ontario
 
@@ -69,15 +69,3 @@ Contour de la province selon l'Ontario (jeu « Province » de Géospatial Ontari
 | Ontario | OSM | 11202 | 0 m | 29 m | 11 % | 5 % | 0 % |
 | MRNF | Ontario | 12272 | 59 m | 195 m | 78 % | 25 % | 1 % |
 | Ontario | MRNF | 11202 | 63 m | 216 m | 80 % | 29 % | 0 % |
-
-Ligne terrestre au nord du 48e parallèle : écart est-ouest des sommets de l'Ontario par rapport au MRNF (positif : Ontario plus à l'est).
-
-| Latitude | Sommets de l'Ontario | Écart médian |
-|---|---|---|
-| 48,0 | 59 | +8 m |
-| 48,5 | 60 | +14 m |
-| 49,0 | 60 | +46 m |
-| 49,5 | 60 | +53 m |
-| 50,0 | 60 | +69 m |
-| 50,5 | 60 | +80 m |
-| 51,0 | 92 | +85 m |
