@@ -38,7 +38,9 @@ communauté. Pour chaque lieu, `rapports/LIEU/` contient :
 Pour tout le Québec, avant le remplacement des limites :
 [rapports/Quebec/](rapports/Quebec/) compare les frontières du Québec
 selon le MRNF et selon OSM, et liste les municipalités du MRNF absentes
-d'OSM (produit par `outils/frontieres.py`).
+d'OSM (produit par `outils/frontieres.py`); son inventaire estime le
+nombre d'objets à envoyer pour chaque municipalité
+(`outils/inventaire.py`).
 
 ## Licences
 
