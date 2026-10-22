@@ -212,6 +212,7 @@ def raccorder(tous, reste, lot, voisines, sauter, lignes_mrnf, chemins_osm, inde
     for r in relations.values():
         r.membres_origine = copy.deepcopy(r.rel["members"])
     morceaux_de = {}
+    a_signaler = []     # (chemin coupé, morceaux neufs, relations déjà servies)
     nb_coupes = 0
     exacts = {}
     for w, pts in sorted(coupes.items()):
@@ -263,7 +264,12 @@ def raccorder(tous, reste, lot, voisines, sauter, lignes_mrnf, chemins_osm, inde
                 r.rel["members"] = membres
                 r.chemins = [m["ref"] for m in membres if m["type"] == "way"]
                 ici.add(r.id)
-        for rid in usages([w]).get(w, set()) - ici:
+        a_signaler.append((w, nouveaux, ici))
+    # Les autres relations des chemins coupés (le Québec, la province
+    # voisine...), en une seule lecture.
+    u = usages([w for w, _, _ in a_signaler]) if a_signaler else {}
+    for w, nouveaux, ici in a_signaler:
+        for rid in u.get(w, set()) - ici:
             res["relations"].setdefault(rid, []).append((w, nouveaux))
     for k in raccordes:
         pts, roles = tous[k]
