@@ -274,6 +274,46 @@ class Regions(unittest.TestCase):
         self.assertEqual({n for r in raccords for n in r if n > 0}, {1, 3})
         self.assertIn("B", plan["modifiees"])
 
+    def anneau_ferme(self, plan, code, idx):
+        """L'anneau de la relation code, d'après le plan, se referme."""
+        noeuds = {w: ids for w, ids, _ in plan["chemins"]}
+        noeuds.update(plan["voisines"]["modifies"])
+        segs = [noeuds.get(m["ref"]) or idx.chemins[m["ref"]]["nodes"]
+                for m in plan["membres"][code] if m["type"] == "way"]
+        return geo.assembler(segs)[1] == 0
+
+    def test_regions_10_voisine_sans_noeud_le_long(self):
+        # L'ancien tracé de B passe au large de l'arc commun (x = 10) par un
+        # long segment, de (12, -3) à (12, 13), sans sommet près de lui : ces
+        # deux sommets sont retirés, et le reste se raccorde à l'arc commun.
+        idx = index({1: ((12, -3), {}), 2: ((25, -3), {}), 3: ((25, 13), {}), 4: ((12, 13), {}),
+                     5: ((0, 0), {}), 6: ((10, 0), {}), 7: ((10, 10), {}), 8: ((0, 10), {})},
+                    [(700, [1, 2, 3, 4, 1], {}), (710, [6, 7, 8, 5, 6], {})])
+        b = Rel(200, [700])
+        b.tags = {"name": "B"}
+        plan = regions.preparer({"A": self.officiel["A"]}, {"A": Rel(100, [710])}, None, idx,
+                                {"B": self.officiel["B"]}, {"B": b}, lambda ws: {})
+        self.assertIn("B", plan["modifiees"])
+        self.assertTrue(self.anneau_ferme(plan, "B", idx))
+        self.assertEqual(plan["voisines"]["modifies"], {700: [2, 3]})
+
+    def test_regions_10_voisine_qui_frole_le_lot(self):
+        # B longe l'arc commun en deux portions, séparées par un sommet
+        # au large (16, 5), pour une seule chaîne de l'arc commun : une
+        # seule portion est retirée, l'autre est gardée.
+        idx = index({1: ((10.1, 1), {}), 2: ((10.1, 4), {}), 3: ((16, 5), {}), 4: ((10.1, 6), {}),
+                     5: ((10.1, 9), {}), 6: ((20, 10), {}), 7: ((20, 0), {}),
+                     11: ((0, 0), {}), 12: ((10, 0), {}), 13: ((10, 10), {}), 14: ((0, 10), {})},
+                    [(700, [1, 2, 3, 4, 5, 6, 7, 1], {}), (710, [12, 13, 14, 11, 12], {})])
+        b = Rel(200, [700])
+        b.tags = {"name": "B"}
+        plan = regions.preparer({"A": self.officiel["A"]}, {"A": Rel(100, [710])}, None, idx,
+                                {"B": self.officiel["B"]}, {"B": b}, lambda ws: {})
+        self.assertIn("B", plan["modifiees"])
+        self.assertTrue(self.anneau_ferme(plan, "B", idx))
+        garde = plan["voisines"]["modifies"][700]
+        self.assertEqual(len({1, 2, 4, 5} & set(garde)), 2)       # une portion sur deux
+
     def test_regions_11_frontiere_gardee(self):
         # La frontière : y = 0 au MRNF, y = -1 dans OSM (chemin 900, de
         # x = 0 à 20, partagé par A, B et la relation de la province 950).
