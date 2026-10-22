@@ -100,6 +100,30 @@ def wkb_gpkg(blob):
     return polys
 
 
+def wkb_gpkg_lignes(blob):
+    """Décode une géométrie linéaire d'un GeoPackage (LineString ou
+    MultiLineString). Renvoie une liste de polylignes (lon, lat)."""
+    enveloppe = (blob[3] >> 1) & 7
+    return _wkb_lignes(blob, 8 + [0, 32, 48, 48, 64][enveloppe])[0]
+
+
+def _wkb_lignes(b, o):
+    ordre = "<" if b[o] == 1 else ">"
+    genre = struct.unpack(ordre + "I", b[o + 1:o + 5])[0] % 1000
+    o += 5
+    n = struct.unpack(ordre + "I", b[o:o + 4])[0]
+    o += 4
+    if genre == 2:
+        return [[struct.unpack(ordre + "dd", b[o + 16 * i:o + 16 * i + 16]) for i in range(n)]], o + 16 * n
+    if genre == 5:
+        res = []
+        for _ in range(n):
+            l, o = _wkb_lignes(b, o)
+            res += l
+        return res, o
+    raise ValueError("géométrie WKB de type %d non gérée" % genre)
+
+
 def _wkb(b, o):
     ordre = "<" if b[o] == 1 else ">"
     genre = struct.unpack(ordre + "I", b[o + 1:o + 5])[0] % 1000
