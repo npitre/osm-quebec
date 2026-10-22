@@ -155,7 +155,7 @@ def interpolations(index, noms, rapport, points=None, villes=None):
         if points is not None:
             g = grilles.get(cle)
             ligne = index.ligne(w["id"])
-            if not g or not any((g.distance(p, rayon_deg=0.004) or 1e9) < INTERPOLATION_M
+            if not g or not any(g.ecart(p, rayon_deg=0.004) < INTERPOLATION_M
                                 for p in ligne[::max(1, len(ligne) // 10)] + ligne[-1:]):
                 continue
         propres = all(usage[n] == 1 for n in w["nodes"]) and all(

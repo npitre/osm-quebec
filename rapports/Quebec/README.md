@@ -46,9 +46,10 @@ actuels de la relation du Québec, au lieu de tracer le MRNF par-dessus.
 - **Ontario** :
   - Dans la rivière des Outaouais, les deux tracés passent au milieu de
     l'eau, mais pas sur le même milieu : 60 m d'écart en médiane, plus
-    de 200 m pour 10 % des points. Dans OSM, la frontière est sur un
-    tiers de sa longueur l'axe même de la rivière (57 chemins
-    `waterway=river`), ailleurs une ligne tracée à la main près de lui.
+    de 200 m pour 10 % des points. Dans OSM, la frontière est en bonne
+    partie l'axe même de la rivière (57 de ses 163 chemins sont
+    `waterway=river`; la moitié de ses points sont à moins de 14 m de
+    l'axe), ailleurs une ligne tracée à la main près de lui.
   - Ces écarts ne viennent pas d'OSM : sa frontière avec l'Ontario est,
     à quelques exceptions près, exactement le tracé officiel de
     l'Ontario (jeu « Province » de Géospatial Ontario, tenu par le

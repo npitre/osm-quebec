@@ -23,9 +23,9 @@ Chemins de la relation du Québec le long de cette frontière : limite seule 104
 | MRNF | en rivière | l'autre tracé | 9095 | 62 m | 212 m | 80 % | 30 % | 0 % |
 | MRNF | en rivière | l'axe de la rivière | 9095 | 76 m | 300 m | 83 % | 39 % | 1 % |
 | MRNF | ailleurs | l'autre tracé | 3177 | 51 m | 104 m | 68 % | 11 % | 0 % |
-| OSM | en rivière | l'autre tracé | 5675 | 52 m | 209 m | 74 % | 30 % | 0 % |
-| OSM | en rivière | l'axe de la rivière | 5675 | 44 m | 162 m | 76 % | 18 % | 2 % |
-| OSM | ailleurs | l'autre tracé | 7433 | 65 m | 345 m | 79 % | 25 % | 4 % |
+| OSM | en rivière | l'autre tracé | 9276 | 63 m | 225 m | 80 % | 30 % | 0 % |
+| OSM | en rivière | l'axe de la rivière | 9276 | 14 m | 106 m | 46 % | 11 % | 1 % |
+| OSM | ailleurs | l'autre tracé | 3832 | 53 m | 461 m | 70 % | 20 % | 7 % |
 
 Distance aux rives non mesurée : la plupart des plans d'eau de la rivière ne portent pas son nom dans OSM (lacs, élargissements).
 
@@ -39,10 +39,10 @@ Chemins de la relation du Québec le long de cette frontière : limite seule 33,
 | MRNF | en rivière | l'axe de la rivière | 1887 | 13 m | 1,2 km | 36 % | 21 % | 11 % |
 | MRNF | en rivière | la rive | 1887 | 32 m | 721 m | 68 % | 20 % | 9 % |
 | MRNF | ailleurs | l'autre tracé | 2365 | 10 m | 36 m | 26 % | 1 % | 0 % |
-| OSM | en rivière | l'autre tracé | 531 | 10 m | 37 m | 21 % | 6 % | 0 % |
-| OSM | en rivière | l'axe de la rivière | 531 | 6 m | 886 m | 15 % | 12 % | 9 % |
-| OSM | en rivière | la rive | 531 | 20 m | 181 m | 50 % | 11 % | 5 % |
-| OSM | ailleurs | l'autre tracé | 2208 | 11 m | 40 m | 27 % | 3 % | 1 % |
+| OSM | en rivière | l'autre tracé | 1122 | 9 m | 29 m | 20 % | 4 % | 0 % |
+| OSM | en rivière | l'axe de la rivière | 1122 | 0 m | 14 m | 7 % | 6 % | 4 % |
+| OSM | en rivière | la rive | 1122 | 30 m | 76 m | 72 % | 6 % | 2 % |
+| OSM | ailleurs | l'autre tracé | 1617 | 13 m | 43 m | 30 % | 4 % | 2 % |
 
 ## Ontario : ligne terrestre du lac Témiscamingue à la baie James
 

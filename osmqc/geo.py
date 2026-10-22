@@ -205,6 +205,13 @@ class Grille:
                         res.add((round(p[0], 7), round(p[1], 7)))
         return sorted(res)
 
+    def ecart(self, p, rayon_deg=0.003):
+        """Comme distance, mais un nombre très grand (1e9) quand aucun
+        segment n'est dans le rayon : à utiliser dans les comparaisons
+        (une distance nulle n'est pas une absence)."""
+        d = self.distance(p, rayon_deg)
+        return 1e9 if d is None else d
+
     def distance(self, p, rayon_deg=0.003):
         """Distance en mètres au segment le plus proche dans le rayon
         (None s'il n'y en a pas)."""

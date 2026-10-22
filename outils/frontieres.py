@@ -165,7 +165,7 @@ def main():
         tous = [p for l in lm for p in l]
         boite = (min(p[0] for p in tous) - 0.02, min(p[1] for p in tous) - 0.02,
                  max(p[0] for p in tous) + 0.02, max(p[1] for p in tous) + 0.02)
-        pres = [w for w in chemins if any((grille_m.distance(p, 0.02) or 1e9) < EAU_M for p in lignes_osm[w][::5])]
+        pres = [w for w in chemins if any(grille_m.ecart(p, 0.02) < EAU_M for p in lignes_osm[w][::5])]
         axe, rives = rivieres(motif, boite)
         g_axe, g_rive = geo.Grille(axe, pas=0.02), geo.Grille(rives, pas=0.02)
         s += "\n## %s : %s\n\n" % (FRONTIERES[typ], riviere)
@@ -177,8 +177,8 @@ def main():
         sans_rives = False
         for source, polylignes, autre in (("MRNF", lm, grille_osm), ("OSM", [lignes_osm[w] for w in pres], grille_m)):
             pts = [p for l in polylignes for p in densifier(l)]
-            eau = [p for p in pts if (g_axe.distance(p, 0.05) or 1e9) < EAU_M]
-            terre = [p for p in pts if (g_axe.distance(p, 0.05) or 1e9) >= EAU_M]
+            eau = [p for p in pts if g_axe.ecart(p, 0.05) < EAU_M]
+            terre = [p for p in pts if g_axe.ecart(p, 0.05) >= EAU_M]
             for partie, ps in (("en rivière", eau), ("ailleurs", terre)):
                 if not ps:
                     continue
@@ -261,10 +261,10 @@ def meridien(lignes_mrnf, points_osm, contour_on):
 def ontario(on, lignes_mrnf, lignes_osm):
     """Frontière Québec-Ontario selon l'Ontario, comparée au MRNF et à OSM."""
     g_on, g_m = geo.Grille([on], pas=0.02), geo.Grille(lignes_mrnf, pas=0.02)
-    osm_qc = [l for l in lignes_osm if any((g_m.distance(p, 0.02) or 1e9) < EAU_M for p in l[::5])]
+    osm_qc = [l for l in lignes_osm if any(g_m.ecart(p, 0.02) < EAU_M for p in l[::5])]
     g_osm = geo.Grille(osm_qc, pas=0.02)
     pts_osm = [p for l in osm_qc for p in l]
-    pts_on = [p for p in on if (g_m.distance(p, 0.02) or 1e9) < EAU_M]
+    pts_on = [p for p in on if g_m.ecart(p, 0.02) < EAU_M]
     pts_m = [p for l in lignes_mrnf for p in densifier(l)]
     s = ("\n## Ontario : tracé officiel de l'Ontario\n\n"
          "Contour de la province selon l'Ontario (jeu « Province » de Géospatial Ontario, tenu par "
