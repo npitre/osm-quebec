@@ -759,14 +759,17 @@ def decouper(index, coupures_, relations_routes, prochain_noeud, prochain_chemin
 SENS = ("oneway", "forward", "backward", "incline", "direction", "turn")
 
 
-def fusions_possibles(index, coupures_, anciennes):
+def fusions_possibles(index, coupures_, anciennes, nouvelles=()):
     """Coupures d'une route sur une ancienne limite qui ne servent plus :
     celles « devenues inutiles », et l'ancienne coupure d'une « coupure à
     déplacer ». Une coupure entre deux segments aux étiquettes différentes
     (un pont, un changement de revêtement) sert à quelque chose : elle
-    n'est pas retenue. Renvoie [(nœud, chemin, chemin)] : les deux chemins
-    du même nom qui s'y rejoignent."""
+    n'est pas retenue, ni une coupure qui sert encore à une limite proposée
+    (à moins de COUPURE_M, quand la route la traverse plusieurs fois).
+    Renvoie [(nœud, chemin, chemin)] : les deux chemins du même nom qui
+    s'y rejoignent."""
     grille_a = geo.Grille([l for l in anciennes if len(l) > 1])
+    grille_n = geo.Grille([l for l in nouvelles if len(l) > 1])
     par_noeud = defaultdict(list)
     for w in index.chemins.values():
         t = w.get("tags", {})
@@ -784,7 +787,7 @@ def fusions_possibles(index, coupures_, anciennes):
             continue
         n = min(bouts, key=lambda b: geo.distance(index.point(b), p))
         da = grille_a.distance(index.point(n))
-        if n in vus or da is None or da >= COUPURE_M:
+        if n in vus or da is None or da >= COUPURE_M or grille_n.ecart(index.point(n)) < COUPURE_M:
             continue
         vus.add(n)
         a, b = sorted(x for x in par_noeud[n] if index.chemins[x]["tags"].get("name") == nom)

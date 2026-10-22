@@ -300,7 +300,7 @@ def regions_comparer(lieu, conf, preparer=False):
         plan["coupures"] = regions.coupures(idx_routes, nouvelles, anciennes)
         print("Coupures de routes : %s" % ", ".join(
             "%s %d" % kv for kv in Counter(c[0] for c in plan["coupures"]).most_common()))
-        plan["decoupe"] = couper_routes(plan, idx_routes, pbf, anciennes)
+        plan["decoupe"] = couper_routes(plan, idx_routes, pbf, anciennes, nouvelles)
         out = dossier("sortie", lieu)
         osmchange.ecrire_osc(osmchange.osc_regions(plan, actuelles, supp[0], supp[1], index,
                                                    str(cr.get("admin_level", "8"))),
@@ -358,14 +358,14 @@ def preparer_voisines(plan):
         v["membres_relations"][rid] = membres
 
 
-def couper_routes(plan, idx_routes, pbf, anciennes):
+def couper_routes(plan, idx_routes, pbf, anciennes, nouvelles=()):
     """Coupe les routes aux limites proposées, et fusionne les coupures
     devenues inutiles sur les anciennes limites, à partir de leur version
     actuelle dans OSM. Une route modifiée depuis l'extrait est laissée de
     côté et signalée."""
     coupes = sorted({c[5] for c in plan["coupures"]
                      if c[0] in ("coupure à ajouter", "coupure à déplacer")})
-    candidats = regions.fusions_possibles(idx_routes, plan["coupures"], anciennes)
+    candidats = regions.fusions_possibles(idx_routes, plan["coupures"], anciennes, nouvelles)
     wids = sorted(set(coupes) | {w for _, a, b in candidats for w in (a, b)})
     if not wids:
         return {"noeuds": {}, "chemins": {}, "modifies": {}, "relations": {}, "rapport": [],
