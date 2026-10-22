@@ -872,9 +872,13 @@ COUPURE_M = 25          # une route coupée à moins de 25 m d'une limite y est 
 
 
 def lignes_limites(plan, exterieur=None):
-    """Polylignes des limites proposées (chemins neufs et réutilisés)."""
+    """Polylignes des limites proposées (chemins neufs et réutilisés), où
+    couper les routes. Les raccords et copies provisoires n'en sont pas :
+    ils disparaîtront quand leur voisine ou leur MRC sera traitée."""
     points = points_du_plan(plan)
-    lignes = [[points[n] for n in ids] for _, ids, _ in plan["chemins"] + plan.get("reutilises", [])]
+    provisoires = plan.get("provisoires", ())
+    lignes = [[points[n] for n in ids] for w, ids, _ in plan["chemins"] + plan.get("reutilises", [])
+              if w not in provisoires]
     lignes += [[points[n] for n in ids] for ids in plan.get("frontiere", {}).values()]
     if exterieur is not None:
         # Repris par une municipalité du lot (pas gardés par une voisine
