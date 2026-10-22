@@ -65,18 +65,65 @@ actuels de la relation du Québec, au lieu de tracer le MRNF par-dessus.
   que le MRNF suit une limite en mer. Ce sont deux conceptions
   différentes plutôt que des erreurs.
 
+### Définition légale de la frontière avec l'Ontario
+
+La frontière remonte à la proclamation de 1791 qui a divisé la province
+de Québec en Haut et Bas-Canada[^1]; la *Canada (Ontario Boundary) Act*
+de 1889 l'a confirmée telle que cette proclamation l'avait fixée[^2].
+Deux documents d'experts décrivent ce que ces textes disent et comment
+on les applique :
+
+- Jean-Paul Lacasse (1977)[^3] : « Le segment de l'Outaouais, pour sa
+  part, est délimité et la frontière se trouve au milieu du chenal
+  principal de la rivière des Outaouais. Mais la frontière n'est pas
+  démarquée [...] ». Seules les lignes terrestres droites sont bornées
+  sur le terrain (Vaudreuil-Soulanges et le méridien 79°31′ jusqu'à la
+  baie James). Pour la Ristigouche, la loi de 1851 retient aussi le
+  milieu du chenal et attribue les îles au Nouveau-Brunswick, mais la
+  rivière a changé depuis.
+- Commission de toponymie du Québec (1984)[^4] : dans le lac
+  Saint-François, le Saint-Laurent, l'Outaouais et le lac
+  Témiscamingue, « les textes mentionnent le milieu du chenal comme
+  étant la limite entre les deux provinces »; le terme peut désigner le
+  point médian de la largeur maximale du plan d'eau, le chenal principal
+  ou le chenal navigable. Une convention de 1980 règle le tracé dans le
+  lac Saint-François et le Saint-Laurent; pour l'Outaouais, « le tracé
+  apparaissant sur les cartes topographiques nationales est considéré
+  satisfaisant pour le moment, même si la juridiction sur plusieurs îles
+  reste à préciser ».
+
+Conséquences :
+
+- La limite légale est le milieu du **chenal principal**, pas le milieu
+  de la rivière, ni l'axe `waterway=river` dessiné dans OSM; dans une
+  rivière large et parsemée d'îles, le chenal principal peut être loin
+  du centre géométrique.
+- En pratique, le tracé de référence de l'Outaouais est celui des cartes
+  topographiques nationales, dont celui du MRNF vient très probablement.
+- Le méridien 79°31′ est borné sur le terrain; le tracé du MRNF (697
+  sommets) suit sans doute ces levés, celui d'OSM n'en est qu'une
+  approximation.
+
+Ces deux documents sont anciens; le texte de la convention de 1980 et
+d'éventuelles ententes plus récentes sur les îles de l'Outaouais restent
+à trouver.
+
+[^1]: Archives publiques de l'Ontario, [limites de l'Ontario en 1791](https://www.archives.gov.on.ca/en/maps/textdocs/ontario-boundaries-1791.aspx).
+[^2]: [Canada (Ontario Boundary) Act, 1889](https://primarydocuments.ca/canada-ontario-boundary-act-1889/).
+[^3]: Jean-Paul Lacasse, [« L'état des frontières du Québec »](https://www.erudit.org/en/revue/rgd/1977/v8/n1/1059611ar.pdf), *Revue générale de droit*, vol. 8, no 1, 1977.
+[^4]: Renaud Dugas, Commission de toponymie du Québec, [communication sur la toponymie transfrontalière](https://unstats.un.org/unsd/geoinfo/UNGEGN/docs/11th-gegn-docs/11th_gegn_WP%20no%207_F.pdf), document de travail no 7, 11e session du Groupe d'experts des Nations Unies pour les noms géographiques, Genève, 1984.
+
 ### Questions en suspens
 
 1. **Ontario** : remplacer la frontière par le tracé du MRNF? À
    discuter avec les contributeurs ontariens, puisque la relation de
-   l'Ontario partage ces chemins. Et, si la définition légale est le
-   milieu de la rivière, faut-il que frontière et rivière partagent la
-   même ligne? La règle 2 des régions (décidée à la rencontre du
-   16 octobre) dit non : l'axe de la rivière est un tracé approximatif
-   de l'écoulement, corrigé au fil des améliorations, alors que la
-   frontière est une ligne officielle fixe; ici, les deux sont à 76 m
-   l'une de l'autre en médiane. La question mérite toutefois d'être
-   reposée.
+   l'Ontario partage ces chemins. Et faut-il que frontière et rivière
+   partagent la même ligne? La règle 2 des régions (décidée à la
+   rencontre du 16 octobre) dit non : l'axe de la rivière est un tracé
+   approximatif de l'écoulement, corrigé au fil des améliorations, alors
+   que la frontière est le milieu du chenal principal, une ligne
+   officielle fixe (voir ci-dessus); ici, les deux sont à 76 m l'une de
+   l'autre en médiane. La question mérite toutefois d'être reposée.
 2. **Nouveau-Brunswick** : même question, mais les écarts sont faibles;
    seul l'estuaire de la Ristigouche mérite un examen.
 3. **Labrador** : garder le tracé actuel d'OSM; faut-il y ajouter une
