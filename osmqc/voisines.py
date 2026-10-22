@@ -204,13 +204,26 @@ def modifier(rel, index, communs, autres, point, noeud, nouveau_chemin, usages, 
                 if nature == "entier":
                     garder.append((w, role))
                 elif nature == "coupé":
-                    i, j = sorted((e["nodes"].index(ns[0]), e["nodes"].index(ns[-1])))
-                    garde = e["nodes"][i:j + 1]
+                    if e["nodes"][0] == e["nodes"][-1]:
+                        # Chemin fermé : la partie gardée est ns elle-même,
+                        # le reste finit d'en faire le tour. Le sens du
+                        # chemin est conservé.
+                        cycle = e["nodes"][:-1]
+                        k0 = cycle.index(ns[0])
+                        tour = cycle[k0:] + cycle[:k0] + [ns[0]]
+                        if tour[:len(ns)] == ns:
+                            garde, restes = ns, [tour[len(ns) - 1:]]
+                        else:
+                            tour = tour[::-1]
+                            garde, restes = ns[::-1], [tour[len(ns) - 1:][::-1]]
+                    else:
+                        i, j = sorted((e["nodes"].index(ns[0]), e["nodes"].index(ns[-1])))
+                        garde = e["nodes"][i:j + 1]
+                        restes = [r for r in (e["nodes"][:i + 1], e["nodes"][j:]) if len(r) > 1]
                     autres_rels = usages([w]).get(w, set()) - {rel.id} - set(lot)
                     modifies[w] = garde
                     garder.append((w, role))
                     nb_coupes += 1
-                    restes = [r for r in (e["nodes"][:i + 1], e["nodes"][j:]) if len(r) > 1]
                     if autres_rels:
                         nouveaux = []
                         for r in restes:
@@ -255,14 +268,17 @@ def modifier(rel, index, communs, autres, point, noeud, nouveau_chemin, usages, 
     membres += [{"type": "way", "ref": w, "role": r} for w, r in garder]
     membres += [{"type": "way", "ref": w, "role": r} for w, _, r in chemins]
     membres += [{"type": "way", "ref": w, "role": r} for w, _, r in communs]
+    vus = set()
+    membres = [m for m in membres if not ((m["type"], m["ref"], m["role"]) in vus
+                                          or vus.add((m["type"], m["ref"], m["role"])))]
 
     # L'anneau de B doit se refermer.
     def noeuds_de(w):
         if w in modifies:
             return modifies[w]
-        if w < 0:
-            return next(ids for x, ids, _ in chemins + communs if x == w)
-        return next((ids for x, ids, _ in communs if x == w), None) or index.chemins[w]["nodes"]
+        # Un chemin négatif hors des raccords et de l'arc commun : morceau
+        # neuf d'une coupe précédente, ajouté à l'index.
+        return next((ids for x, ids, _ in chemins + communs if x == w), None) or index.chemins[w]["nodes"]
     _, ouverts = geo.assembler([noeuds_de(m["ref"]) for m in membres if m["type"] == "way"])
     if ouverts:
         return None, "l'anneau ne se referme pas"
