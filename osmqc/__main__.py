@@ -28,7 +28,7 @@ import tomllib
 import xml.etree.ElementTree as ET
 from collections import Counter
 
-from . import adresses, envoi, extrait, osm, osmchange, positions, rapport, regions, rqa, rues, voisines
+from . import adresses, envoi, extrait, osm, osmchange, positions, progres, rapport, regions, rqa, rues, voisines
 
 
 def lire_lieu(chemin):
@@ -303,6 +303,7 @@ def regions_comparer(lieu, conf, preparer=False):
             k = "%s %s" % cle
             if k in ids_englobantes:
                 englobantes[k] = (regions.Relation(ids_englobantes[k], pbf, commun), polys_e, communes)
+        progres.etape("Plan de remplacement des limites")
         plan = regions.preparer(polys, rels, ext, index, vois, rels_voisines, usages, chemins_des_noeuds,
                                 frontiere, englobantes)
         plan["liens"] = liens
@@ -319,11 +320,13 @@ def regions_comparer(lieu, conf, preparer=False):
         proteges = [w for w in plan["retires"] if regions.protege(index.chemins[w].get("tags", {}))]
         plan["proteges"] = regions.reporter_notes(proteges, index, plan)
         actuelles = {c: osm.objets("relation", [toutes[c].id])[0] for c in sorted(set(rels) | set(plan["modifiees"]))}
+        progres.etape("Vérification des adresses avec les limites proposées")
         apres, _ = regions.comparer(charger_adresses(lieu), polys, regions.anneaux_proposes(plan, ext))
         plan["verification"] = apres
         print("Limites proposées : %d adresses dans la bonne municipalité, %d non" % (
             apres[("OSM", True)], apres[("OSM", False)]))
         # Routes qui traversent les limites : coupures à ajouter ou à déplacer.
+        progres.etape("Routes qui traversent les limites")
         nouvelles = regions.lignes_limites(plan, ext)
         anciennes = [a for r in rels.values() for a in r.anneaux]
         idx_routes = routes_autour(lieu, nouvelles + anciennes)
@@ -331,6 +334,7 @@ def regions_comparer(lieu, conf, preparer=False):
         print("Coupures de routes : %s" % ", ".join(
             "%s %d" % kv for kv in Counter(c[0] for c in plan["coupures"]).most_common()))
         plan["decoupe"] = couper_routes(plan, idx_routes, pbf, anciennes, nouvelles)
+        progres.etape("Fichier d'envoi et rapport")
         out = dossier("sortie", lieu)
         osmchange.ecrire_osc(osmchange.osc_regions(plan, actuelles, supp[0], supp[1], index,
                                                    str(cr.get("admin_level", "8"))),
@@ -535,7 +539,9 @@ def main():
     }
     if (section, cmd) not in actions:
         sys.exit("Commande inconnue : %s %s" % (section, cmd))
+    progres.etape("%s %s : %s" % (section, cmd, lieu))
     actions[(section, cmd)]()
+    progres.etape("Terminé")
 
 
 main()

@@ -83,6 +83,12 @@ qui est refusé tant que la discussion publique n'est pas inscrite dans
 la section `groupe` correspondante du lieu. Pour l'authentification,
 voir l'en-tête de `osmqc/envoi.py`.
 
+Pendant les longues étapes, la sortie d'erreur montre la progression :
+une ligne au début de chaque étape, avec le temps écoulé, et une ligne
+toutes les 30 secondes pendant une lecture de l'extrait, avec la part du
+fichier déjà lue (sous Linux). Ce sont des lignes ordinaires, lisibles
+en braille. `OSMQC_SANS_PROGRES=1` les fait taire.
+
 Les fichiers d'envoi (`.osc`) et un CSV de toutes les adresses vont
 dans `sortie/LIEU/` (hors du dépôt); les rapports de révision, dans
 `rapports/LIEU/` (voir Résultats).
@@ -505,10 +511,12 @@ Liste au 21 octobre 2026, par ordre de priorité.
 6. **Route qui finit sur la limite** : classée « coupure à ajouter »
    alors qu'il n'y a rien à couper (chemin des Joyeux-Sportifs, dans la
    Petite-Nation).
-7. **Durée** : la préparation des limites de la Petite-Nation lit
-   l'extrait du Québec en entier plusieurs fois (voisines, usage des
-   chemins et des nœuds) et prend environ 5 minutes; tout lire en un
-   seul passage.
+7. **Durée** : la préparation des limites de la Petite-Nation prend
+   environ 8 minutes. Deux lectures de l'usage des nœuds (points
+   triples, puis nœuds libérés) coûtent près de 2 minutes chacune, et le
+   calcul de chaque région administrative (des dizaines de milliers de
+   sommets) près d'une minute. Tout lire en un seul passage, et ne
+   comparer que la partie du contour proche du lot.
 
 ### Rues
 

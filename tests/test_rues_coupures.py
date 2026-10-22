@@ -1,6 +1,10 @@
+import os
 import unittest
 
 from osmqc import osm, regions, rues, rqa
+
+# Pas d'indicateur de progression pendant les tests (osmqc/progres.py).
+os.environ["OSMQC_SANS_PROGRES"] = "1"
 
 # Petits jeux de données construits à la main, autour de 46° N, 75° O.
 # Un millième de degré vaut environ 77 m en longitude et 111 m en latitude.

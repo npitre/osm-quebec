@@ -11,6 +11,9 @@ from unittest import mock
 
 from osmqc import adresses, envoi, geo, osm, osmchange, positions, regions, rqa, rues
 
+# Pas d'indicateur de progression pendant les tests (osmqc/progres.py).
+os.environ["OSMQC_SANS_PROGRES"] = "1"
+
 LON, LAT = -75.0, 46.0
 
 

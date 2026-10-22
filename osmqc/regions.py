@@ -18,7 +18,7 @@ import json
 import sqlite3
 from collections import Counter, defaultdict
 
-from . import extrait, geo, osm
+from . import extrait, geo, osm, progres
 
 URL_SDA = ("https://diffusion.mern.gouv.qc.ca/diffusion/RGQ/Vectoriel/Theme/Local/"
            "SDA_20k/GPKG/SDA.gpkg.zip")
@@ -541,6 +541,8 @@ def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rel
     lot = [r.id for r in relations.values()]
     # Usage de tous les chemins des voisines, en une seule lecture.
     tous_usages = (usages or (lambda ws: {}))(sorted({w for r in rels_voisines.values() for w in r.chemins}))
+    if rels_voisines:
+        progres.etape("Voisines hors du lot (%d)" % len(rels_voisines))
     for code, rel in sorted(rels_voisines.items()):
         if not membres[code] and not fr["retirer"].get(code):
             continue
@@ -575,6 +577,8 @@ def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rel
         rapport += res["rapport"]
     # MRC et régions : leur contour suit les limites municipales.
     englobantes = (englobantes or {}) if index is not None else {}
+    if englobantes:
+        progres.etape("MRC et régions (%d)" % len(englobantes))
     raccords_fr = set(fr.get("noeuds_raccord", ()))
     plan_frontiere, lignes_lot = {}, {}
     if englobantes:
@@ -629,6 +633,7 @@ def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rel
                 del modif_voisines["relations"][rid]
 
     for cle, (rel, polys, communes) in sorted(englobantes.items()):
+        progres.etape("  %s (%s)" % (cle, rel.tags.get("name", "")))
         anneaux_ext = [p[0] for p in polys]
         anneaux_int = [a for p in polys for a in p[1:]]
         g_ext, g_int = geo.Grille(anneaux_ext, pas=0.02), geo.Grille(anneaux_int, pas=0.02)

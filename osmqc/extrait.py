@@ -19,6 +19,8 @@ import xml.etree.ElementTree as ET
 
 import osmium
 
+from . import progres
+
 TYPES = {"n": "node", "w": "way", "r": "relation"}
 
 
@@ -92,7 +94,7 @@ def zone(pbf, cases, pas=0.02, cles_noeuds=CLES_NOEUDS, cles_chemins=CLES_CHEMIN
     fw.enable_for(osmium.osm.WAY)
     fp = (osmium.FileProcessor(pbf, osmium.osm.NODE | osmium.osm.WAY)
           .with_locations().with_filter(fn).with_filter(fw))
-    for o in fp:
+    for o in progres.suivre(fp, pbf, "objets autour du lieu"):
         if o.is_node():
             if o.location.valid() and dedans(o.location.lon, o.location.lat):
                 noeuds[o.id] = _noeud(o)
@@ -121,7 +123,7 @@ def chemins_nommes(pbf, noms):
     fn.enable_for(osmium.osm.NODE)
     fp = (osmium.FileProcessor(pbf, osmium.osm.NODE | osmium.osm.WAY)
           .with_locations().with_filter(fn).with_filter(fw))
-    for o in fp:
+    for o in progres.suivre(fp, pbf, "voies nommées (%d noms)" % len(noms)):
         if not o.is_way() or o.tags.get("name") not in noms:
             continue
         chemins.append({"type": "way", "id": o.id, "version": o.version,
@@ -140,7 +142,8 @@ def completer_versions(pbf, elements, ids):
                  if e["type"] == "node" and e["id"] in ids and e.get("version") is None}
     if not manquants:
         return
-    for o in osmium.FileProcessor(pbf, osmium.osm.NODE).with_filter(osmium.filter.IdFilter(list(manquants))):
+    fp = osmium.FileProcessor(pbf, osmium.osm.NODE).with_filter(osmium.filter.IdFilter(list(manquants)))
+    for o in progres.suivre(fp, pbf, "versions de %d nœuds" % len(manquants)):
         manquants[o.id].update(_noeud(o))
 
 
@@ -149,7 +152,8 @@ def relations(pbf, ids):
     (position, version, étiquettes). Renvoie une liste d'objets."""
     rels = []
     chemins_voulus = set()
-    for o in osmium.FileProcessor(pbf, osmium.osm.RELATION).with_filter(osmium.filter.IdFilter(list(ids))):
+    fp = osmium.FileProcessor(pbf, osmium.osm.RELATION).with_filter(osmium.filter.IdFilter(list(ids)))
+    for o in progres.suivre(fp, pbf, "%d relations" % len(ids)):
         membres = [{"type": TYPES[m.type], "ref": m.ref, "role": m.role} for m in o.members]
         rels.append({"type": "relation", "id": o.id, "version": o.version,
                      "members": membres, "tags": dict(o.tags)})
@@ -158,14 +162,15 @@ def relations(pbf, ids):
     noeuds_voulus = set()
     filtre = osmium.filter.IdFilter(list(chemins_voulus))
     filtre.enable_for(osmium.osm.WAY)
-    for o in osmium.FileProcessor(pbf, osmium.osm.WAY).with_filter(filtre):
+    for o in progres.suivre(osmium.FileProcessor(pbf, osmium.osm.WAY).with_filter(filtre), pbf,
+                            "leurs %d chemins" % len(chemins_voulus)):
         chemins.append({"type": "way", "id": o.id, "version": o.version,
                         "nodes": [n.ref for n in o.nodes], "tags": dict(o.tags)})
         noeuds_voulus.update(n.ref for n in o.nodes)
     # Et les nœuds membres des relations (label, admin_centre).
     noeuds_voulus.update(m["ref"] for r in rels for m in r["members"] if m["type"] == "node")
-    noeuds = [_noeud(o) for o in osmium.FileProcessor(pbf, osmium.osm.NODE)
-              .with_filter(osmium.filter.IdFilter(list(noeuds_voulus)))]
+    fp = osmium.FileProcessor(pbf, osmium.osm.NODE).with_filter(osmium.filter.IdFilter(list(noeuds_voulus)))
+    noeuds = [_noeud(o) for o in progres.suivre(fp, pbf, "leurs %d nœuds" % len(noeuds_voulus))]
     return rels + chemins + noeuds
 
 
@@ -179,7 +184,8 @@ def objets(pbf, genre, ids):
     filtre = osmium.filter.IdFilter(ids)
     filtre.enable_for(entite)
     res = []
-    for o in osmium.FileProcessor(pbf, entite).with_filter(filtre):
+    for o in progres.suivre(osmium.FileProcessor(pbf, entite).with_filter(filtre), pbf,
+                            "%d objets (%s)" % (len(ids), genre)):
         if genre == "node":
             res.append(_noeud(o))
         elif genre == "way":
@@ -205,7 +211,7 @@ def appliquer(pbf, osc, sortie, resultat=None):
     if resultat is None:
         resultat = {}
         maxi = {"node": 0, "way": 0, "relation": 0}
-        for o in osmium.FileProcessor(pbf):
+        for o in progres.suivre(osmium.FileProcessor(pbf), pbf, "identifiants libres"):
             g = TYPES[o.type_str()]
             maxi[g] = max(maxi[g], o.id)
         for bloc in racine:
@@ -238,7 +244,8 @@ def appliquer(pbf, osc, sortie, resultat=None):
         ecrivain = osmium.io.Writer(sortie, entete)
         fusion = osmium.MergeInputReader()
         fusion.add_file(fh.name)
-        fusion.apply_to_reader(lecteur, ecrivain, False)
+        with progres.lecture(pbf, "application du fichier d'envoi"):
+            fusion.apply_to_reader(lecteur, ecrivain, False)
         ecrivain.close()
         lecteur.close()
     finally:
@@ -248,8 +255,8 @@ def appliquer(pbf, osc, sortie, resultat=None):
 
 def relation_quebec(pbf):
     """Relation de la province de Québec (niveau 4) dans l'extrait, ou None."""
-    for o in osmium.FileProcessor(pbf, osmium.osm.RELATION).with_filter(
-            osmium.filter.TagFilter(("admin_level", "4"))):
+    fp = osmium.FileProcessor(pbf, osmium.osm.RELATION).with_filter(osmium.filter.TagFilter(("admin_level", "4")))
+    for o in progres.suivre(fp, pbf, "relation du Québec"):
         if o.tags.get("ISO3166-2") == "CA-QC" or o.tags.get("name") in ("Québec", "Quebec"):
             return o.id
     return None
@@ -260,7 +267,8 @@ def limites_admin(pbf):
     {code: (id, nom, admin_level)}."""
     res = {}
     filtre = osmium.filter.TagFilter(("boundary", "administrative"))
-    for o in osmium.FileProcessor(pbf, osmium.osm.RELATION).with_filter(filtre):
+    for o in progres.suivre(osmium.FileProcessor(pbf, osmium.osm.RELATION).with_filter(filtre), pbf,
+                            "relations de limite (ref:qc)"):
         code = o.tags.get("ref:qc")
         if code:
             res.setdefault(code, (o.id, o.tags.get("name", ""), o.tags.get("admin_level", "")))
@@ -277,7 +285,8 @@ def usages(pbf, nids, wids=()):
     chemins = {n: set() for n in nids}
     membres = set()
     rels = {w: set() for w in wids}
-    for o in osmium.FileProcessor(pbf, osmium.osm.WAY | osmium.osm.RELATION):
+    fp = osmium.FileProcessor(pbf, osmium.osm.WAY | osmium.osm.RELATION)
+    for o in progres.suivre(fp, pbf, "usage de %d nœuds et %d chemins" % (len(nids), len(wids))):
         if o.is_way():
             if nids:
                 for n in o.nodes:

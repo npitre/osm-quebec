@@ -1,6 +1,10 @@
+import os
 import unittest
 
 from osmqc import adresses, geo, regions, rqa
+
+# Pas d'indicateur de progression pendant les tests (osmqc/progres.py).
+os.environ["OSMQC_SANS_PROGRES"] = "1"
 
 
 def adr(numero, suffixe="", unite="", lon=-61.87, lat=47.36, rue="Chemin du Gros-Cap"):

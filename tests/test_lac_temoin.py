@@ -27,6 +27,9 @@ import fabriquer  # noqa: E402
 import osmium  # noqa: E402
 from osmqc import extrait, geo  # noqa: E402
 
+# Pas d'indicateur de progression pendant les tests (osmqc/progres.py).
+os.environ["OSMQC_SANS_PROGRES"] = "1"
+
 LIEU = "Lac-Temoin"
 LOT2 = "Riviere-Controle"
 ETAPES = ["adresses extraire", "adresses osm", "regions preparer", "rues preparer",
