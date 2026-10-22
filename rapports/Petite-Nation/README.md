@@ -56,12 +56,12 @@ extrait OSM de Geofabrik du 16 octobre 2026.
   relient l'arc commun à leurs anciens points triples. Ils disparaîtront
   quand ces voisines seront traitées. Deux autres voisines n'ont pas de
   relation dans OSM (TNO aquatiques).
-- MRC et régions voisines (règle 12) : Argenteuil, Les Laurentides,
-  Antoine-Labelle, Les Collines-de-l'Outaouais, La Vallée-de-la-Gatineau
-  et la région des Laurentides prennent les arcs de la MRC sur leur
-  contour; 9 raccords provisoires les relient à leurs anciens chemins.
-  La MRC de Papineau et la région de l'Outaouais ne sont pas modifiées
-  (voir les questions en suspens).
+- MRC et régions (règle 12) : Argenteuil, Les Laurentides,
+  Antoine-Labelle, Les Collines-de-l'Outaouais, La Vallée-de-la-Gatineau,
+  la région des Laurentides et celle de l'Outaouais prennent les arcs de
+  la MRC sur leur contour; 11 raccords provisoires les relient à leurs
+  anciens chemins. La MRC de Papineau n'est pas modifiée (voir les
+  questions en suspens).
 - 45 relations modifiées; 53 chemins retirés des relations, tous de
   simples lignes de limite devenues inutiles, supprimées. Les rivières
   qui ne sont pas la frontière ne sont pas touchées.
@@ -104,13 +104,13 @@ changement de revêtement) et sont gardées.
 
 ### Questions en suspens
 
-1. **Relation de la MRC** (7572164) et **région de l'Outaouais**
-   (8100164) : elles gardent leurs anciens chemins. Le long de la
-   rivière des Outaouais, elles ont leurs propres chemins, proches du
-   tracé du MRNF, alors que les municipalités reprennent la frontière
-   d'OSM, jusqu'à 4 km plus loin; l'outil ne sait pas encore les
-   raccorder. Leur contour devrait-il suivre la frontière d'OSM, comme
-   les municipalités?
+1. **Relation de la MRC** (7572164) : elle garde ses anciens chemins.
+   Le long de la rivière des Outaouais, son contour borde le TNO
+   aquatique de la MRC, qui n'a pas de relation dans OSM : aucune
+   municipalité ne reprend la frontière d'OSM sur ce tronçon, et
+   l'outil ne sait pas encore y raccorder la MRC. Faut-il créer la
+   relation du TNO aquatique (question 3), ou faire suivre la frontière
+   d'OSM à la MRC elle-même?
 2. **Notre-Dame-de-la-Salette** : corriger son rattachement à la MRC de
    Papineau dans OSM?
 3. **TNO aquatique** : créer sa relation, ou laisser la rivière hors des

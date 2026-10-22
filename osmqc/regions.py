@@ -543,6 +543,14 @@ def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rel
     tous_usages = (usages or (lambda ws: {}))(sorted({w for r in rels_voisines.values() for w in r.chemins}))
     if rels_voisines:
         progres.etape("Voisines hors du lot (%d)" % len(rels_voisines))
+    # Les coupes d'une voisine sont appliquées en mémoire : la suivante
+    # part de l'état coupé, et les morceaux neufs entrent tout de suite
+    # dans les voisines pas encore traitées qui partagent le chemin.
+    coupes_vois = set()
+    par_id_vois = {r.id: c for c, r in rels_voisines.items()}
+    for rel in rels_voisines.values():
+        if not hasattr(rel, "membres_origine"):
+            rel.membres_origine = [dict(m) for m in rel.rel["members"]]
     for code, rel in sorted(rels_voisines.items()):
         if not membres[code] and not fr["retirer"].get(code):
             continue
@@ -557,7 +565,7 @@ def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rel
             for _, _, roles in chemins + reutilises:
                 roles.pop(code, None)
             continue
-        deja = set(res["modifies"]) & set(modif_voisines["modifies"])
+        deja = set(res["modifies"]) & set(modif_voisines["modifies"]) - coupes_vois
         if deja:
             rapport.append("voisine %s non modifiée : chemin %s déjà coupé pour une autre voisine"
                            % (rel.tags.get("name", code), ", ".join(map(str, sorted(deja)))))
@@ -571,8 +579,17 @@ def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rel
             provisoires.add(w)
         modif_voisines["modifies"].update(res["modifies"])
         modif_voisines["neufs"].update(res["neufs"])
+        for w, ns in res["modifies"].items():
+            index.chemins[w]["nodes"] = ns
+            coupes_vois.add(w)
+        for nw, (ns, tags) in res["neufs"].items():
+            index.chemins[nw] = {"type": "way", "id": nw, "nodes": ns, "tags": dict(tags)}
         for rid, coupes in res["relations"].items():
-            modif_voisines["relations"].setdefault(rid, []).extend(coupes)
+            autre = par_id_vois.get(rid)
+            if autre is None or autre in nouvelles:
+                modif_voisines["relations"].setdefault(rid, []).extend(coupes)
+                continue
+            inserer_morceaux(rels_voisines[autre], coupes)
         modif_voisines["liberes"] |= res["liberes"]
         rapport += res["rapport"]
     # MRC et régions : leur contour suit les limites municipales.
@@ -584,6 +601,7 @@ def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rel
     if englobantes:
         plan_frontiere = {w: index.chemins[w]["nodes"] for ws in fr["morceaux"].values() for w in ws}
         lignes_lot = {w: ids for w, ids, _ in chemins + reutilises if w not in provisoires}
+        roles_lot = {w: roles for w, _, roles in chemins + reutilises if w not in provisoires}
         lignes_lot.update(plan_frontiere)
         for code, lst in membres.items():
             for t, w, r in lst:
@@ -608,15 +626,7 @@ def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rel
         autre = par_id_eng.get(rid)
         if autre is None or autre in nouvelles:
             return False
-        r = englobantes[autre][0]
-        for w, morceaux in coupes:
-            m2 = []
-            for m in r.rel["members"]:
-                m2.append(m)
-                if m["type"] == "way" and m["ref"] == w:
-                    m2 += [{"type": "way", "ref": n, "role": m["role"]} for n in morceaux]
-            r.rel["members"] = m2
-        r.chemins = [m["ref"] for m in r.rel["members"] if m["type"] == "way"]
+        inserer_morceaux(englobantes[autre][0], coupes)
         return True
 
     # Les coupes faites pour les voisines, appliquées en mémoire : les
@@ -644,6 +654,22 @@ def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rel
                 codes = {c for c, ws in fr["morceaux"].items() if w in ws}
                 if codes & set(communes):
                     communs.append((w, ids, "outer"))
+                continue
+            # Qui borde l'arc, des deux côtés : il est sur le contour quand
+            # une seule de ses municipalités est de l'englobante et que
+            # l'autre côté est connu et n'en est pas; entre deux de ses
+            # municipalités, il est à l'intérieur; entre deux autres, il
+            # est dehors. Sinon (un côté inconnu : une municipalité ou un
+            # TNO aquatique sans relation, une frontière, ou un chemin
+            # repris d'une relation parente), le tracé tranche.
+            bordent = set(roles_lot.get(w, ()))
+            dedans = bordent & set(communes)
+            if len(dedans) >= 2 or (len(bordent) >= 2 and not dedans):
+                continue
+            if dedans and bordent - dedans:
+                role = "inner" if anneaux_int and pts and all(g_int.ecart(p, 0.001) < SUR_M for p in pts) \
+                    else "outer"
+                communs.append((w, ids, role))
                 continue
             # Un arc court qui part de la frontière : son seul autre nœud
             # suffit (le nœud de raccord est sur la frontière d'OSM, pas
@@ -729,9 +755,9 @@ def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rel
                 if m["type"] == "way" and m["ref"] == w:
                     res_m += [{"type": "way", "ref": n, "role": m["role"]} for n in morceaux]
             nouvelles[code] = res_m
-    # Morceaux qu'aucune relation ne garde (une englobante a retiré celui
-    # qu'une autre coupe lui donnait) : ils ne sont pas créés.
-    if englobantes:
+    # Morceaux qu'aucune relation ne garde (une voisine ou une englobante a
+    # retiré celui qu'une autre coupe lui donnait) : ils ne sont pas créés.
+    if index is not None:
         servis = {m["ref"] for lst in nouvelles.values() for m in lst if m["type"] == "way"}
         servis |= {n for coupes in modif_voisines["relations"].values() for _, ms in coupes for n in ms}
         for nw in [nw for nw in modif_voisines["neufs"] if nw not in servis]:
@@ -764,6 +790,19 @@ def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rel
             "lot": sorted(relations), "voisines": modif_voisines, "provisoires": provisoires,
             "frontiere": {w: index.chemins[w]["nodes"] for ws in fr["morceaux"].values() for w in ws},
             "etiquettes": etiquettes}
+
+
+def inserer_morceaux(r, coupes):
+    """Ajoute en mémoire à la relation r les morceaux neufs de chemins
+    coupés, juste après le chemin coupé. coupes : [(chemin, [morceaux])]."""
+    for w, morceaux in coupes:
+        m2 = []
+        for m in r.rel["members"]:
+            m2.append(m)
+            if m["type"] == "way" and m["ref"] == w:
+                m2 += [{"type": "way", "ref": n, "role": m["role"]} for n in morceaux]
+        r.rel["members"] = m2
+    r.chemins = [m["ref"] for m in r.rel["members"] if m["type"] == "way"]
 
 
 def cles_membres(membres):
