@@ -5,13 +5,21 @@
 #
 # Usage, depuis la racine du dépôt (une dizaine de minutes) :
 #   python3 outils/frontieres.py
+#
+# Facultatif : le contour officiel de l'Ontario (jeu « Province » de
+# Géospatial Ontario, Licence du gouvernement ouvert de l'Ontario), pour
+# comparer aussi la frontière Québec-Ontario à la version ontarienne :
+#   https://ws.gisetl.lrc.gov.on.ca/fmedatadownload/Packages/PROVINCE.zip
+# décompressé dans donnees/ontario/ (le fichier PROVINCE.shp y est cherché).
 
 import bisect
 import collections
+import glob
 import os
 import re
 import sqlite3
 import statistics
+import struct
 import sys
 import unicodedata
 
@@ -212,6 +220,7 @@ def main():
     s += rapport.tableau(["Latitude", "Nœuds d'OSM", "Écart médian"],
                          [[("%.1f" % k).replace(".", ","), len(v), "%+.0f m" % statistics.median(v)]
                           for k, v in sorted(par.items())])
+    s += ontario(mrnf["FROONT"], [lignes_osm[w] for w in chemins], lon_mrnf, lats, lon_m)
     rapport.ecrire(os.path.join(DOSSIER, "frontieres.md"), s)
     rapport.ecrire_geojson_compact({"type": "FeatureCollection", "features": [
         {"type": "Feature", "geometry": {"type": "Point", "coordinates": list(p)},
@@ -220,6 +229,52 @@ def main():
                         "marker-color": "#d62728" if d is None or d > 1000 else "#ff7f0e"}}
         for typ, p, d in carte]}, os.path.join(DOSSIER, "frontieres.geojson"))
     municipalites()
+
+
+def polygone_shp(chemin):
+    """Sommets du premier polygone d'un fichier shapefile (type 5), en
+    coordonnées géographiques."""
+    b = open(chemin, "rb").read()
+    o = 108
+    nb_parts, nb_pts = struct.unpack("<2i", b[o + 36:o + 44])
+    q = o + 44 + 4 * nb_parts
+    return [struct.unpack("<2d", b[q + 16 * i:q + 16 * i + 16]) for i in range(nb_pts)]
+
+
+def ontario(lignes_mrnf, lignes_osm, lon_mrnf, lats, lon_m):
+    """Frontière Québec-Ontario selon l'Ontario, comparée au MRNF et à OSM."""
+    shp = glob.glob(os.path.join("donnees", "ontario", "**", "PROVINCE.shp"), recursive=True)
+    if not shp:
+        return ""
+    on = polygone_shp(shp[0])
+    g_on, g_m = geo.Grille([on], pas=0.02), geo.Grille(lignes_mrnf, pas=0.02)
+    osm_qc = [l for l in lignes_osm if any((g_m.distance(p, 0.02) or 1e9) < EAU_M for p in l[::5])]
+    g_osm = geo.Grille(osm_qc, pas=0.02)
+    pts_osm = [p for l in osm_qc for p in l]
+    pts_on = [p for p in on if (g_m.distance(p, 0.02) or 1e9) < EAU_M]
+    pts_m = [p for l in lignes_mrnf for p in densifier(l)]
+    s = ("\n## Ontario : tracé officiel de l'Ontario\n\n"
+         "Contour de la province selon l'Ontario (jeu « Province » de Géospatial Ontario, tenu par "
+         "le bureau de l'arpenteur général, Licence du gouvernement ouvert de l'Ontario; précision "
+         "annoncée : à 100 m près). Distances entre les sommets ou nœuds de chaque tracé et l'autre "
+         "tracé, le long de la frontière Québec-Ontario.\n\n")
+    s += rapport.tableau(["Tracé", "Distance à", "Points", "Médiane", "90 % à moins de",
+                          "Plus de 20 m", "Plus de 100 m", "Plus de 1 km"], [
+        ["OSM", "Ontario"] + resume(distances(pts_osm, g_on)),
+        ["Ontario", "OSM"] + resume(distances(pts_on, g_osm)),
+        ["MRNF", "Ontario"] + resume(distances(pts_m, g_on)),
+        ["Ontario", "MRNF"] + resume(distances(pts_on, g_m))])
+    par = collections.defaultdict(list)
+    for p in on:
+        if lats[0] <= p[1] <= lats[-1] and abs(p[0] - lon_m) < 0.05:
+            d = geo.distance(p, (lon_mrnf(p[1]), p[1]))
+            par[int(p[1] * 2) / 2].append(d if p[0] > lon_m else -d)
+    s += ("\nLigne terrestre au nord du 48e parallèle : écart est-ouest des sommets de l'Ontario "
+          "par rapport au MRNF (positif : Ontario plus à l'est).\n\n")
+    s += rapport.tableau(["Latitude", "Sommets de l'Ontario", "Écart médian"],
+                         [[("%.1f" % k).replace(".", ","), len(v), "%+.0f m" % statistics.median(v)]
+                          for k, v in sorted(par.items())])
+    return s
 
 
 DESIGNATIONS = {"M": "Municipalité", "V": "Ville", "P": "Paroisse", "VL": "Village", "CT": "Canton",

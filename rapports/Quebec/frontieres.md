@@ -58,3 +58,26 @@ Ligne presque nord-sud, du lac Témiscamingue à la baie James : 697 sommets au 
 | 50,5 | 6 | +81 m |
 | 51,0 | 21 | -1 m |
 | 51,5 | 70 | -660 m |
+
+## Ontario : tracé officiel de l'Ontario
+
+Contour de la province selon l'Ontario (jeu « Province » de Géospatial Ontario, tenu par le bureau de l'arpenteur général, Licence du gouvernement ouvert de l'Ontario; précision annoncée : à 100 m près). Distances entre les sommets ou nœuds de chaque tracé et l'autre tracé, le long de la frontière Québec-Ontario.
+
+| Tracé | Distance à | Points | Médiane | 90 % à moins de | Plus de 20 m | Plus de 100 m | Plus de 1 km |
+|---|---|---|---|---|---|---|---|
+| OSM | Ontario | 10096 | 0 m | 0 m | 4 % | 3 % | 3 % |
+| Ontario | OSM | 11202 | 0 m | 29 m | 11 % | 5 % | 0 % |
+| MRNF | Ontario | 12272 | 59 m | 195 m | 78 % | 25 % | 1 % |
+| Ontario | MRNF | 11202 | 63 m | 216 m | 80 % | 29 % | 0 % |
+
+Ligne terrestre au nord du 48e parallèle : écart est-ouest des sommets de l'Ontario par rapport au MRNF (positif : Ontario plus à l'est).
+
+| Latitude | Sommets de l'Ontario | Écart médian |
+|---|---|---|
+| 48,0 | 59 | +8 m |
+| 48,5 | 60 | +14 m |
+| 49,0 | 60 | +46 m |
+| 49,5 | 60 | +53 m |
+| 50,0 | 60 | +69 m |
+| 50,5 | 60 | +80 m |
+| 51,0 | 92 | +85 m |

@@ -13,7 +13,8 @@ du MRNF à plus de 100 m du tracé d'OSM), et
 [municipalités absentes](municipalites.md).
 
 Données : Découpages administratifs du MRNF, version V2026-09, extrait
-OSM de Geofabrik du 16 octobre 2026.
+OSM de Geofabrik du 16 octobre 2026, et contour de l'Ontario (jeu
+« Province » de Géospatial Ontario, géométrie de 2019).
 
 ## 1. Frontières du Québec
 
@@ -48,12 +49,20 @@ actuels de la relation du Québec, au lieu de tracer le MRNF par-dessus.
     de 200 m pour 10 % des points. Dans OSM, la frontière est sur un
     tiers de sa longueur l'axe même de la rivière (57 chemins
     `waterway=river`), ailleurs une ligne tracée à la main près de lui.
-  - La ligne terrestre, du lac Témiscamingue à la baie James, n'est pas
-    plus précise : dans OSM, c'est une ligne simplifiée, avec un nœud
-    tous les 10 km environ entre les 49e et 51e parallèles, qui dérive
-    jusqu'à 80 m vers l'est. L'écart n'est pas constant : ce n'est pas
-    une différence de système de référence. Près de la baie James, les
+  - Sur la ligne terrestre, du lac Témiscamingue à la baie James, le
+    tracé d'OSM s'écarte progressivement vers l'est, jusqu'à 80 m au
+    51e parallèle. L'écart n'est pas constant : ce n'est pas une
+    différence de système de référence. Près de la baie James, les
     tracés s'écartent de 0,6 à 2 km.
+  - Ces écarts ne viennent pas d'OSM : sa frontière avec l'Ontario est,
+    à quelques exceptions près, exactement le tracé officiel de
+    l'Ontario (jeu « Province » de Géospatial Ontario, tenu par le
+    bureau de l'arpenteur général; 94 % des nœuds d'OSM à moins de 5 m).
+    C'est entre les deux gouvernements que le tracé diffère : 60 m en
+    médiane entre l'Ontario et le MRNF, et la même dérive vers l'est sur
+    la ligne terrestre, alors que l'Ontario y a un sommet tous les
+    900 m environ. L'Ontario annonce une précision « à 100 m près », à
+    partir de sources diverses.
 - **Labrador** : le cas le plus délicat. Le long du 52e parallèle, la
   concordance est bonne (14 m en médiane), sauf par endroits (7 % des
   points à plus de 1 km). Le long de la ligne de partage des eaux, les
@@ -100,9 +109,9 @@ Conséquences :
   du centre géométrique.
 - En pratique, le tracé de référence de l'Outaouais est celui des cartes
   topographiques nationales, dont celui du MRNF vient très probablement.
-- Le méridien 79°31′ est borné sur le terrain; le tracé du MRNF (697
-  sommets) suit sans doute ces levés, celui d'OSM n'en est qu'une
-  approximation.
+- Le méridien 79°31′ est borné sur le terrain, mais le tracé du MRNF et
+  celui de l'Ontario (repris par OSM) s'écartent jusqu'à 85 m l'un de
+  l'autre : au moins l'un des deux ne suit pas exactement ces bornes.
 
 Ces deux documents sont anciens; le texte de la convention de 1980 et
 d'éventuelles ententes plus récentes sur les îles de l'Outaouais restent
@@ -115,9 +124,11 @@ d'éventuelles ententes plus récentes sur les îles de l'Outaouais restent
 
 ### Questions en suspens
 
-1. **Ontario** : remplacer la frontière par le tracé du MRNF? À
-   discuter avec les contributeurs ontariens, puisque la relation de
-   l'Ontario partage ces chemins. Et faut-il que frontière et rivière
+1. **Ontario** : OSM suit le tracé officiel de l'Ontario, qui diffère
+   de celui du Québec. Lequel suit les bornes et les textes légaux?
+   Remplacer la frontière par le tracé du MRNF voudrait dire préférer la
+   version québécoise : à discuter avec les contributeurs ontariens,
+   puisque la relation de l'Ontario partage ces chemins. Et faut-il que frontière et rivière
    partagent la même ligne? La règle 2 des régions (décidée à la
    rencontre du 16 octobre) dit non : l'axe de la rivière est un tracé
    approximatif de l'écoulement, corrigé au fil des améliorations, alors
