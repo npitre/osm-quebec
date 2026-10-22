@@ -1,0 +1,16 @@
+# Bouchée 10 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Rivière-du-Loup (3 de 3) (bouchée 10)"
+
+[rqa]
+municipalites = ["12015", "12020"]
+
+[regions.osm]
+"12015" = 8223959   # Saint-Antonin
+"12020" = 8223960   # Saint-Modeste
+
+[regions.groupe]
+comment = "Limites municipales (Rivière-du-Loup (3 de 3)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

@@ -1,0 +1,19 @@
+# Bouchée 116 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Antoine-Labelle (5 de 7) (bouchée 116)"
+
+[rqa]
+municipalites = ["79015", "79022", "79025", "79030", "79924"]
+
+[regions.osm]
+"79015" = 7362266   # Lac-du-Cerf
+"79022" = 7362282   # Saint-Aimé-du-Lac-des-Îles
+"79025" = 7361739   # Kiamika
+"79030" = 1490833   # Nominingue
+"79924" = 1490836   # Lac-Ernest
+
+[regions.groupe]
+comment = "Limites municipales (Antoine-Labelle (5 de 7)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

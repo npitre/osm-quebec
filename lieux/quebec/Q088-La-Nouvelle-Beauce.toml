@@ -1,0 +1,25 @@
+# Bouchée 88 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "La Nouvelle-Beauce (bouchée 88)"
+
+[rqa]
+municipalites = ["26005", "26010", "26015", "26022", "26030", "26035", "26040", "26048", "26055", "26063", "26070"]
+
+[regions.osm]
+"26005" = 8180107   # Frampton
+"26010" = 8180108   # Saints-Anges
+"26015" = 8090030   # Vallée-Jonction
+"26022" = 8180110   # Saint-Elzéar
+"26030" = 8180109   # Sainte-Marie
+"26035" = 8164172   # Sainte-Marguerite
+"26040" = 8180113   # Sainte-Hénédine
+"26048" = 8180112   # Scott
+"26055" = 8180115   # Saint-Bernard
+"26063" = 8180114   # Saint-Isidore
+"26070" = 8180116   # Saint-Lambert-de-Lauzon
+
+[regions.groupe]
+comment = "Limites municipales (La Nouvelle-Beauce) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

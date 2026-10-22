@@ -1,0 +1,29 @@
+# Bouchée 42 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Le Val-Saint-François (1 de 2) (bouchée 42)"
+
+[rqa]
+municipalites = ["42005", "42040", "42045", "42050", "42055", "42060", "42065", "42070", "42075", "42078", "42088", "42095", "42098", "42100", "42110"]
+
+[regions.osm]
+"42005" = 7950472   # Stoke
+"42040" = 7950488   # Bonsecours
+"42045" = 7950487   # Lawrenceville
+"42050" = 7950489   # Sainte-Anne-de-la-Rochelle
+"42055" = 7950486   # Valcourt
+"42060" = 7950485   # Valcourt
+"42065" = 7950484   # Maricourt
+"42070" = 7950481   # Kingsbury
+"42075" = 7950480   # Melbourne
+"42078" = 7950482   # Ulverton
+"42088" = 7950475   # Windsor
+"42095" = 7950474   # Val-Joli
+"42098" = 7950479   # Richmond
+"42100" = 7950473   # Saint-Claude
+"42110" = 7950478   # Cleveland
+
+[regions.groupe]
+comment = "Limites municipales (Le Val-Saint-François (1 de 2)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

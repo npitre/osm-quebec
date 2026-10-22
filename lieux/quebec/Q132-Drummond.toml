@@ -1,0 +1,32 @@
+# Bouchée 132 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Drummond (bouchée 132)"
+
+[rqa]
+municipalites = ["49005", "49015", "49020", "49025", "49030", "49040", "49048", "49058", "49070", "49075", "49080", "49085", "49095", "49100", "49105", "49113", "49125", "49130"]
+
+[regions.osm]
+"49005" = 7932215   # Saint-Félix-de-Kingsey
+"49015" = 7932217   # Durham-Sud
+"49020" = 7932218   # Lefebvre
+"49025" = 7932216   # L'Avenir
+"49030" = 7932214   # Saint-Lucien
+"49040" = 7932219   # Wickham
+"49048" = 7932220   # Saint-Germain-de-Grantham
+"49058" = 7932209   # Drummondville
+"49070" = 7932213   # Saint-Cyrille-de-Wendover
+"49075" = 7932211   # Notre-Dame-du-Bon-Conseil
+"49080" = 7932212   # Notre-Dame-du-Bon-Conseil
+"49085" = 7932210   # Sainte-Brigitte-des-Saults
+"49095" = 7932221   # Saint-Majorique-de-Grantham
+"49100" = 7932223   # Saint-Edmond-de-Grantham
+"49105" = 7932222   # Saint-Eugène
+"49113" = 7932224   # Saint-Guillaume
+"49125" = 7932225   # Saint-Bonaventure
+"49130" = 7932226   # Saint-Pie-de-Guire
+
+[regions.groupe]
+comment = "Limites municipales (Drummond) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

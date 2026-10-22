@@ -1,0 +1,25 @@
+# Bouchée 17 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Lac-Saint-Jean-Est (2 de 5) (bouchée 17)"
+
+[rqa]
+municipalites = ["93005", "93012", "93022", "93035", "93042", "93055", "93060", "93902", "93904", "93906", "93908"]
+
+[regions.osm]
+"93005" = 8374628   # Desbiens
+"93012" = 8374629   # Métabetchouan–Lac-à-la-Croix
+"93022" = 20273558   # Hébertville
+"93035" = 8374534   # Saint-Gédéon
+"93042" = 8374471   # Alma
+"93055" = 8374472   # Labrecque
+"93060" = 8374524   # Lamarche
+"93902" = 8379449   # Mont-Apica
+"93904" = 8376233   # Lac-Moncouche
+"93906" = 8376234   # Lac-Achouakan
+"93908" = 8376235   # Belle-Rivière
+
+[regions.groupe]
+comment = "Limites municipales (Lac-Saint-Jean-Est (2 de 5)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

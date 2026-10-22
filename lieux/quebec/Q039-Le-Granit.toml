@@ -1,0 +1,25 @@
+# Bouchée 39 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Le Granit (2 de 3) (bouchée 39)"
+
+[rqa]
+municipalites = ["30005", "30025", "30030", "30045", "30050", "30055", "30070", "30072", "30080", "30085", "30095"]
+
+[regions.osm]
+"30005" = 8064421   # Saint-Augustin-de-Woburn
+"30025" = 8064415   # Frontenac
+"30030" = 8064416   # Lac-Mégantic
+"30045" = 8064424   # Nantes
+"30050" = 8064417   # Sainte-Cécile-de-Whitton
+"30055" = 8064413   # Audet
+"30070" = 8064411   # Saint-Robert-Bellarmin
+"30072" = 8064412   # Saint-Ludger
+"30080" = 8064414   # Lac-Drolet
+"30085" = 8064418   # Saint-Sébastien
+"30095" = 8064420   # Lambton
+
+[regions.groupe]
+comment = "Limites municipales (Le Granit (2 de 3)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

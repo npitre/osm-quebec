@@ -1,0 +1,18 @@
+# Bouchée 65 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Pontiac (4 de 4) (bouchée 65)"
+
+[rqa]
+municipalites = ["84020", "84025", "84030", "84040"]
+
+[regions.osm]
+"84020" = 7041555   # Portage-du-Fort
+"84025" = 7041642   # Bryson
+"84030" = 7041641   # Campbell's Bay
+"84040" = 7041643   # Litchfield
+
+[regions.groupe]
+comment = "Limites municipales (Pontiac (4 de 4)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

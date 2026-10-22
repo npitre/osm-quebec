@@ -1,0 +1,26 @@
+# Bouchée 87 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Lévis, Lotbinière (2 de 2) (bouchée 87)"
+
+[rqa]
+municipalites = ["25213", "33007", "33017", "33025", "33030", "33035", "33040", "33045", "33052", "33085", "33090", "33095"]
+
+[regions.osm]
+"25213" = 8164410   # Lévis
+"33007" = 8110672   # Saint-Sylvestre
+"33017" = 8110671   # Sainte-Agathe-de-Lotbinière
+"33025" = 8110670   # Saint-Patrice-de-Beaurivage
+"33030" = 8110669   # Saint-Narcisse-de-Beaurivage
+"33035" = 8110660   # Saint-Gilles
+"33040" = 8110663   # Dosquet
+"33045" = 8110659   # Saint-Agapit
+"33052" = 8110662   # Saint-Flavien
+"33085" = 8110657   # Notre-Dame-du-Sacré-Coeur-d'Issoudun
+"33090" = 8110658   # Saint-Apollinaire
+"33095" = 8110655   # Saint-Antoine-de-Tilly
+
+[regions.groupe]
+comment = "Limites municipales (Lévis, Lotbinière (2 de 2)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

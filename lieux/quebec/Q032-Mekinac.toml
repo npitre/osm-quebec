@@ -1,0 +1,19 @@
+# Bouchée 32 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Mékinac (3 de 3) (bouchée 32)"
+
+[rqa]
+municipalites = ["35015", "35020", "35027", "35035", "35040"]
+
+[regions.osm]
+"35015" = 8394057   # Saint-Adelphe
+"35020" = 8393957   # Saint-Séverin
+"35027" = 7715906   # Saint-Tite
+"35035" = 8393958   # Hérouxville
+"35040" = 8393955   # Grandes-Piles
+
+[regions.groupe]
+comment = "Limites municipales (Mékinac (3 de 3)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

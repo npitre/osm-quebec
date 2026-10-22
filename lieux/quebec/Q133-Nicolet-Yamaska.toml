@@ -1,0 +1,30 @@
+# Bouchée 133 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Nicolet-Yamaska (bouchée 133)"
+
+[rqa]
+municipalites = ["50005", "50013", "50023", "50030", "50035", "50042", "50050", "50057", "50065", "50072", "50085", "50090", "50095", "50100", "50113", "50128"]
+
+[regions.osm]
+"50005" = 8042767   # Sainte-Eulalie
+"50013" = 8042766   # Aston-Jonction
+"50023" = 8042765   # Saint-Wenceslas
+"50030" = 8042769   # Saint-Célestin
+"50035" = 8042770   # Saint-Célestin
+"50042" = 8042768   # Saint-Léonard-d'Aston
+"50050" = 8042772   # Sainte-Perpétue
+"50057" = 8042773   # Sainte-Monique
+"50065" = 8042771   # Grand-Saint-Esprit
+"50072" = 8042774   # Nicolet
+"50085" = 8042775   # La Visitation-de-Yamaska
+"50090" = 8042776   # Saint-Zéphirin-de-Courval
+"50095" = 8042777   # Saint-Elphège
+"50100" = 8042778   # Baie-du-Febvre
+"50113" = 8042779   # Pierreville
+"50128" = 8042780   # Saint-François-du-Lac
+
+[regions.groupe]
+comment = "Limites municipales (Nicolet-Yamaska) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

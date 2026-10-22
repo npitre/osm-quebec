@@ -1,0 +1,37 @@
+# Bouchée 69 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Abitibi-Ouest (bouchée 69)"
+
+[rqa]
+municipalites = ["87005", "87010", "87015", "87020", "87025", "87030", "87035", "87042", "87050", "87058", "87070", "87075", "87080", "87085", "87090", "87095", "87100", "87105", "87110", "87115", "87120", "87902", "87904"]
+
+[regions.osm]
+"87005" = 7360206   # Duparquet
+"87010" = 7360205   # Rapide-Danseur
+"87015" = 7360204   # Roquemaure
+"87020" = 7360203   # Gallichan
+"87025" = 7360202   # Palmarolle
+"87030" = 7360200   # Sainte-Germaine-Boulé
+"87035" = 7360201   # Poularies
+"87042" = 7360198   # Taschereau
+"87050" = 7360199   # Authier
+"87058" = 8363974   # Macamic
+"87070" = 8363567   # Sainte-Hélène-de-Mancebourg
+"87075" = 8363569   # Clerval
+"87080" = 8362516   # La Reine
+"87085" = 8363570   # Dupuy
+"87090" = 8363564   # La Sarre
+"87095" = 8363565   # Chazel
+"87100" = 7360331   # Authier-Nord
+"87105" = 8363566   # Val-Saint-Gilles
+"87110" = 8363568   # Clermont
+"87115" = 8362518   # Normétal
+"87120" = 8362517   # Saint-Lambert
+"87902" = 7678914   # Lac-Duparquet
+"87904" = 8161442   # Rivière-Ojima
+
+[regions.groupe]
+comment = "Limites municipales (Abitibi-Ouest) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

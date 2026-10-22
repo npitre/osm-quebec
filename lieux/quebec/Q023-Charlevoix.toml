@@ -1,0 +1,21 @@
+# Bouchée 23 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Charlevoix (bouchée 23)"
+
+[rqa]
+municipalites = ["16005", "16013", "16023", "16048", "16050", "16055", "16902"]
+
+[regions.osm]
+"16005" = 7717123   # Petite-Rivière-Saint-François
+"16013" = 7717122   # Baie-Saint-Paul
+"16023" = 7717121   # L'Isle-aux-Coudres
+"16048" = 7717119   # Les Éboulements
+"16050" = 7717118   # Saint-Hilarion
+"16055" = 7717120   # Saint-Urbain
+"16902" = 8397614   # Lac-Pikauba
+
+[regions.groupe]
+comment = "Limites municipales (Charlevoix) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

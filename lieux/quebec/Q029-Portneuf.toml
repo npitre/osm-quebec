@@ -1,0 +1,25 @@
+# Bouchée 29 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Portneuf (2 de 2) (bouchée 29)"
+
+[rqa]
+municipalites = ["34030", "34038", "34048", "34058", "34060", "34065", "34078", "34085", "34090", "34097", "34105"]
+
+[regions.osm]
+"34030" = 8277031   # Cap-Santé
+"34038" = 8277027   # Saint-Basile
+"34048" = 8277021   # Portneuf
+"34058" = 8277335   # Deschambault-Grondines
+"34060" = 8277357   # Saint-Gilbert
+"34065" = 8277356   # Saint-Marc-des-Carrières
+"34078" = 8279175   # Saint-Casimir
+"34085" = 8279176   # Saint-Thuribe
+"34090" = 8279177   # Saint-Ubalde
+"34097" = 8114649   # Saint-Alban
+"34105" = 8114650   # Sainte-Christine-d'Auvergne
+
+[regions.groupe]
+comment = "Limites municipales (Portneuf (2 de 2)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

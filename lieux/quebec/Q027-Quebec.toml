@@ -1,0 +1,19 @@
+# Bouchée 27 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Québec (bouchée 27)"
+
+[rqa]
+municipalites = ["23015", "23027", "23057", "23072", "23802"]
+
+[regions.osm]
+"23015" = 8381589   # Notre-Dame-des-Anges
+"23027" = 2319206   # Québec
+"23057" = 7716093   # L'Ancienne-Lorette
+"23072" = 7716091   # Saint-Augustin-de-Desmaures
+"23802" = 7701011   # Wendake
+
+[regions.groupe]
+comment = "Limites municipales (Québec) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

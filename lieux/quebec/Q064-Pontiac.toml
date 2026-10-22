@@ -1,0 +1,23 @@
+# Bouchée 64 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Pontiac (3 de 4) (bouchée 64)"
+
+[rqa]
+municipalites = ["84005", "84010", "84015", "84035", "84045", "84050", "84055", "84060", "84065"]
+
+[regions.osm]
+"84005" = 7041406   # Bristol
+"84010" = 8353789   # Shawville
+"84015" = 7041407   # Clarendon
+"84035" = 7041732   # L'Île-du-Grand-Calumet
+"84045" = 7041801   # Thorne
+"84050" = 7045910   # Alleyn-et-Cawood
+"84055" = 7045223   # Otter Lake
+"84060" = 8353638   # Fort-Coulonge
+"84065" = 7045161   # Mansfield-et-Pontefract
+
+[regions.groupe]
+comment = "Limites municipales (Pontiac (3 de 4)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

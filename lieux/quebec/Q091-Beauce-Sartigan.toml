@@ -1,0 +1,30 @@
+# Bouchée 91 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Beauce-Sartigan (bouchée 91)"
+
+[rqa]
+municipalites = ["29005", "29013", "29020", "29027", "29030", "29038", "29045", "29050", "29057", "29065", "29073", "29095", "29100", "29112", "29120", "29125"]
+
+[regions.osm]
+"29005" = 8089949   # Saint-Théophile
+"29013" = 8089951   # Saint-Gédéon-de-Beauce
+"29020" = 8089952   # Saint-Hilaire-de-Dorset
+"29027" = 16866124   # Courcelles–Saint-Évariste
+"29030" = 8089954   # La Guadeloupe
+"29038" = 8089950   # Saint-Honoré-de-Shenley
+"29045" = 8089948   # Saint-Martin
+"29050" = 8089945   # Saint-René
+"29057" = 8089944   # Saint-Côme–Linière
+"29065" = 8089942   # Saint-Philibert
+"29073" = 8089943   # Saint-Georges
+"29095" = 8089946   # Lac-Poulin
+"29100" = 8089947   # Saint-Benoît-Labre
+"29112" = 8089953   # Saint-Éphrem-de-Beauce
+"29120" = 8089941   # Notre-Dame-des-Pins
+"29125" = 8089940   # Saint-Simon-les-Mines
+
+[regions.groupe]
+comment = "Limites municipales (Beauce-Sartigan) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

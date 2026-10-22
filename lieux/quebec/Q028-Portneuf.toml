@@ -1,0 +1,24 @@
+# Bouchée 28 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Portneuf (1 de 2) (bouchée 28)"
+
+[rqa]
+municipalites = ["34007", "34017", "34025", "34115", "34120", "34128", "34135", "34902", "34904", "34906"]
+
+[regions.osm]
+"34007" = 8205573   # Neuville
+"34017" = 8205572   # Pont-Rouge
+"34025" = 8205571   # Donnacona
+"34115" = 8114653   # Saint-Léonard-de-Portneuf
+"34120" = 8114651   # Lac-Sergent
+"34128" = 8114652   # Saint-Raymond
+"34135" = 8114654   # Rivière-à-Pierre
+"34902" = 8114657   # Lac-Blanc
+"34904" = 8114656   # Linton
+"34906" = 8114655   # Lac-Lapeyrère
+
+[regions.groupe]
+comment = "Limites municipales (Portneuf (1 de 2)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

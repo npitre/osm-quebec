@@ -1,0 +1,15 @@
+# Bouchée 61 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "La Vallée-de-la-Gatineau (7 de 7) (bouchée 61)"
+
+[rqa]
+municipalites = ["83904"]
+
+[regions.osm]
+"83904" = 8103023   # Cascades-Malignes
+
+[regions.groupe]
+comment = "Limites municipales (La Vallée-de-la-Gatineau (7 de 7)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

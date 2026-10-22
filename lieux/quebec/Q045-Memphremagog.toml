@@ -1,0 +1,31 @@
+# Bouchée 45 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Memphrémagog (bouchée 45)"
+
+[rqa]
+municipalites = ["45008", "45020", "45025", "45030", "45035", "45043", "45050", "45055", "45060", "45072", "45080", "45085", "45093", "45095", "45100", "45105", "45115"]
+
+[regions.osm]
+"45008" = 7953114   # Stanstead
+"45020" = 7953115   # Ogden
+"45025" = 7953116   # Stanstead
+"45030" = 7953121   # Potton
+"45035" = 7953112   # Ayer's Cliff
+"45043" = 7953111   # Hatley
+"45050" = 7953110   # North Hatley
+"45055" = 7953109   # Hatley
+"45060" = 7953113   # Sainte-Catherine-de-Hatley
+"45072" = 7953117   # Magog
+"45080" = 7953119   # Saint-Benoît-du-Lac
+"45085" = 7953120   # Austin
+"45093" = 7950490   # Eastman
+"45095" = 7953122   # Bolton-Est
+"45100" = 7953123   # Saint-Étienne-de-Bolton
+"45105" = 7950491   # Stukely-Sud
+"45115" = 7953118   # Orford
+
+[regions.groupe]
+comment = "Limites municipales (Memphrémagog) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

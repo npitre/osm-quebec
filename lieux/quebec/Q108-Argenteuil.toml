@@ -1,0 +1,15 @@
+# Bouchée 108 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Argenteuil (2 de 2) (bouchée 108)"
+
+[rqa]
+municipalites = ["76008"]
+
+[regions.osm]
+"76008" = 7697272   # Saint-André-d'Argenteuil
+
+[regions.groupe]
+comment = "Limites municipales (Argenteuil (2 de 2)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

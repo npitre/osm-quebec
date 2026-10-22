@@ -1,0 +1,24 @@
+# Bouchée 129 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "L'Érable (bouchée 129)"
+
+[rqa]
+municipalites = ["32013", "32023", "32033", "32043", "32050", "32058", "32065", "32072", "32080", "32085"]
+
+[regions.osm]
+"32013" = 8055272   # Saint-Ferdinand
+"32023" = 8055273   # Sainte-Sophie-d'Halifax
+"32033" = 8055277   # Princeville
+"32043" = 8055276   # Plessisville
+"32050" = 8055271   # Saint-Pierre-Baptiste
+"32058" = 8055268   # Inverness
+"32065" = 8055269   # Lyster
+"32072" = 8055270   # Laurierville
+"32080" = 8055274   # Notre-Dame-de-Lourdes
+"32085" = 8055278   # Villeroy
+
+[regions.groupe]
+comment = "Limites municipales (L'Érable) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

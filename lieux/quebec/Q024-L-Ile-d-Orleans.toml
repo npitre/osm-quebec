@@ -1,0 +1,20 @@
+# Bouchée 24 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "L'Île-d'Orléans (bouchée 24)"
+
+[rqa]
+municipalites = ["20005", "20010", "20015", "20020", "20025", "20030"]
+
+[regions.osm]
+"20005" = 8099227   # Saint-François-de-l'Île-d'Orléans
+"20010" = 8099225   # Sainte-Famille-de-l'Île-d'Orléans
+"20015" = 8099226   # Saint-Jean-de-l'Île-d'Orléans
+"20020" = 8099222   # Saint-Laurent-de-l'Île-d'Orléans
+"20025" = 8099224   # Saint-Pierre-de-l'Île-d'Orléans
+"20030" = 8099223   # Sainte-Pétronille
+
+[regions.groupe]
+comment = "Limites municipales (L'Île-d'Orléans) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

@@ -1,0 +1,24 @@
+# Bouchée 104 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Montcalm (bouchée 104)"
+
+[rqa]
+municipalites = ["63005", "63013", "63023", "63030", "63035", "63040", "63048", "63055", "63060", "63065"]
+
+[regions.osm]
+"63005" = 7704058   # Sainte-Marie-Salomé
+"63013" = 7704060   # Saint-Jacques
+"63023" = 7704061   # Saint-Alexis
+"63030" = 7704064   # Saint-Esprit
+"63035" = 7704065   # Saint-Roch-de-l'Achigan
+"63040" = 7704066   # Saint-Roch-Ouest
+"63048" = 7704067   # Saint-Lin–Laurentides
+"63055" = 7704063   # Saint-Calixte
+"63060" = 7704062   # Sainte-Julienne
+"63065" = 7704059   # Saint-Liguori
+
+[regions.groupe]
+comment = "Limites municipales (Montcalm) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

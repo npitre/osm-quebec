@@ -1,0 +1,22 @@
+# Bouchée 7 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Les Basques (1 de 2), Rivière-du-Loup (2 de 3) (bouchée 7)"
+
+[rqa]
+municipalites = ["11005", "11010", "11015", "11025", "11030", "11035", "11902", "12035"]
+
+[regions.osm]
+"11005" = 8228424   # Saint-Clément
+"11010" = 8228418   # Saint-Jean-de-Dieu
+"11015" = 8228419   # Sainte-Rita
+"11025" = 8228991   # Saint-Médard
+"11030" = 8228421   # Sainte-Françoise
+"11035" = 8228423   # Saint-Éloi
+"11902" = 8228993   # Lac-Boisbouscache
+"12035" = 8228425   # Saint-Paul-de-la-Croix
+
+[regions.groupe]
+comment = "Limites municipales (Les Basques (1 de 2), Rivière-du-Loup (2 de 3)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

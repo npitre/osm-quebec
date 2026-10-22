@@ -1,0 +1,30 @@
+# Bouchée 4 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "La Mitis (1 de 2) (bouchée 4)"
+
+[rqa]
+municipalites = ["09005", "09010", "09015", "09020", "09025", "09030", "09035", "09040", "09048", "09055", "09060", "09065", "09070", "09092", "09902", "09904"]
+
+[regions.osm]
+"09005" = 8264390   # La Rédemption
+"09010" = 8268275   # Saint-Charles-Garnier
+"09015" = 8268165   # Les Hauteurs
+"09020" = 8262620   # Sainte-Jeanne-d'Arc-de-la-Mitis
+"09025" = 8234684   # Saint-Gabriel-de-Rimouski
+"09030" = 8226225   # Saint-Donat
+"09035" = 8234683   # Sainte-Angèle-de-Mérici
+"09040" = 8234682   # Padoue
+"09048" = 8232989   # Métis-sur-Mer
+"09055" = 8234650   # Saint-Octave-de-Métis
+"09060" = 8232990   # Grand-Métis
+"09065" = 8232993   # Price
+"09070" = 8234651   # Saint-Joseph-de-Lepage
+"09092" = 8226226   # Sainte-Luce
+"09902" = 8271772   # Lac-des-Eaux-Mortes
+"09904" = 8271773   # Lac-à-la-Croix
+
+[regions.groupe]
+comment = "Limites municipales (La Mitis (1 de 2)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

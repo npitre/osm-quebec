@@ -1,0 +1,24 @@
+# Bouchée 89 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Beauce-Centre (bouchée 89)"
+
+[rqa]
+municipalites = ["27008", "27015", "27028", "27035", "27043", "27050", "27055", "27060", "27065", "27070"]
+
+[regions.osm]
+"27008" = 8090034   # Saint-Victor
+"27015" = 8090033   # Saint-Alfred
+"27028" = 8090032   # Beauceville
+"27035" = 8090028   # Saint-Odilon-de-Cranbourne
+"27043" = 8090029   # Saint-Joseph-de-Beauce
+"27050" = 8090031   # Saint-Joseph-des-Érables
+"27055" = 8090035   # Saint-Jules
+"27060" = 8090036   # Tring-Jonction
+"27065" = 8090037   # Saint-Frédéric
+"27070" = 8090038   # Saint-Séverin
+
+[regions.groupe]
+comment = "Limites municipales (Beauce-Centre) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

@@ -1,0 +1,24 @@
+# Bouchée 66 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Témiscamingue (1 de 3) (bouchée 66)"
+
+[rqa]
+municipalites = ["85005", "85010", "85015", "85025", "85030", "85037", "85045", "85055", "85060", "85905"]
+
+[regions.osm]
+"85005" = 8367981   # Témiscaming
+"85010" = 8367980   # Kipawa
+"85015" = 8367136   # Saint-Édouard-de-Fabre
+"85025" = 8163999   # Ville-Marie
+"85030" = 8368053   # Duhamel-Ouest
+"85037" = 8366111   # Lorrainville
+"85045" = 8366079   # Saint-Bruno-de-Guigues
+"85055" = 8366272   # Fugèreville
+"85060" = 8366271   # Latulipe-et-Gaboury
+"85905" = 8367861   # Laniel
+
+[regions.groupe]
+comment = "Limites municipales (Témiscamingue (1 de 3)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

@@ -1,0 +1,30 @@
+# Bouchée 101 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Matawinie (2 de 4) (bouchée 101)"
+
+[rqa]
+municipalites = ["62053", "62055", "62060", "62065", "62070", "62075", "62080", "62085", "62902", "62904", "62906", "62908", "62910", "62912", "62914", "62916"]
+
+[regions.osm]
+"62053" = 7707058   # Entrelacs
+"62055" = 7707057   # Notre-Dame-de-la-Merci
+"62060" = 7707055   # Saint-Donat
+"62065" = 7707051   # Saint-Côme
+"62070" = 7707048   # Sainte-Émélie-de-l'Énergie
+"62075" = 7707047   # Saint-Damien
+"62080" = 7707046   # Saint-Zénon
+"62085" = 7707045   # Saint-Michel-des-Saints
+"62902" = 8293394   # Lac-Minaki
+"62904" = 8293311   # Lac-Devenyns
+"62906" = 8294984   # Baie-de-la-Bouteille
+"62908" = 8293523   # Lac-Matawin
+"62910" = 8293609   # Lac-Legendre
+"62912" = 8293750   # Saint-Guillaume-Nord
+"62914" = 8293608   # Lac-des-Dix-Milles
+"62916" = 8293607   # Lac-Santé
+
+[regions.groupe]
+comment = "Limites municipales (Matawinie (2 de 4)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

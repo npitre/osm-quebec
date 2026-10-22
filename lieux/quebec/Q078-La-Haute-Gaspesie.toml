@@ -1,0 +1,16 @@
+# Bouchée 78 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "La Haute-Gaspésie (4 de 4), La Haute-Gaspésie (3 de 4) (bouchée 78)"
+
+[rqa]
+municipalites = ["04010", "04020"]
+
+[regions.osm]
+"04010" = 8240795   # Saint-Maxime-du-Mont-Louis
+"04020" = 8240793   # Rivière-à-Claude
+
+[regions.groupe]
+comment = "Limites municipales (La Haute-Gaspésie (4 de 4), La Haute-Gaspésie (3 de 4)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

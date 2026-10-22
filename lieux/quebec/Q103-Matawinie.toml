@@ -1,0 +1,21 @@
+# Bouchée 103 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Matawinie (4 de 4), La Rivière-du-Nord (bouchée 103)"
+
+[rqa]
+municipalites = ["62037", "62047", "75005", "75017", "75028", "75040", "75045"]
+
+[regions.osm]
+"62037" = 7707059   # Rawdon
+"62047" = 7707056   # Chertsey
+"75005" = 7698653   # Saint-Colomban
+"75017" = 7698652   # Saint-Jérôme
+"75028" = 7698650   # Sainte-Sophie
+"75040" = 7698651   # Prévost
+"75045" = 7698649   # Saint-Hippolyte
+
+[regions.groupe]
+comment = "Limites municipales (Matawinie (4 de 4), La Rivière-du-Nord) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

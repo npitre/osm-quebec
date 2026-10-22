@@ -1,0 +1,18 @@
+# Bouchée 80 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Avignon (1 de 3) (bouchée 80)"
+
+[rqa]
+municipalites = ["06005", "06013", "06020", "06902"]
+
+[regions.osm]
+"06005" = 8271767   # Maria
+"06013" = 8271765   # Carleton-sur-Mer
+"06020" = 8271764   # Nouvelle
+"06902" = 8406163   # Rivière-Nouvelle
+
+[regions.groupe]
+comment = "Limites municipales (Avignon (1 de 3)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

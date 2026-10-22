@@ -1,0 +1,18 @@
+# Bouchée 8 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Les Basques (2 de 2) (bouchée 8)"
+
+[rqa]
+municipalites = ["11040", "11045", "11050", "11055"]
+
+[regions.osm]
+"11040" = 8228426   # Trois-Pistoles
+"11045" = 8228422   # Notre-Dame-des-Neiges
+"11050" = 8228994   # Saint-Mathieu-de-Rioux
+"11055" = 8228995   # Saint-Simon-de-Rimouski
+
+[regions.groupe]
+comment = "Limites municipales (Les Basques (2 de 2)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

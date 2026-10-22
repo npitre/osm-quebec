@@ -1,0 +1,22 @@
+# Bouchée 115 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Antoine-Labelle (4 de 7) (bouchée 115)"
+
+[rqa]
+municipalites = ["79037", "79047", "79050", "79902", "79912", "79914", "79916", "79920"]
+
+[regions.osm]
+"79037" = 1490839   # Rivière-Rouge
+"79047" = 1490849   # La Macaza
+"79050" = 7361694   # L'Ascension
+"79902" = 1490844   # Lac-de-la-Pomme
+"79912" = 1490848   # Lac-De La Bidière
+"79914" = 1490847   # Lac-Oscar
+"79916" = 1490841   # Lac-de-la-Maison-de-Pierre
+"79920" = 1490846   # Baie-des-Chaloupes
+
+[regions.groupe]
+comment = "Limites municipales (Antoine-Labelle (4 de 7)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

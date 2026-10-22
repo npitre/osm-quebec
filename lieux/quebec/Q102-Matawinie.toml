@@ -1,0 +1,19 @@
+# Bouchée 102 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Matawinie (3 de 4) (bouchée 102)"
+
+[rqa]
+municipalites = ["62007", "62015", "62020", "62025", "62030"]
+
+[regions.osm]
+"62007" = 7707050   # Saint-Félix-de-Valois
+"62015" = 7707049   # Saint-Jean-de-Matha
+"62020" = 7707052   # Sainte-Béatrix
+"62025" = 7707053   # Saint-Alphonse-Rodriguez
+"62030" = 7707054   # Sainte-Marcelline-de-Kildare
+
+[regions.groupe]
+comment = "Limites municipales (Matawinie (3 de 4)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

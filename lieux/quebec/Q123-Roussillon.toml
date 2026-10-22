@@ -1,0 +1,23 @@
+# Bouchée 123 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Roussillon (1 de 2) (bouchée 123)"
+
+[rqa]
+municipalites = ["67005", "67020", "67025", "67030", "67035", "67040", "67045", "67050", "67055"]
+
+[regions.osm]
+"67005" = 7785152   # Saint-Mathieu
+"67020" = 7785147   # Candiac
+"67025" = 7785150   # Delson
+"67030" = 7785148   # Sainte-Catherine
+"67035" = 7785153   # Saint-Constant
+"67040" = 7785154   # Saint-Isidore
+"67045" = 7785156   # Mercier
+"67050" = 7785155   # Châteauguay
+"67055" = 7785157   # Léry
+
+[regions.groupe]
+comment = "Limites municipales (Roussillon (1 de 2)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

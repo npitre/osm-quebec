@@ -1,0 +1,28 @@
+# Bouchée 34 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Trois-Rivières, Maskinongé (3 de 3), Les Chenaux (bouchée 34)"
+
+[rqa]
+municipalites = ["37067", "37205", "37210", "37215", "37220", "37225", "37230", "37235", "37240", "37245", "37250", "51020", "51025", "51090"]
+
+[regions.osm]
+"37067" = 7711553   # Trois-Rivières
+"37205" = 8277355   # Sainte-Anne-de-la-Pérade
+"37210" = 7711547   # Batiscan
+"37215" = 7711546   # Sainte-Geneviève-de-Batiscan
+"37220" = 7711549   # Champlain
+"37225" = 7711548   # Saint-Luc-de-Vincennes
+"37230" = 7711550   # Saint-Maurice
+"37235" = 7711551   # Notre-Dame-du-Mont-Carmel
+"37240" = 7711545   # Saint-Narcisse
+"37245" = 7711544   # Saint-Stanislas
+"37250" = 8277354   # Saint-Prosper-de-Champlain
+"51020" = 7711428   # Yamachiche
+"51025" = 7711424   # Saint-Barnabé
+"51090" = 7711421   # Saint-Étienne-des-Grès
+
+[regions.groupe]
+comment = "Limites municipales (Trois-Rivières, Maskinongé (3 de 3), Les Chenaux) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

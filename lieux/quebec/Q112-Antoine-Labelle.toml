@@ -1,0 +1,22 @@
+# Bouchée 112 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Antoine-Labelle (1 de 7) (bouchée 112)"
+
+[rqa]
+municipalites = ["79060", "79065", "79078", "79088", "79097", "79105", "79110", "79926"]
+
+[regions.osm]
+"79060" = 7360511   # Lac-Saguay
+"79065" = 7360513   # Chute-Saint-Philippe
+"79078" = 7360512   # Lac-des-Écorces
+"79088" = 1490837   # Mont-Laurier
+"79097" = 1490845   # Ferme-Neuve
+"79105" = 7360492   # Lac-Saint-Paul
+"79110" = 7360493   # Mont-Saint-Michel
+"79926" = 1490840   # Lac-Marguerite
+
+[regions.groupe]
+comment = "Limites municipales (Antoine-Labelle (1 de 7)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

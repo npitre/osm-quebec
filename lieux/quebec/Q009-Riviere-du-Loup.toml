@@ -1,0 +1,24 @@
+# Bouchée 9 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Rivière-du-Loup (1 de 3) (bouchée 9)"
+
+[rqa]
+municipalites = ["12005", "12010", "12025", "12030", "12043", "12045", "12057", "12065", "12072", "12080"]
+
+[regions.osm]
+"12005" = 8228986   # Saint-Cyprien
+"12010" = 8227658   # Saint-Hubert-de-Rivière-du-Loup
+"12025" = 8227657   # Saint-François-Xavier-de-Viger
+"12030" = 8227656   # Saint-Épiphane
+"12043" = 8228146   # L'Isle-Verte
+"12045" = 8228147   # Notre-Dame-des-Sept-Douleurs
+"12057" = 8227654   # Cacouna
+"12065" = 8227655   # Saint-Arsène
+"12072" = 8189523   # Rivière-du-Loup
+"12080" = 8166514   # Notre-Dame-du-Portage
+
+[regions.groupe]
+comment = "Limites municipales (Rivière-du-Loup (1 de 3)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

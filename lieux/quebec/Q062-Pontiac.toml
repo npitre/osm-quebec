@@ -1,0 +1,15 @@
+# Bouchée 62 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Pontiac (1 de 4) (bouchée 62)"
+
+[rqa]
+municipalites = ["84082"]
+
+[regions.osm]
+"84082" = 7045475   # L'Isle-aux-Allumettes
+
+[regions.groupe]
+comment = "Limites municipales (Pontiac (1 de 4)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

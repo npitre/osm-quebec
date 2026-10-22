@@ -1,0 +1,26 @@
+# Bouchée 120 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Pierre-De Saurel (bouchée 120)"
+
+[rqa]
+municipalites = ["53005", "53010", "53015", "53020", "53025", "53032", "53040", "53050", "53052", "53065", "53072", "53085"]
+
+[regions.osm]
+"53005" = 7932156   # Saint-David
+"53010" = 7932158   # Massueville
+"53015" = 7932159   # Saint-Aimé
+"53020" = 7932161   # Saint-Robert
+"53025" = 7932163   # Sainte-Victoire-de-Sorel
+"53032" = 7932165   # Saint-Ours
+"53040" = 7932166   # Saint-Roch-de-Richelieu
+"53050" = 8480876   # Saint-Joseph-de-Sorel
+"53052" = 7932164   # Sorel-Tracy
+"53065" = 7932162   # Sainte-Anne-de-Sorel
+"53072" = 7932160   # Yamaska
+"53085" = 7932157   # Saint-Gérard-Majella
+
+[regions.groupe]
+comment = "Limites municipales (Pierre-De Saurel) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

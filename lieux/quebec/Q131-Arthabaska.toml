@@ -1,0 +1,36 @@
+# Bouchée 131 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Arthabaska (bouchée 131)"
+
+[rqa]
+municipalites = ["39005", "39010", "39015", "39020", "39025", "39030", "39035", "39043", "39060", "39062", "39077", "39085", "39090", "39097", "39105", "39117", "39130", "39135", "39145", "39152", "39165", "39170"]
+
+[regions.osm]
+"39005" = 7997276   # Saints-Martyrs-Canadiens
+"39010" = 7997275   # Ham-Nord
+"39015" = 7997274   # Notre-Dame-de-Ham
+"39020" = 7997273   # Saint-Rémi-de-Tingwick
+"39025" = 7997271   # Tingwick
+"39030" = 7997272   # Chesterville
+"39035" = 7997263   # Sainte-Hélène-de-Chester
+"39043" = 7997259   # Saint-Norbert-d'Arthabaska
+"39060" = 7997264   # Saint-Christophe-d'Arthabaska
+"39062" = 7997260   # Victoriaville
+"39077" = 7997265   # Warwick
+"39085" = 7997262   # Saint-Albert
+"39090" = 7997266   # Sainte-Élizabeth-de-Warwick
+"39097" = 7997270   # Kingsey Falls
+"39105" = 7997269   # Sainte-Séraphine
+"39117" = 7997268   # Sainte-Clotilde-de-Horton
+"39130" = 7997267   # Saint-Samuel
+"39135" = 7997261   # Saint-Valère
+"39145" = 7997258   # Saint-Rosaire
+"39152" = 7997256   # Daveluyville
+"39165" = 7997255   # Maddington Falls
+"39170" = 7997254   # Saint-Louis-de-Blandford
+
+[regions.groupe]
+comment = "Limites municipales (Arthabaska) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

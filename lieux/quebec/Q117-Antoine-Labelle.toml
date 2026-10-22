@@ -1,0 +1,15 @@
+# Bouchée 117 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Antoine-Labelle (6 de 7) (bouchée 117)"
+
+[rqa]
+municipalites = ["79010"]
+
+[regions.osm]
+"79010" = 1490843   # Notre-Dame-de-Pontmain
+
+[regions.groupe]
+comment = "Limites municipales (Antoine-Labelle (6 de 7)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

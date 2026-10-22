@@ -1,0 +1,30 @@
+# Bouchée 70 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Abitibi (1 de 2) (bouchée 70)"
+
+[rqa]
+municipalites = ["88005", "88012", "88022", "88030", "88035", "88040", "88045", "88050", "88057", "88065", "88070", "88075", "88080", "88085", "88090", "88904"]
+
+[regions.osm]
+"88005" = 7359893   # Champneuf
+"88012" = 16785732   # La Morandière-Rochebaucourt
+"88022" = 7360010   # Barraute
+"88030" = 7360008   # La Corne
+"88035" = 7360009   # Landrienne
+"88040" = 7360325   # Saint-Marc-de-Figuery
+"88045" = 7360110   # La Motte
+"88050" = 7360326   # Saint-Mathieu-d'Harricana
+"88057" = 18741228   # Amos
+"88065" = 7360337   # Saint-Dominique-du-Rosaire
+"88070" = 7360330   # Berry
+"88075" = 7360328   # Trécesson
+"88080" = 7360329   # Launay
+"88085" = 7360327   # Sainte-Gertrude-Manneville
+"88090" = 7360111   # Preissac
+"88904" = 8359838   # Lac-Chicobi
+
+[regions.groupe]
+comment = "Limites municipales (Abitibi (1 de 2)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

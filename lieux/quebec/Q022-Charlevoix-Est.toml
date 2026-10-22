@@ -1,0 +1,23 @@
+# Bouchée 22 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Charlevoix-Est (bouchée 22)"
+
+[rqa]
+municipalites = ["15005", "15013", "15025", "15030", "15035", "15058", "15065", "15902", "15904"]
+
+[regions.osm]
+"15005" = 7717112   # Saint-Irénée
+"15013" = 7717114   # La Malbaie
+"15025" = 7717116   # Notre-Dame-des-Monts
+"15030" = 7717115   # Saint-Aimé-des-Lacs
+"15035" = 7717113   # Clermont
+"15058" = 7717111   # Saint-Siméon
+"15065" = 7717110   # Baie-Sainte-Catherine
+"15902" = 8147782   # Mont-Élie
+"15904" = 8147783   # Sagard
+
+[regions.groupe]
+comment = "Limites municipales (Charlevoix-Est) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

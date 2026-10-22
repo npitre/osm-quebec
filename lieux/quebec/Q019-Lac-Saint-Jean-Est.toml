@@ -1,0 +1,17 @@
+# Bouchée 19 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Lac-Saint-Jean-Est (5 de 5), Lac-Saint-Jean-Est (3 de 5) (bouchée 19)"
+
+[rqa]
+municipalites = ["93045", "93065", "93070"]
+
+[regions.osm]
+"93045" = 8374507   # Saint-Nazaire
+"93065" = 8374473   # L'Ascension-de-Notre-Seigneur
+"93070" = 8374474   # Saint-Henri-de-Taillon
+
+[regions.groupe]
+comment = "Limites municipales (Lac-Saint-Jean-Est (5 de 5), Lac-Saint-Jean-Est (3 de 5)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

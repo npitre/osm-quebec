@@ -1,0 +1,31 @@
+# Bouchée 124 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Les Jardins-de-Napierville, Le Haut-Saint-Laurent (2 de 2) (bouchée 124)"
+
+[rqa]
+municipalites = ["68005", "68010", "68015", "68020", "68025", "68030", "68035", "68040", "68045", "68050", "68055", "69005", "69010", "69017", "69025", "69030", "69037"]
+
+[regions.osm]
+"68005" = 7785077   # Saint-Bernard-de-Lacolle
+"68010" = 7785081   # Hemmingford
+"68015" = 7785082   # Hemmingford
+"68020" = 7785080   # Sainte-Clotilde
+"68025" = 7785076   # Saint-Patrice-de-Sherrington
+"68030" = 7785072   # Napierville
+"68035" = 7785073   # Saint-Cyprien-de-Napierville
+"68040" = 7785074   # Saint-Jacques-le-Mineur
+"68045" = 7785075   # Saint-Édouard
+"68050" = 7785078   # Saint-Michel
+"68055" = 7785079   # Saint-Rémi
+"69005" = 7743223   # Havelock
+"69010" = 7743224   # Franklin
+"69017" = 7743222   # Saint-Chrysostome
+"69025" = 7743220   # Howick
+"69030" = 7743221   # Très-Saint-Sacrement
+"69037" = 7743225   # Ormstown
+
+[regions.groupe]
+comment = "Limites municipales (Les Jardins-de-Napierville, Le Haut-Saint-Laurent (2 de 2)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

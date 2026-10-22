@@ -1,0 +1,36 @@
+# Bouchée 121 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Rouville, Le Haut-Richelieu (bouchée 121)"
+
+[rqa]
+municipalites = ["55008", "55015", "55023", "55030", "55037", "55048", "55057", "55065", "56005", "56010", "56015", "56023", "56030", "56035", "56042", "56050", "56055", "56060", "56065", "56083", "56097", "56105"]
+
+[regions.osm]
+"55008" = 7903250   # Ange-Gardien
+"55015" = 7903249   # Saint-Paul-d'Abbotsford
+"55023" = 7903251   # Saint-Césaire
+"55030" = 7903253   # Sainte-Angèle-de-Monnoir
+"55037" = 7903252   # Rougemont
+"55048" = 7903254   # Marieville
+"55057" = 7903255   # Richelieu
+"55065" = 7903256   # Saint-Mathias-sur-Richelieu
+"56005" = 1600480   # Venise-en-Québec
+"56010" = 1600486   # Clarenceville
+"56015" = 1600477   # Noyan
+"56023" = 1600483   # Lacolle
+"56030" = 7820573   # Saint-Valentin
+"56035" = 1600482   # Saint-Paul-de-l'Île-aux-Noix
+"56042" = 1600481   # Henryville
+"56050" = 7820572   # Saint-Sébastien
+"56055" = 7820571   # Saint-Alexandre
+"56060" = 1600485   # Sainte-Anne-de-Sabrevois
+"56065" = 1600479   # Saint-Blaise-sur-Richelieu
+"56083" = 1600484   # Saint-Jean-sur-Richelieu
+"56097" = 7820570   # Mont-Saint-Grégoire
+"56105" = 7820569   # Sainte-Brigide-d'Iberville
+
+[regions.groupe]
+comment = "Limites municipales (Rouville, Le Haut-Richelieu) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

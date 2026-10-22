@@ -1,0 +1,25 @@
+# Bouchée 47 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Brome-Missisquoi (2 de 2), La Haute-Yamaska (bouchée 47)"
+
+[rqa]
+municipalites = ["46058", "46065", "46070", "47010", "47017", "47025", "47030", "47035", "47040", "47047", "47055"]
+
+[regions.osm]
+"46058" = 7926992   # Sutton
+"46065" = 7926990   # Bolton-Ouest
+"46070" = 7926993   # Brome
+"47010" = 7927023   # Saint-Alphonse-de-Granby
+"47017" = 7927022   # Granby
+"47025" = 7927018   # Waterloo
+"47030" = 7927017   # Warden
+"47035" = 7927019   # Shefford
+"47040" = 7927016   # Saint-Joachim-de-Shefford
+"47047" = 7927020   # Roxton Pond
+"47055" = 7927021   # Sainte-Cécile-de-Milton
+
+[regions.groupe]
+comment = "Limites municipales (Brome-Missisquoi (2 de 2), La Haute-Yamaska) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

@@ -1,0 +1,18 @@
+# Bouchée 58 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "La Vallée-de-la-Gatineau (4 de 7) (bouchée 58)"
+
+[rqa]
+municipalites = ["83075", "83085", "83090", "83095"]
+
+[regions.osm]
+"83075" = 7357978   # Egan-Sud
+"83085" = 7358185   # Bois-Franc
+"83090" = 7358187   # Aumond
+"83095" = 7358186   # Grand-Remous
+
+[regions.groupe]
+comment = "Limites municipales (La Vallée-de-la-Gatineau (4 de 7)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

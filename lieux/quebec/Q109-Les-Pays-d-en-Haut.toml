@@ -1,0 +1,24 @@
+# Bouchée 109 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Les Pays-d'en-Haut (bouchée 109)"
+
+[rqa]
+municipalites = ["77011", "77012", "77022", "77030", "77035", "77043", "77050", "77055", "77060", "77065"]
+
+[regions.osm]
+"77011" = 7697463   # Estérel
+"77012" = 7697464   # Sainte-Marguerite-du-Lac-Masson
+"77022" = 7697465   # Sainte-Adèle
+"77030" = 7697462   # Piedmont
+"77035" = 7697466   # Sainte-Anne-des-Lacs
+"77043" = 7697467   # Saint-Sauveur
+"77050" = 7697468   # Morin-Heights
+"77055" = 7697471   # Lac-des-Seize-Îles
+"77060" = 7697470   # Wentworth-Nord
+"77065" = 7697469   # Saint-Adolphe-d'Howard
+
+[regions.groupe]
+comment = "Limites municipales (Les Pays-d'en-Haut) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

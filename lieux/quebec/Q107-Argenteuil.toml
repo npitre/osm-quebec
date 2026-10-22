@@ -1,0 +1,22 @@
+# Bouchée 107 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Argenteuil (1 de 2) (bouchée 107)"
+
+[rqa]
+municipalites = ["76020", "76025", "76030", "76035", "76043", "76052", "76055", "76065"]
+
+[regions.osm]
+"76020" = 7697271   # Lachute
+"76025" = 7697270   # Gore
+"76030" = 7697269   # Mille-Isles
+"76035" = 7697273   # Wentworth
+"76043" = 7697274   # Brownsburg-Chatham
+"76052" = 7697276   # Grenville-sur-la-Rouge
+"76055" = 7697277   # Grenville
+"76065" = 7697275   # Harrington
+
+[regions.groupe]
+comment = "Limites municipales (Argenteuil (1 de 2)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

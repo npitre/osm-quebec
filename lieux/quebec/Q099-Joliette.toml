@@ -1,0 +1,20 @@
+# Bouchée 99 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Joliette (2 de 2) (bouchée 99)"
+
+[rqa]
+municipalites = ["61005", "61013", "61025", "61027", "61030", "61045"]
+
+[regions.osm]
+"61005" = 7706455   # Saint-Paul
+"61013" = 7706454   # Crabtree
+"61025" = 7706452   # Joliette
+"61027" = 7706448   # Saint-Thomas
+"61030" = 7706449   # Notre-Dame-des-Prairies
+"61045" = 7706447   # Notre-Dame-de-Lourdes
+
+[regions.groupe]
+comment = "Limites municipales (Joliette (2 de 2)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

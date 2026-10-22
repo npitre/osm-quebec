@@ -1,0 +1,22 @@
+# Bouchée 111 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Les Laurentides (2 de 2) (bouchée 111)"
+
+[rqa]
+municipalites = ["78065", "78070", "78075", "78102", "78115", "78120", "78127", "78130"]
+
+[regions.osm]
+"78065" = 7692501   # Huberdeau
+"78070" = 7362398   # Amherst
+"78075" = 7362396   # Brébeuf
+"78102" = 7362395   # Mont-Tremblant
+"78115" = 7362397   # La Conception
+"78120" = 7362394   # Labelle
+"78127" = 7362392   # Lac-Tremblant-Nord
+"78130" = 7362393   # La Minerve
+
+[regions.groupe]
+comment = "Limites municipales (Les Laurentides (2 de 2)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

@@ -1,0 +1,39 @@
+# Bouchée 1 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "La Matapédia (bouchée 1)"
+
+[rqa]
+municipalites = ["07005", "07010", "07018", "07025", "07030", "07035", "07040", "07047", "07057", "07065", "07070", "07075", "07080", "07085", "07090", "07095", "07100", "07105", "07902", "07904", "07906", "07908", "07910", "07912", "07914"]
+
+[regions.osm]
+"07005" = 8150931   # Sainte-Marguerite-Marie
+"07010" = 8265747   # Sainte-Florence
+"07018" = 8150932   # Causapscal
+"07025" = 8265748   # Albertville
+"07030" = 8268169   # Saint-Léon-le-Grand
+"07035" = 8268167   # Saint-Zénon-du-Lac-Humqui
+"07040" = 8268170   # Sainte-Irène
+"07047" = 8262628   # Amqui
+"07057" = 8262627   # Lac-au-Saumon
+"07065" = 8150930   # Saint-Alexandre-des-Lacs
+"07070" = 8150929   # Saint-Tharcisius
+"07075" = 8150456   # Saint-Vianney
+"07080" = 8262623   # Val-Brillant
+"07085" = 8262624   # Sayabec
+"07090" = 8264391   # Saint-Cléophas
+"07095" = 8262621   # Saint-Moïse
+"07100" = 8262622   # Saint-Noël
+"07105" = 8234681   # Saint-Damase
+"07902" = 8150455   # Routhierville
+"07904" = 8268166   # Rivière-Vaseuse
+"07906" = 8271771   # Rivière-Patapédia-Est
+"07908" = 8150933   # Lac-Casault
+"07910" = 8150934   # Ruisseau-des-Mineurs
+"07912" = 8268168   # Lac-Alfred
+"07914" = 8262625   # Lac-Matapédia
+
+[regions.groupe]
+comment = "Limites municipales (La Matapédia) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

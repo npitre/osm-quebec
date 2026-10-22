@@ -1,0 +1,22 @@
+# Bouchée 72 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "La Vallée-de-l'Or (bouchée 72)"
+
+[rqa]
+municipalites = ["89008", "89010", "89015", "89045", "89050", "89902", "89908", "89912"]
+
+[regions.osm]
+"89008" = 7359771   # Val-d'Or
+"89010" = 7360109   # Rivière-Héva
+"89015" = 7360108   # Malartic
+"89045" = 8450479   # Senneterre
+"89050" = 7359892   # Belcourt
+"89902" = 8365715   # Matchi-Manitou
+"89908" = 8365714   # Lac-Metei
+"89912" = 8364665   # Lac-Granet
+
+[regions.groupe]
+comment = "Limites municipales (La Vallée-de-l'Or) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

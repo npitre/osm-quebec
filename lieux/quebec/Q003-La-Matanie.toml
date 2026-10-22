@@ -1,0 +1,15 @@
+# Bouchée 3 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "La Matanie (2 de 2) (bouchée 3)"
+
+[rqa]
+municipalites = ["08902"]
+
+[regions.osm]
+"08902" = 8001955   # Rivière-Bonjour
+
+[regions.groupe]
+comment = "Limites municipales (La Matanie (2 de 2)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

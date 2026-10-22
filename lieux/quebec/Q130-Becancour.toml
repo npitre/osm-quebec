@@ -1,0 +1,26 @@
+# Bouchée 130 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Bécancour (bouchée 130)"
+
+[rqa]
+municipalites = ["38005", "38010", "38015", "38020", "38028", "38035", "38040", "38047", "38055", "38060", "38065", "38070"]
+
+[regions.osm]
+"38005" = 8042844   # Saint-Sylvère
+"38010" = 8042836   # Bécancour
+"38015" = 8042841   # Sainte-Marie-de-Blandford
+"38020" = 8042843   # Lemieux
+"38028" = 8042842   # Manseau
+"38035" = 8042839   # Sainte-Françoise
+"38040" = 8042840   # Sainte-Sophie-de-Lévrard
+"38047" = 8042838   # Fortierville
+"38055" = 8042834   # Parisville
+"38060" = 8042837   # Sainte-Cécile-de-Lévrard
+"38065" = 8042835   # Saint-Pierre-les-Becquets
+"38070" = 8042833   # Deschaillons-sur-Saint-Laurent
+
+[regions.groupe]
+comment = "Limites municipales (Bécancour) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

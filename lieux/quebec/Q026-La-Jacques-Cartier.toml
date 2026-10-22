@@ -1,0 +1,24 @@
+# Bouchée 26 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "La Jacques-Cartier (bouchée 26)"
+
+[rqa]
+municipalites = ["22005", "22010", "22015", "22020", "22025", "22030", "22035", "22040", "22045", "22902"]
+
+[regions.osm]
+"22005" = 7716433   # Sainte-Catherine-de-la-Jacques-Cartier
+"22010" = 7716432   # Fossambault-sur-le-Lac
+"22015" = 7716431   # Lac-Saint-Joseph
+"22020" = 7716430   # Shannon
+"22025" = 7716429   # Saint-Gabriel-de-Valcartier
+"22030" = 7716428   # Lac-Delage
+"22035" = 7716425   # Stoneham-et-Tewkesbury
+"22040" = 7716427   # Lac-Beauport
+"22045" = 7716426   # Sainte-Brigitte-de-Laval
+"22902" = 8114658   # Lac-Croche
+
+[regions.groupe]
+comment = "Limites municipales (La Jacques-Cartier) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

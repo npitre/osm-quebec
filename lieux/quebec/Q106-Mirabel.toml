@@ -1,0 +1,15 @@
+# Bouchée 106 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Mirabel (bouchée 106)"
+
+[rqa]
+municipalites = ["74005"]
+
+[regions.osm]
+"74005" = 7699994   # Mirabel
+
+[regions.groupe]
+comment = "Limites municipales (Mirabel) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

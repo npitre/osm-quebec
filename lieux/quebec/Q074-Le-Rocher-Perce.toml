@@ -1,0 +1,20 @@
+# Bouchée 74 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Le Rocher-Percé (bouchée 74)"
+
+[rqa]
+municipalites = ["02005", "02010", "02015", "02028", "02047", "02902"]
+
+[regions.osm]
+"02005" = 8237764   # Percé
+"02010" = 8244715   # Sainte-Thérèse-de-Gaspé
+"02015" = 8244714   # Grande-Rivière
+"02028" = 8271776   # Chandler
+"02047" = 8271756   # Port-Daniel–Gascons
+"02902" = 8271774   # Mont-Alexandre
+
+[regions.groupe]
+comment = "Limites municipales (Le Rocher-Percé) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

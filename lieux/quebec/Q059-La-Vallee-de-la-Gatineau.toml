@@ -1,0 +1,21 @@
+# Bouchée 59 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "La Vallée-de-la-Gatineau (5 de 7) (bouchée 59)"
+
+[rqa]
+municipalites = ["83032", "83040", "83045", "83050", "83055", "83060", "83070"]
+
+[regions.osm]
+"83032" = 7041000   # Gracefield
+"83040" = 7041005   # Cayamant
+"83045" = 7041002   # Blue Sea
+"83050" = 7041003   # Bouchette
+"83055" = 7041001   # Sainte-Thérèse-de-la-Gatineau
+"83060" = 7041004   # Messines
+"83070" = 7358188   # Déléage
+
+[regions.groupe]
+comment = "Limites municipales (La Vallée-de-la-Gatineau (5 de 7)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

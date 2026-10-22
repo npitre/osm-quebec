@@ -1,0 +1,15 @@
+# Bouchée 71 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Abitibi (2 de 2) (bouchée 71)"
+
+[rqa]
+municipalites = ["88902"]
+
+[regions.osm]
+"88902" = 8107216   # Lac-Despinassy
+
+[regions.groupe]
+comment = "Limites municipales (Abitibi (2 de 2)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

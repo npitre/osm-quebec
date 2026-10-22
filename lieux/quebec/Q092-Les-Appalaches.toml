@@ -1,0 +1,33 @@
+# Bouchée 92 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Les Appalaches (bouchée 92)"
+
+[rqa]
+municipalites = ["31008", "31015", "31020", "31025", "31030", "31035", "31040", "31045", "31050", "31056", "31060", "31084", "31095", "31100", "31105", "31122", "31130", "31135", "31140"]
+
+[regions.osm]
+"31008" = 8055332   # Beaulac-Garthby
+"31015" = 8055330   # Disraeli
+"31020" = 8055331   # Disraeli
+"31025" = 8055339   # Saint-Jacques-le-Majeur-de-Wolfestown
+"31030" = 8055340   # Saint-Fortunat
+"31035" = 8055338   # Saint-Julien
+"31040" = 8055337   # Irlande
+"31045" = 8055329   # Saint-Joseph-de-Coleraine
+"31050" = 8055328   # Sainte-Praxède
+"31056" = 8055326   # Adstock
+"31060" = 8055322   # Sainte-Clotilde-de-Beauce
+"31084" = 8055327   # Thetford Mines
+"31095" = 8055336   # Saint-Adrien-d'Irlande
+"31100" = 8055335   # Saint-Jean-de-Brébeuf
+"31105" = 8055334   # Kinnear's Mills
+"31122" = 8055323   # East Broughton
+"31130" = 8055324   # Sacré-Coeur-de-Jésus
+"31135" = 8055325   # Saint-Pierre-de-Broughton
+"31140" = 8055333   # Saint-Jacques-de-Leeds
+
+[regions.groupe]
+comment = "Limites municipales (Les Appalaches) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

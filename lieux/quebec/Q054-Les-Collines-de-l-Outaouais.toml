@@ -1,0 +1,20 @@
+# Bouchée 54 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Les Collines-de-l'Outaouais (bouchée 54)"
+
+[rqa]
+municipalites = ["82005", "82015", "82020", "82025", "82030", "82035"]
+
+[regions.osm]
+"82005" = 7547234   # L'Ange-Gardien
+"82015" = 7041289   # Val-des-Monts
+"82020" = 7041122   # Cantley
+"82025" = 7045744   # Chelsea
+"82030" = 7041343   # Pontiac
+"82035" = 7045685   # La Pêche
+
+[regions.groupe]
+comment = "Limites municipales (Les Collines-de-l'Outaouais) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

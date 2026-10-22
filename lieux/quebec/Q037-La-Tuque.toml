@@ -1,0 +1,16 @@
+# Bouchée 37 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "La Tuque (bouchée 37)"
+
+[rqa]
+municipalites = ["90017", "90027"]
+
+[regions.osm]
+"90017" = 7716489   # La Bostonnais
+"90027" = 7716488   # Lac-Édouard
+
+[regions.groupe]
+comment = "Limites municipales (La Tuque) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

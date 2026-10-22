@@ -1,0 +1,21 @@
+# Bouchée 97 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "L'Assomption, Les Moulins (bouchée 97)"
+
+[rqa]
+municipalites = ["60005", "60013", "60020", "60028", "60037", "64008", "64015"]
+
+[regions.osm]
+"60005" = 7706381   # Charlemagne
+"60013" = 7706380   # Repentigny
+"60020" = 7706376   # Saint-Sulpice
+"60028" = 7706379   # L'Assomption
+"60037" = 8325030   # L'Épiphanie
+"64008" = 7704070   # Terrebonne
+"64015" = 7704069   # Mascouche
+
+[regions.groupe]
+comment = "Limites municipales (L'Assomption, Les Moulins) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

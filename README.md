@@ -40,7 +40,9 @@ Pour tout le Québec, avant le remplacement des limites :
 selon le MRNF et selon OSM, et liste les municipalités du MRNF absentes
 d'OSM (produit par `outils/frontieres.py`); son inventaire estime le
 nombre d'objets à envoyer pour chaque municipalité
-(`outils/inventaire.py`).
+(`outils/inventaire.py`), et son découpage répartit le Québec
+méridional en bouchées d'au plus 8 000 objets estimés, chacune avec son
+fichier de lieu dans `lieux/quebec/` (`outils/bouchees.py`).
 
 ## Licences
 

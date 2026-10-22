@@ -1,0 +1,25 @@
+# Bouchée 25 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "La Côte-de-Beaupré (bouchée 25)"
+
+[rqa]
+municipalites = ["21005", "21010", "21015", "21020", "21025", "21030", "21035", "21040", "21045", "21902", "21904"]
+
+[regions.osm]
+"21005" = 7717046   # Saint-Tite-des-Caps
+"21010" = 7717049   # Saint-Ferréol-les-Neiges
+"21015" = 7717048   # Saint-Louis-de-Gonzague-du-Cap-Tourmente
+"21020" = 7717047   # Saint-Joachim
+"21025" = 7717050   # Beaupré
+"21030" = 7717051   # Sainte-Anne-de-Beaupré
+"21035" = 7717052   # Château-Richer
+"21040" = 7717053   # L'Ange-Gardien
+"21045" = 7717054   # Boischatel
+"21902" = 8146885   # Sault-au-Cochon
+"21904" = 8114659   # Lac-Jacques-Cartier
+
+[regions.groupe]
+comment = "Limites municipales (La Côte-de-Beaupré) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

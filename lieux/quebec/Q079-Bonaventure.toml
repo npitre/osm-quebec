@@ -1,0 +1,28 @@
+# Bouchée 79 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Bonaventure (bouchée 79)"
+
+[rqa]
+municipalites = ["05010", "05015", "05020", "05025", "05032", "05040", "05045", "05050", "05055", "05060", "05065", "05070", "05077", "05902"]
+
+[regions.osm]
+"05010" = 8276148   # Shigawake
+"05015" = 8276147   # Saint-Godefroi
+"05020" = 8276146   # Hope Town
+"05025" = 8276145   # Hope
+"05032" = 8271757   # Paspébiac
+"05040" = 8271758   # New Carlisle
+"05045" = 8271759   # Bonaventure
+"05050" = 8408070   # Saint-Elzéar
+"05055" = 8271760   # Saint-Siméon
+"05060" = 8271761   # Caplan
+"05065" = 8408082   # Saint-Alphonse
+"05070" = 8271762   # New Richmond
+"05077" = 8271775   # Cascapédia–Saint-Jules
+"05902" = 8513256   # Rivière-Bonaventure
+
+[regions.groupe]
+comment = "Limites municipales (Bonaventure) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

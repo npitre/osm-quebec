@@ -1,0 +1,21 @@
+# Bouchée 126 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Beauharnois-Salaberry (bouchée 126)"
+
+[rqa]
+municipalites = ["70005", "70012", "70022", "70030", "70035", "70040", "70052"]
+
+[regions.osm]
+"70005" = 7765239   # Saint-Urbain-Premier
+"70012" = 7765240   # Sainte-Martine
+"70022" = 7765238   # Beauharnois
+"70030" = 7765241   # Saint-Étienne-de-Beauharnois
+"70035" = 7765242   # Saint-Louis-de-Gonzague
+"70040" = 7765244   # Saint-Stanislas-de-Kostka
+"70052" = 7765243   # Salaberry-de-Valleyfield
+
+[regions.groupe]
+comment = "Limites municipales (Beauharnois-Salaberry) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

@@ -1,0 +1,19 @@
+# Bouchée 105 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Deux-Montagnes (1 de 2) (bouchée 105)"
+
+[rqa]
+municipalites = ["72015", "72020", "72025", "72032", "72043"]
+
+[regions.osm]
+"72015" = 7699989   # Sainte-Marthe-sur-le-Lac
+"72020" = 7699991   # Pointe-Calumet
+"72025" = 7699990   # Saint-Joseph-du-Lac
+"72032" = 6451177   # Oka
+"72043" = 7699993   # Saint-Placide
+
+[regions.groupe]
+comment = "Limites municipales (Deux-Montagnes (1 de 2)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

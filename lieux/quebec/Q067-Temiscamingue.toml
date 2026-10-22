@@ -1,0 +1,15 @@
+# Bouchée 67 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Témiscamingue (2 de 3) (bouchée 67)"
+
+[rqa]
+municipalites = ["85020"]
+
+[regions.osm]
+"85020" = 8366269   # Béarn
+
+[regions.groupe]
+comment = "Limites municipales (Témiscamingue (2 de 3)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

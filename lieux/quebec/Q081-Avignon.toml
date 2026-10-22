@@ -1,0 +1,17 @@
+# Bouchée 81 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Avignon (2 de 3) (bouchée 81)"
+
+[rqa]
+municipalites = ["06025", "06030", "06035"]
+
+[regions.osm]
+"06025" = 8271763   # Escuminac
+"06030" = 8274884   # Pointe-à-la-Croix
+"06035" = 8274888   # Ristigouche-Sud-Est
+
+[regions.groupe]
+comment = "Limites municipales (Avignon (2 de 3)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

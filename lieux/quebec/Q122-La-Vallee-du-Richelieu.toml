@@ -1,0 +1,27 @@
+# Bouchée 122 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "La Vallée-du-Richelieu (bouchée 122)"
+
+[rqa]
+municipalites = ["57005", "57010", "57020", "57025", "57030", "57033", "57035", "57040", "57045", "57050", "57057", "57068", "57075"]
+
+[regions.osm]
+"57005" = 7903230   # Chambly
+"57010" = 7903231   # Carignan
+"57020" = 7903229   # Saint-Basile-le-Grand
+"57025" = 7903226   # McMasterville
+"57030" = 7903225   # Otterburn Park
+"57033" = 7903219   # Saint-Jean-Baptiste
+"57035" = 7903220   # Mont-Saint-Hilaire
+"57040" = 7903227   # Beloeil
+"57045" = 7903228   # Saint-Mathieu-de-Beloeil
+"57050" = 7903224   # Saint-Marc-sur-Richelieu
+"57057" = 7903221   # Saint-Charles-sur-Richelieu
+"57068" = 7903222   # Saint-Denis-sur-Richelieu
+"57075" = 7903223   # Saint-Antoine-sur-Richelieu
+
+[regions.groupe]
+comment = "Limites municipales (La Vallée-du-Richelieu) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

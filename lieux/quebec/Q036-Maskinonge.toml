@@ -1,0 +1,22 @@
+# Bouchée 36 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Maskinongé (2 de 3) (bouchée 36)"
+
+[rqa]
+municipalites = ["51030", "51035", "51060", "51065", "51070", "51075", "51080", "51085"]
+
+[regions.osm]
+"51030" = 7711426   # Saint-Sévère
+"51035" = 7711432   # Saint-Léon-le-Grand
+"51060" = 7711425   # Saint-Paulin
+"51065" = 7711418   # Saint-Alexis-des-Monts
+"51070" = 7711419   # Saint-Mathieu-du-Parc
+"51075" = 7711422   # Saint-Élie-de-Caxton
+"51080" = 7711423   # Charette
+"51085" = 7711420   # Saint-Boniface
+
+[regions.groupe]
+comment = "Limites municipales (Maskinongé (2 de 3)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

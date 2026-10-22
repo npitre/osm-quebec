@@ -1,0 +1,30 @@
+# Bouchée 13 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Kamouraska (bouchée 13)"
+
+[rqa]
+municipalites = ["14005", "14010", "14018", "14025", "14030", "14035", "14040", "14045", "14050", "14055", "14060", "14065", "14070", "14075", "14902", "14904"]
+
+[regions.osm]
+"14005" = 8217847   # Mont-Carmel
+"14010" = 8223963   # Saint-Bruno-de-Kamouraska
+"14018" = 8223964   # Saint-Pascal
+"14025" = 8189525   # Sainte-Hélène-de-Kamouraska
+"14030" = 8189526   # Saint-Joseph-de-Kamouraska
+"14035" = 8189524   # Saint-Alexandre-de-Kamouraska
+"14040" = 8120202   # Saint-André-de-Kamouraska
+"14045" = 8120203   # Saint-Germain-de-Kamouraska
+"14050" = 8120204   # Kamouraska
+"14055" = 8120205   # Saint-Denis-De La Bouteillerie
+"14060" = 8223958   # Saint-Philippe-de-Néri
+"14065" = 8120206   # Rivière-Ouelle
+"14070" = 8217848   # Saint-Pacôme
+"14075" = 8217849   # Saint-Gabriel-Lalemant
+"14902" = 8166516   # Picard
+"14904" = 8120210   # Petit-Lac-Sainte-Anne
+
+[regions.groupe]
+comment = "Limites municipales (Kamouraska) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

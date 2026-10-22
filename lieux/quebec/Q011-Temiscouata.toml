@@ -1,0 +1,31 @@
+# Bouchée 11 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Témiscouata (1 de 2) (bouchée 11)"
+
+[rqa]
+municipalites = ["13005", "13010", "13015", "13020", "13025", "13030", "13040", "13055", "13062", "13065", "13073", "13075", "13080", "13085", "13090", "13095", "13100"]
+
+[regions.osm]
+"13005" = 8244471   # Dégelis
+"13010" = 8244718   # Saint-Jean-de-la-Lande
+"13015" = 8244719   # Packington
+"13020" = 8244717   # Saint-Marc-du-Lac-Long
+"13025" = 8244716   # Rivière-Bleue
+"13030" = 8244720   # Saint-Eusèbe
+"13040" = 8244469   # Saint-Juste-du-Lac
+"13055" = 8234773   # Biencourt
+"13062" = 8420436   # Lac-des-Aigles
+"13065" = 8228985   # Saint-Michel-du-Squatec
+"13073" = 8228987   # Témiscouata-sur-le-Lac
+"13075" = 8228989   # Saint-Pierre-de-Lamy
+"13080" = 8228990   # Saint-Louis-du-Ha! Ha!
+"13085" = 8228988   # Saint-Elzéar-de-Témiscouata
+"13090" = 8228145   # Saint-Honoré-de-Témiscouata
+"13095" = 8223961   # Pohénégamook
+"13100" = 8223962   # Saint-Athanase
+
+[regions.groupe]
+comment = "Limites municipales (Témiscouata (1 de 2)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

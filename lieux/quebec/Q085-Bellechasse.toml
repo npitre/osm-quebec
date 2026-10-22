@@ -1,0 +1,22 @@
+# Bouchée 85 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Bellechasse (1 de 2) (bouchée 85)"
+
+[rqa]
+municipalites = ["19068", "19075", "19082", "19090", "19097", "19105", "19110", "19117"]
+
+[regions.osm]
+"19068" = 8180286   # Saint-Henri
+"19075" = 8180275   # Saint-Gervais
+"19082" = 8180269   # Saint-Raphaël
+"19090" = 8180270   # La Durantaye
+"19097" = 8180274   # Saint-Charles-de-Bellechasse
+"19105" = 8180273   # Beaumont
+"19110" = 8180272   # Saint-Michel-de-Bellechasse
+"19117" = 8180271   # Saint-Vallier
+
+[regions.groupe]
+comment = "Limites municipales (Bellechasse (1 de 2)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

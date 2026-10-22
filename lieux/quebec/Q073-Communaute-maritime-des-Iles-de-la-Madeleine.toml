@@ -1,0 +1,16 @@
+# Bouchée 73 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Communauté maritime des Îles-de-la-Madeleine (bouchée 73)"
+
+[rqa]
+municipalites = ["01023", "01042"]
+
+[regions.osm]
+"01023" = 8402197   # Les Îles-de-la-Madeleine
+"01042" = 8402196   # Grosse-Île
+
+[regions.groupe]
+comment = "Limites municipales (Communauté maritime des Îles-de-la-Madeleine) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

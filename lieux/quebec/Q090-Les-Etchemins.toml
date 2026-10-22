@@ -1,0 +1,26 @@
+# Bouchée 90 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Les Etchemins (1 de 2) (bouchée 90)"
+
+[rqa]
+municipalites = ["28005", "28015", "28020", "28025", "28030", "28035", "28040", "28045", "28053", "28060", "28065", "28075"]
+
+[regions.osm]
+"28005" = 8191117   # Saint-Zacharie
+"28015" = 8191116   # Sainte-Aurélie
+"28020" = 8201833   # Saint-Prosper
+"28025" = 8201835   # Saint-Benjamin
+"28030" = 8201834   # Sainte-Rose-de-Watford
+"28035" = 8191115   # Saint-Louis-de-Gonzague
+"28040" = 8191114   # Saint-Cyprien
+"28045" = 8199037   # Sainte-Justine
+"28053" = 8199036   # Lac-Etchemin
+"28060" = 8199038   # Saint-Luc-de-Bellechasse
+"28065" = 8199039   # Sainte-Sabine
+"28075" = 8199040   # Saint-Magloire
+
+[regions.groupe]
+comment = "Limites municipales (Les Etchemins (1 de 2)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

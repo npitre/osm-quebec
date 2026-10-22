@@ -1,0 +1,15 @@
+# Bouchée 118 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Antoine-Labelle (7 de 7) (bouchée 118)"
+
+[rqa]
+municipalites = ["79005"]
+
+[regions.osm]
+"79005" = 1490834   # Notre-Dame-du-Laus
+
+[regions.groupe]
+comment = "Limites municipales (Antoine-Labelle (7 de 7)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

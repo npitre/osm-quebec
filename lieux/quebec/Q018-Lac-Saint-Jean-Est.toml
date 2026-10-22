@@ -1,0 +1,15 @@
+# Bouchée 18 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Lac-Saint-Jean-Est (4 de 5) (bouchée 18)"
+
+[rqa]
+municipalites = ["93075"]
+
+[regions.osm]
+"93075" = 8374475   # Sainte-Monique
+
+[regions.groupe]
+comment = "Limites municipales (Lac-Saint-Jean-Est (4 de 5)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

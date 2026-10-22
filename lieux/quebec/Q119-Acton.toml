@@ -1,0 +1,39 @@
+# Bouchée 119 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Acton, Les Maskoutains (bouchée 119)"
+
+[rqa]
+municipalites = ["48005", "48010", "48015", "48020", "48028", "48038", "48045", "48050", "54008", "54017", "54025", "54030", "54035", "54048", "54060", "54065", "54072", "54090", "54095", "54100", "54105", "54110", "54115", "54120", "54125"]
+
+[regions.osm]
+"48005" = 7932240   # Béthanie
+"48010" = 7932241   # Roxton Falls
+"48015" = 7932242   # Roxton
+"48020" = 7932243   # Sainte-Christine
+"48028" = 7932244   # Acton Vale
+"48038" = 7932245   # Upton
+"48045" = 7932246   # Saint-Théodore-d'Acton
+"48050" = 7932247   # Saint-Nazaire-d'Acton
+"54008" = 7927128   # Saint-Pie
+"54017" = 7927133   # Saint-Damase
+"54025" = 7927131   # Sainte-Madeleine
+"54030" = 7927132   # Sainte-Marie-Madeleine
+"54035" = 7927130   # La Présentation
+"54048" = 7927129   # Saint-Hyacinthe
+"54060" = 7927127   # Saint-Dominique
+"54065" = 7927126   # Saint-Valérien-de-Milton
+"54072" = 7927125   # Saint-Liboire
+"54090" = 7927121   # Saint-Simon
+"54095" = 7927117   # Sainte-Hélène-de-Bagot
+"54100" = 7927118   # Saint-Hugues
+"54105" = 7927122   # Saint-Barnabé-Sud
+"54110" = 7927123   # Saint-Jude
+"54115" = 7927124   # Saint-Bernard-de-Michaudville
+"54120" = 7927120   # Saint-Louis
+"54125" = 7927119   # Saint-Marcel-de-Richelieu
+
+[regions.groupe]
+comment = "Limites municipales (Acton, Les Maskoutains) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

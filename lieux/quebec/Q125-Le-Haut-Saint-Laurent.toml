@@ -1,0 +1,20 @@
+# Bouchée 125 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Le Haut-Saint-Laurent (1 de 2) (bouchée 125)"
+
+[rqa]
+municipalites = ["69045", "69050", "69055", "69060", "69065", "69070"]
+
+[regions.osm]
+"69045" = 7743226   # Hinchinbrooke
+"69050" = 7743228   # Elgin
+"69055" = 7743227   # Huntingdon
+"69060" = 7743230   # Godmanchester
+"69065" = 7743229   # Sainte-Barbe
+"69070" = 7743231   # Saint-Anicet
+
+[regions.groupe]
+comment = "Limites municipales (Le Haut-Saint-Laurent (1 de 2)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

@@ -1,0 +1,15 @@
+# Bouchée 53 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Gatineau (bouchée 53)"
+
+[rqa]
+municipalites = ["81017"]
+
+[regions.osm]
+"81017" = 5356213   # Gatineau
+
+[regions.groupe]
+comment = "Limites municipales (Gatineau) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

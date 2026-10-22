@@ -1,0 +1,28 @@
+# Bouchée 84 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Montmagny, Les Etchemins (2 de 2) (bouchée 84)"
+
+[rqa]
+municipalites = ["18005", "18010", "18015", "18020", "18025", "18030", "18035", "18040", "18045", "18050", "18055", "18060", "18065", "28070"]
+
+[regions.osm]
+"18005" = 8216428   # Saint-Just-de-Bretenières
+"18010" = 8216427   # Lac-Frontière
+"18015" = 8194984   # Saint-Fabien-de-Panet
+"18020" = 8201830   # Sainte-Lucie-de-Beauregard
+"18025" = 8195805   # Sainte-Apolline-de-Patton
+"18030" = 8194985   # Saint-Paul-de-Montminy
+"18035" = 8189529   # Sainte-Euphémie-sur-Rivière-du-Sud
+"18040" = 8189528   # Notre-Dame-du-Rosaire
+"18045" = 8188526   # Cap-Saint-Ignace
+"18050" = 8188525   # Montmagny
+"18055" = 8189530   # Saint-Pierre-de-la-Rivière-du-Sud
+"18060" = 8189531   # Saint-François-de-la-Rivière-du-Sud
+"18065" = 8188523   # Berthier-sur-Mer
+"28070" = 8191113   # Saint-Camille-de-Lellis
+
+[regions.groupe]
+comment = "Limites municipales (Montmagny, Les Etchemins (2 de 2)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

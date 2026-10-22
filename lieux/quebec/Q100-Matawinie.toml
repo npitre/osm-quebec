@@ -1,0 +1,18 @@
+# Bouchée 100 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Matawinie (1 de 4) (bouchée 100)"
+
+[rqa]
+municipalites = ["62918", "62919", "62920", "62922"]
+
+[regions.osm]
+"62918" = 8292643   # Baie-Obaoca
+"62919" = 8294694   # Lac-Cabasta
+"62920" = 8292716   # Baie-Atibenne
+"62922" = 8292783   # Lac-du-Taureau
+
+[regions.groupe]
+comment = "Limites municipales (Matawinie (1 de 4)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

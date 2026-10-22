@@ -13,7 +13,9 @@ du MRNF à plus de 100 m du tracé d'OSM), et
 [municipalités absentes](municipalites.md). L'[inventaire](inventaire.md)
 (`outils/inventaire.py`, détail dans [inventaire.csv](inventaire.csv))
 estime, municipalité par municipalité, le nombre d'objets à envoyer,
-pour choisir les bouchées.
+pour choisir les bouchées. Le [découpage](bouchees.md)
+(`outils/bouchees.py`) en tire les bouchées du Québec méridional, chacune
+avec son fichier de lieu dans `lieux/quebec/`.
 
 Données : Découpages administratifs du MRNF, version V2026-09, extrait
 OSM de Geofabrik du 16 octobre 2026, et contour de l'Ontario (jeu

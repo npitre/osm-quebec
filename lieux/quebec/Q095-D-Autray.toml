@@ -1,0 +1,26 @@
+# Bouchée 95 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "D'Autray (1 de 2) (bouchée 95)"
+
+[rqa]
+municipalites = ["52007", "52017", "52030", "52035", "52040", "52045", "52050", "52055", "52062", "52070", "52075", "52090"]
+
+[regions.osm]
+"52007" = 7710970   # Lavaltrie
+"52017" = 7710969   # Lanoraie
+"52030" = 7710966   # Sainte-Élisabeth
+"52035" = 7710968   # Berthierville
+"52040" = 7710967   # Sainte-Geneviève-de-Berthier
+"52045" = 7710962   # Saint-Ignace-de-Loyola
+"52050" = 7710963   # La Visitation-de-l'Île-Dupas
+"52055" = 7710960   # Saint-Barthélemy
+"52062" = 7710961   # Saint-Cuthbert
+"52070" = 7710965   # Saint-Norbert
+"52075" = 7710964   # Saint-Cléophas-de-Brandon
+"52090" = 7710959   # Saint-Didace
+
+[regions.groupe]
+comment = "Limites municipales (D'Autray (1 de 2)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

@@ -1,0 +1,35 @@
+# Bouchée 41 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Les Sources, Le Haut-Saint-François (bouchée 41)"
+
+[rqa]
+municipalites = ["40005", "40010", "40017", "40025", "40032", "40043", "40047", "41012", "41020", "41027", "41037", "41038", "41055", "41060", "41065", "41070", "41075", "41080", "41085", "41098", "41117"]
+
+[regions.osm]
+"40005" = 7997177   # Ham-Sud
+"40010" = 7997178   # Saint-Adrien
+"40017" = 7997179   # Wotton
+"40025" = 7997180   # Saint-Camille
+"40032" = 7997181   # Saint-Georges-de-Windsor
+"40043" = 7997182   # Val-des-Sources
+"40047" = 7997183   # Danville
+"41012" = 7953238   # Saint-Isidore-de-Clifton
+"41020" = 7953236   # Chartierville
+"41027" = 7953235   # La Patrie
+"41037" = 7953237   # Newport
+"41038" = 7953239   # Cookshire-Eaton
+"41055" = 7953241   # Ascot Corner
+"41060" = 7953234   # East Angus
+"41065" = 7953240   # Westbury
+"41070" = 7953232   # Bury
+"41075" = 7953231   # Hampden
+"41080" = 7953230   # Scotstown
+"41085" = 7953229   # Lingwick
+"41098" = 7953228   # Weedon
+"41117" = 7953233   # Dudswell
+
+[regions.groupe]
+comment = "Limites municipales (Les Sources, Le Haut-Saint-François) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

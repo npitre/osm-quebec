@@ -1,0 +1,22 @@
+# Bouchée 14 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Le Domaine-du-Roy (bouchée 14)"
+
+[rqa]
+municipalites = ["91005", "91010", "91015", "91020", "91030", "91035", "91042", "91050"]
+
+[regions.osm]
+"91005" = 8160578   # Lac-Bouchette
+"91010" = 8134378   # Saint-André-du-Lac-Saint-Jean
+"91015" = 8164879   # Saint-François-de-Sales
+"91020" = 8164880   # Chambord
+"91030" = 8164878   # Sainte-Hedwidge
+"91035" = 8160827   # Saint-Prime
+"91042" = 8160416   # Saint-Félicien
+"91050" = 8160415   # La Doré
+
+[regions.groupe]
+comment = "Limites municipales (Le Domaine-du-Roy) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

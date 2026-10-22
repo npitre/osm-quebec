@@ -1,0 +1,24 @@
+# Bouchée 68 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Témiscamingue (3 de 3), Rouyn-Noranda (bouchée 68)"
+
+[rqa]
+municipalites = ["85052", "85065", "85070", "85075", "85085", "85090", "85095", "85100", "85105", "86042"]
+
+[regions.osm]
+"85052" = 8364714   # Laverlochère-Angliers
+"85065" = 8366270   # Belleterre
+"85070" = 8364603   # Laforce
+"85075" = 8364634   # Moffet
+"85085" = 8366124   # Saint-Eugène-de-Guigues
+"85090" = 8366112   # Notre-Dame-du-Nord
+"85095" = 8364810   # Guérin
+"85100" = 8364828   # Nédélec
+"85105" = 8364749   # Rémigny
+"86042" = 7360112   # Rouyn-Noranda
+
+[regions.groupe]
+comment = "Limites municipales (Témiscamingue (3 de 3), Rouyn-Noranda) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

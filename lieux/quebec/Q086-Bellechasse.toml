@@ -1,0 +1,26 @@
+# Bouchée 86 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Bellechasse (2 de 2) (bouchée 86)"
+
+[rqa]
+municipalites = ["19005", "19010", "19015", "19020", "19025", "19030", "19037", "19045", "19050", "19055", "19062", "19070"]
+
+[regions.osm]
+"19005" = 8180278   # Saint-Philémon
+"19010" = 8180279   # Notre-Dame-Auxiliatrice-de-Buckland
+"19015" = 8180281   # Saint-Nazaire-de-Dorchester
+"19020" = 8180282   # Saint-Léon-de-Standon
+"19025" = 8180283   # Saint-Malachie
+"19030" = 8180277   # Saint-Damien-de-Buckland
+"19037" = 8180267   # Armagh
+"19045" = 8180268   # Saint-Nérée-de-Bellechasse
+"19050" = 8180276   # Saint-Lazare-de-Bellechasse
+"19055" = 8180284   # Sainte-Claire
+"19062" = 8180285   # Saint-Anselme
+"19070" = 8180280   # Honfleur
+
+[regions.groupe]
+comment = "Limites municipales (Bellechasse (2 de 2)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

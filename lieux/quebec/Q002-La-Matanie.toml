@@ -1,0 +1,25 @@
+# Bouchée 2 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "La Matanie (1 de 2) (bouchée 2)"
+
+[rqa]
+municipalites = ["08005", "08010", "08015", "08023", "08030", "08035", "08040", "08053", "08065", "08073", "08080"]
+
+[regions.osm]
+"08005" = 7998291   # Les Méchins
+"08010" = 7998290   # Saint-Jean-de-Cherbourg
+"08015" = 7998289   # Grosses-Roches
+"08023" = 7998292   # Sainte-Félicité
+"08030" = 7998293   # Saint-Adelme
+"08035" = 7998294   # Saint-René-de-Matane
+"08040" = 7998295   # Sainte-Paule
+"08053" = 7998297   # Matane
+"08065" = 7998296   # Saint-Léandre
+"08073" = 7998298   # Saint-Ulric
+"08080" = 7998299   # Baie-des-Sables
+
+[regions.groupe]
+comment = "Limites municipales (La Matanie (1 de 2)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

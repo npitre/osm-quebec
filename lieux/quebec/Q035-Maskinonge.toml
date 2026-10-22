@@ -1,0 +1,20 @@
+# Bouchée 35 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Maskinongé (1 de 3) (bouchée 35)"
+
+[rqa]
+municipalites = ["51008", "51015", "51040", "51045", "51050", "51055"]
+
+[regions.osm]
+"51008" = 7711437   # Maskinongé
+"51015" = 7711434   # Louiseville
+"51040" = 7711433   # Sainte-Ursule
+"51045" = 7711436   # Saint-Justin
+"51050" = 7711435   # Saint-Édouard-de-Maskinongé
+"51055" = 7711431   # Sainte-Angèle-de-Prémont
+
+[regions.groupe]
+comment = "Limites municipales (Maskinongé (1 de 3)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

@@ -1,0 +1,29 @@
+# Bouchée 20 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Saguenay, Le Fjord-du-Saguenay (1 de 3), Le Fjord-du-Saguenay (2 de 3) (bouchée 20)"
+
+[rqa]
+municipalites = ["94068", "94210", "94215", "94220", "94225", "94230", "94235", "94240", "94245", "94250", "94255", "94260", "94265", "94926", "94928"]
+
+[regions.osm]
+"94068" = 8158186   # Saguenay
+"94210" = 8279999   # L'Anse-Saint-Jean
+"94215" = 8280063   # Rivière-Éternité
+"94220" = 8280192   # Ferland-et-Boilleau
+"94225" = 8280062   # Saint-Félix-d'Otis
+"94230" = 8378421   # Sainte-Rose-du-Nord
+"94235" = 8377420   # Saint-Fulgence
+"94240" = 8377413   # Saint-Honoré
+"94245" = 8374535   # Saint-David-de-Falardeau
+"94250" = 8374506   # Bégin
+"94255" = 8374537   # Saint-Ambroise
+"94260" = 8378349   # Saint-Charles-de-Bourget
+"94265" = 8158183   # Larouche
+"94926" = 8378465   # Lalemant
+"94928" = 8378458   # Lac-Ministuk
+
+[regions.groupe]
+comment = "Limites municipales (Saguenay, Le Fjord-du-Saguenay (1 de 3), Le Fjord-du-Saguenay (2 de 3)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

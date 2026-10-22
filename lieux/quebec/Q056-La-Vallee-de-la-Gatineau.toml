@@ -1,0 +1,17 @@
+# Bouchée 56 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "La Vallée-de-la-Gatineau (2 de 7) (bouchée 56)"
+
+[rqa]
+municipalites = ["83010", "83015", "83020"]
+
+[regions.osm]
+"83010" = 7045907   # Low
+"83015" = 7045908   # Kazabazua
+"83020" = 7045909   # Lac-Sainte-Marie
+
+[regions.groupe]
+comment = "Limites municipales (La Vallée-de-la-Gatineau (2 de 7)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

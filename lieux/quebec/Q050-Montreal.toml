@@ -1,0 +1,23 @@
+# Bouchée 50 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Montréal (5 de 5) (bouchée 50)"
+
+[rqa]
+municipalites = ["66087", "66092", "66097", "66102", "66107", "66112", "66117", "66127", "66142"]
+
+[regions.osm]
+"66087" = 197562   # Dorval
+"66092" = 3421685   # L'Île-Dorval
+"66097" = 197576   # Pointe-Claire
+"66102" = 197577   # Kirkland
+"66107" = 197578   # Beaconsfield
+"66112" = 197579   # Baie-D'Urfé
+"66117" = 197580   # Sainte-Anne-de-Bellevue
+"66127" = 197583   # Senneville
+"66142" = 197601   # Dollard-des-Ormeaux
+
+[regions.groupe]
+comment = "Limites municipales (Montréal (5 de 5)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

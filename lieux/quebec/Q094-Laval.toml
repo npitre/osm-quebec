@@ -1,0 +1,24 @@
+# Bouchée 94 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Laval, Deux-Montagnes (2 de 2), Thérèse-De Blainville (bouchée 94)"
+
+[rqa]
+municipalites = ["65005", "72005", "72010", "73005", "73010", "73015", "73020", "73025", "73030", "73035"]
+
+[regions.osm]
+"65005" = 1438336   # Laval
+"72005" = 7699988   # Saint-Eustache
+"72010" = 2798489   # Deux-Montagnes
+"73005" = 7703994   # Boisbriand
+"73010" = 7703993   # Sainte-Thérèse
+"73015" = 7703991   # Blainville
+"73020" = 7703992   # Rosemère
+"73025" = 7703990   # Lorraine
+"73030" = 7703989   # Bois-des-Filion
+"73035" = 7703988   # Sainte-Anne-des-Plaines
+
+[regions.groupe]
+comment = "Limites municipales (Laval, Deux-Montagnes (2 de 2), Thérèse-De Blainville) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

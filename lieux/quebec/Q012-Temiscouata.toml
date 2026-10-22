@@ -1,0 +1,16 @@
+# Bouchée 12 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Témiscouata (2 de 2) (bouchée 12)"
+
+[rqa]
+municipalites = ["13045", "13050"]
+
+[regions.osm]
+"13045" = 8244470   # Auclair
+"13050" = 8241002   # Lejeune
+
+[regions.groupe]
+comment = "Limites municipales (Témiscouata (2 de 2)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

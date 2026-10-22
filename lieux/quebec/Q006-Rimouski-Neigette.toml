@@ -1,0 +1,24 @@
+# Bouchée 6 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Rimouski-Neigette (bouchée 6)"
+
+[rqa]
+municipalites = ["10005", "10010", "10015", "10025", "10030", "10043", "10060", "10070", "10075", "10902"]
+
+[regions.osm]
+"10005" = 8138185   # Esprit-Saint
+"10010" = 8138184   # La Trinité-des-Monts
+"10015" = 8138189   # Saint-Narcisse-de-Rimouski
+"10025" = 8138191   # Saint-Marcellin
+"10030" = 8138190   # Saint-Anaclet-de-Lessard
+"10043" = 8138193   # Rimouski
+"10060" = 8138188   # Saint-Valérien
+"10070" = 8138192   # Saint-Fabien
+"10075" = 8138187   # Saint-Eugène-de-Ladrière
+"10902" = 8138186   # Lac-Huron
+
+[regions.groupe]
+comment = "Limites municipales (Rimouski-Neigette) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

@@ -1,0 +1,26 @@
+# Bouchée 110 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Les Laurentides (1 de 2) (bouchée 110)"
+
+[rqa]
+municipalites = ["78005", "78010", "78015", "78020", "78032", "78042", "78047", "78050", "78055", "78060", "78095", "78100"]
+
+[regions.osm]
+"78005" = 7692496   # Val-Morin
+"78010" = 7692497   # Val-David
+"78015" = 7692499   # Lantier
+"78020" = 7692498   # Sainte-Lucie-des-Laurentides
+"78032" = 7692507   # Sainte-Agathe-des-Monts
+"78042" = 7692505   # Ivry-sur-le-Lac
+"78047" = 7692504   # Mont-Blanc
+"78050" = 7692508   # Barkmere
+"78055" = 7692503   # Montcalm
+"78060" = 7692502   # Arundel
+"78095" = 7362415   # Lac-Supérieur
+"78100" = 7692500   # Val-des-Lacs
+
+[regions.groupe]
+comment = "Limites municipales (Les Laurentides (1 de 2)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

@@ -1,0 +1,15 @@
+# Bouchée 21 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Le Fjord-du-Saguenay (3 de 3) (bouchée 21)"
+
+[rqa]
+municipalites = ["94205"]
+
+[regions.osm]
+"94205" = 8280001   # Petit-Saguenay
+
+[regions.groupe]
+comment = "Limites municipales (Le Fjord-du-Saguenay (3 de 3)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

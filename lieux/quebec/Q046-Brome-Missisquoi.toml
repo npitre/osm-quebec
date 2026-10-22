@@ -1,0 +1,32 @@
+# Bouchée 46 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Brome-Missisquoi (1 de 2) (bouchée 46)"
+
+[rqa]
+municipalites = ["46005", "46010", "46017", "46025", "46030", "46035", "46040", "46045", "46050", "46075", "46078", "46080", "46085", "46090", "46095", "46100", "46105", "46112"]
+
+[regions.osm]
+"46005" = 7926991   # Abercorn
+"46010" = 7927001   # Frelighsburg
+"46017" = 1600478   # Saint-Armand
+"46025" = 7927009   # Pike River
+"46030" = 7927008   # Stanbridge Station
+"46035" = 7927006   # Bedford
+"46040" = 7927007   # Bedford
+"46045" = 7927002   # Stanbridge East
+"46050" = 7926999   # Dunham
+"46075" = 7926994   # Lac-Brome
+"46078" = 7926995   # Bromont
+"46080" = 7926998   # Cowansville
+"46085" = 7926997   # East Farnham
+"46090" = 7926996   # Brigham
+"46095" = 7927000   # Saint-Ignace-de-Stanbridge
+"46100" = 7927005   # Notre-Dame-de-Stanbridge
+"46105" = 7927004   # Sainte-Sabine
+"46112" = 7927003   # Farnham
+
+[regions.groupe]
+comment = "Limites municipales (Brome-Missisquoi (1 de 2)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

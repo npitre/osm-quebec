@@ -1,0 +1,27 @@
+# Bouchée 51 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Papineau (1 de 2) (bouchée 51)"
+
+[rqa]
+municipalites = ["80005", "80010", "80015", "80020", "80027", "80037", "80045", "80095", "80103", "80110", "80115", "80125", "80130"]
+
+[regions.osm]
+"80005" = 7572123   # Fassett
+"80010" = 7572125   # Montebello
+"80015" = 7572124   # Notre-Dame-de-Bonsecours
+"80020" = 7572128   # Notre-Dame-de-la-Paix
+"80027" = 7572130   # Saint-André-Avellin
+"80037" = 7572131   # Papineauville
+"80045" = 7572132   # Plaisance
+"80095" = 7362049   # Lac-Simon
+"80103" = 7572129   # Chénéville
+"80110" = 7572127   # Namur
+"80115" = 7572122   # Boileau
+"80125" = 7572126   # Saint-Émile-de-Suffolk
+"80130" = 7362399   # Lac-des-Plages
+
+[regions.groupe]
+comment = "Limites municipales (Papineau (1 de 2)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

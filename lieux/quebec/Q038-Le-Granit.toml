@@ -1,0 +1,21 @@
+# Bouchée 38 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Le Granit (1 de 3) (bouchée 38)"
+
+[rqa]
+municipalites = ["30010", "30015", "30020", "30035", "30040", "30105", "30110"]
+
+[regions.osm]
+"30010" = 8064427   # Notre-Dame-des-Bois
+"30015" = 8064428   # Val-Racine
+"30020" = 8064422   # Piopolis
+"30035" = 8064423   # Marston
+"30040" = 8064429   # Milan
+"30105" = 8064426   # Stornoway
+"30110" = 8064430   # Stratford
+
+[regions.groupe]
+comment = "Limites municipales (Le Granit (1 de 3)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

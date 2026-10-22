@@ -1,0 +1,21 @@
+# Bouchée 75 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "La Côte-de-Gaspé (bouchée 75)"
+
+[rqa]
+municipalites = ["03005", "03010", "03015", "03020", "03025", "03902", "03904"]
+
+[regions.osm]
+"03005" = 8237761   # Gaspé
+"03010" = 8237875   # Cloridorme
+"03015" = 8237874   # Petite-Vallée
+"03020" = 8237873   # Grande-Vallée
+"03025" = 8242523   # Murdochville
+"03902" = 8237876   # Rivière-Saint-Jean
+"03904" = 8408254   # Collines-du-Basque
+
+[regions.groupe]
+comment = "Limites municipales (La Côte-de-Gaspé) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

@@ -1,0 +1,27 @@
+# Bouchée 44 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Sherbrooke, Coaticook (bouchée 44)"
+
+[rqa]
+municipalites = ["43027", "44003", "44005", "44010", "44015", "44023", "44037", "44045", "44050", "44055", "44060", "44071", "44080"]
+
+[regions.osm]
+"43027" = 5915931   # Sherbrooke
+"44003" = 7953158   # Saint-Malo
+"44005" = 7953155   # Saint-Venant-de-Paquette
+"44010" = 7953156   # East Hereford
+"44015" = 7953157   # Saint-Herménégilde
+"44023" = 7953161   # Dixville
+"44037" = 7953163   # Coaticook
+"44045" = 7953165   # Barnston-Ouest
+"44050" = 7953166   # Stanstead-Est
+"44055" = 7953159   # Sainte-Edwidge-de-Clifton
+"44060" = 7953160   # Martinville
+"44071" = 7953162   # Compton
+"44080" = 7953164   # Waterville
+
+[regions.groupe]
+comment = "Limites municipales (Sherbrooke, Coaticook) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

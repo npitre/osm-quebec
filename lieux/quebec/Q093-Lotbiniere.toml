@@ -1,0 +1,21 @@
+# Bouchée 93 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Lotbinière (1 de 2) (bouchée 93)"
+
+[rqa]
+municipalites = ["33060", "33065", "33070", "33080", "33102", "33115", "33123"]
+
+[regions.osm]
+"33060" = 8110661   # Laurier-Station
+"33065" = 8110667   # Saint-Janvier-de-Joly
+"33070" = 8110668   # Val-Alain
+"33080" = 8110665   # Saint-Édouard-de-Lotbinière
+"33102" = 8110656   # Sainte-Croix
+"33115" = 8110664   # Lotbinière
+"33123" = 8110666   # Leclercville
+
+[regions.groupe]
+comment = "Limites municipales (Lotbinière (1 de 2)) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

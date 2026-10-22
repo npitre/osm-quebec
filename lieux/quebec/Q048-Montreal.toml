@@ -1,0 +1,28 @@
+# Bouchée 48 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "Montréal (4 de 5), Longueuil, Roussillon (2 de 2), Marguerite-D'Youville (bouchée 48)"
+
+[rqa]
+municipalites = ["58007", "58012", "58033", "58037", "58227", "59010", "59015", "59020", "59025", "59030", "59035", "66007", "67010", "67015"]
+
+[regions.osm]
+"58007" = 2812764   # Brossard
+"58012" = 8479338   # Saint-Lambert
+"58033" = 6948557   # Boucherville
+"58037" = 7042081   # Saint-Bruno-de-Montarville
+"58227" = 6948543   # Longueuil
+"59010" = 7903245   # Sainte-Julie
+"59015" = 7903244   # Saint-Amable
+"59020" = 7903246   # Varennes
+"59025" = 7903243   # Verchères
+"59030" = 7903242   # Calixa-Lavallée
+"59035" = 7903241   # Contrecoeur
+"66007" = 1634159   # Montréal-Est
+"67010" = 7785151   # Saint-Philippe
+"67015" = 7785149   # La Prairie
+
+[regions.groupe]
+comment = "Limites municipales (Montréal (4 de 5), Longueuil, Roussillon (2 de 2), Marguerite-D'Youville) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel

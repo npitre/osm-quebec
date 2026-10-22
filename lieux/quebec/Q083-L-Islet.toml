@@ -1,0 +1,28 @@
+# Bouchée 83 de l'import des limites du Québec méridional (outils/bouchees.py).
+# Ne pas modifier à la main : relancer outils/bouchees.py --lieux.
+
+nom = "L'Islet (bouchée 83)"
+
+[rqa]
+municipalites = ["17005", "17010", "17015", "17020", "17025", "17030", "17035", "17040", "17045", "17055", "17060", "17065", "17070", "17078"]
+
+[regions.osm]
+"17005" = 8216424   # Saint-Omer
+"17010" = 8216425   # Saint-Pamphile
+"17015" = 8216426   # Saint-Adalbert
+"17020" = 8195806   # Saint-Marcel
+"17025" = 8201831   # Sainte-Félicité
+"17030" = 8201832   # Sainte-Perpétue
+"17035" = 8189527   # Tourville
+"17040" = 8189532   # Saint-Damase-de-L'Islet
+"17045" = 8189535   # Saint-Cyrille-de-Lessard
+"17055" = 8189534   # Saint-Aubert
+"17060" = 8189533   # Sainte-Louise
+"17065" = 8188529   # Saint-Roch-des-Aulnaies
+"17070" = 8188530   # Saint-Jean-Port-Joli
+"17078" = 8188527   # L'Islet
+
+[regions.groupe]
+comment = "Limites municipales (L'Islet) d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+# discussion = ""   # obligatoire avant un envoi réel
