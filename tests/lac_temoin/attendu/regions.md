@@ -35,8 +35,8 @@ Source : Découpages administratifs du MRNF (1/20 000). Règles : voir le [READM
 | Élément | Nombre |
 |---|---|
 | Nœuds créés | 6 |
-| Chemins de limite créés | 8 |
-| Relations modifiées | 3 |
+| Chemins de limite créés | 10 |
+| Relations modifiées | 5 |
 | Chemins retirés des relations | 6 |
 | dont supprimés (simples lignes de limite inutilisées) | 3 |
 | Nœuds supprimés | 4 |
@@ -50,6 +50,8 @@ Source : Découpages administratifs du MRNF (1/20 000). Règles : voir le [READM
 - arc de 3 sommets (99002 outer, 99003 outer) : 1 chemin(s) neuf(s)
 - arc de 3 sommets (99002 outer) : 1 chemin(s) neuf(s), 1 chemin(s) existant(s) déjà conforme(s)
 - Rivière-Contrôle : 2 chemin(s) retiré(s), 2 raccord(s), 1 copie(s), 1 chemin(s) coupé(s)
+- MRC 99 : MRC du Témoin : 0 chemin(s) retiré(s), 2 raccord(s), 0 copie(s), 1 chemin(s) coupé(s)
+- région 99 : Région du Témoin : 2 chemin(s) retiré(s), 2 raccord(s), 0 copie(s), 0 chemin(s) coupé(s)
 
 Chemins supprimés : [101](https://www.openstreetmap.org/way/101), [105](https://www.openstreetmap.org/way/105), [120](https://www.openstreetmap.org/way/120).
 

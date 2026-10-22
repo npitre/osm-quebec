@@ -265,10 +265,16 @@ class LacTemoin(unittest.TestCase):
     def anneaux_fermes(self, extrait_):
         pos, chemins, rels = extrait_
         for rid, (membres, tags) in rels.items():
-            if tags.get("type") != "boundary" or tags.get("admin_level") != "8":
+            if tags.get("type") != "boundary" or tags.get("admin_level") not in ("5", "6", "8"):
                 continue                # le Québec et la province voisine sont incomplets ici
             _, ouverts = geo.assembler([chemins[r][0] for t, r, _ in membres if t == "w"])
             self.assertEqual(ouverts, 0, (rid, tags.get("name")))
+        # Aucun chemin de limite créé orphelin (un chemin protégé retiré
+        # reste, lui, en place).
+        membres = {r for m, _ in rels.values() for t, r, _ in m if t == "w"}
+        orphelins = [w for w, (_, t) in chemins.items()
+                     if t.get("boundary") and w not in membres and w not in self.carte_tags]
+        self.assertEqual(orphelins, [])
 
     def test_anneaux_fermes_apres_chaque_envoi(self):
         self.anneaux_fermes(self.extrait_lot1)
@@ -289,6 +295,32 @@ class LacTemoin(unittest.TestCase):
                     self.assertLess(geo.distance_ligne(pos[n], anneau), 0.01, r)
         # La réserve, elle, est restée entière.
         self.assertEqual(len([m for m in rels[1004][0] if m[0] == "w"]), 3)
+
+    def test_mrc_et_region(self):
+        # Le lot touche le contour de la MRC et de la région : elles
+        # prennent ses arcs, avec deux raccords partagés vers l'ancien
+        # contour gardé au nord (le chemin 133, raccourci).
+        mrc, reg = (self.regions[("modify", "relation", r)]["members"] for r in (1200, 1300))
+        self.assertEqual(mrc, reg)
+        neufs = self.crees(self.regions, "way")
+        nord = {self.noeud(40, 30), self.noeud(0, 30)}
+        raccords = [neufs[r] for _, r, _ in mrc if r < 0 and set(neufs[r]["nodes"]) & nord]
+        self.assertEqual(len(raccords), 2)
+        self.assertTrue(all(o["tags"]["admin_level"] == "5" for o in raccords))
+        self.assertEqual(self.regions[("modify", "way", 133)]["nodes"], [self.noeud(40, 30), self.noeud(0, 30)])
+        # Après le second lot, leur contour ne suit plus que le tracé du
+        # MRNF, la frontière gardée à part.
+        pos, chemins, rels = self.extrait_lot2
+        contour = [P(x, y) for x, y in fabriquer.CONTOUR]
+        frontiere = {w for t, w, _ in rels[1100][0] if t == "w"}
+        sur_frontiere = {n for w in frontiere for n in chemins[w][0]}
+        for rid in (1200, 1300):
+            ws = [r for t, r, _ in rels[rid][0] if t == "w"]
+            self.assertNotIn(133, ws)
+            for w in ws:
+                if w not in frontiere:
+                    for n in set(chemins[w][0]) - sur_frontiere:
+                        self.assertLess(geo.distance_ligne(pos[n], contour), 0.01, (rid, w))
 
     def test_relance_apres_les_deux_lots(self):
         self.assertEqual(self.relances, [True, True])

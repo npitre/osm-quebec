@@ -24,7 +24,7 @@
       <nd ref="6" />
       <nd ref="-4" />
       <nd ref="7" />
-      <tag k="admin_level" v="8" />
+      <tag k="admin_level" v="5" />
       <tag k="boundary" v="administrative" />
     </way>
     <way id="-5" version="0">
@@ -37,13 +37,13 @@
     <way id="-6" version="0">
       <nd ref="9" />
       <nd ref="11" />
-      <tag k="admin_level" v="8" />
+      <tag k="admin_level" v="5" />
       <tag k="boundary" v="administrative" />
       <tag k="note" v="Limite à vérifier sur le terrain" />
     </way>
     <way id="-7" version="0">
       <nd ref="-6" />
-      <nd ref="17" />
+      <nd ref="19" />
       <tag k="admin_level" v="8" />
       <tag k="boundary" v="administrative" />
     </way>
@@ -59,6 +59,18 @@
       <tag k="admin_level" v="8" />
       <tag k="boundary" v="administrative" />
     </way>
+    <way id="-13" version="0">
+      <nd ref="12" />
+      <nd ref="14" />
+      <tag k="admin_level" v="5" />
+      <tag k="boundary" v="administrative" />
+    </way>
+    <way id="-14" version="0">
+      <nd ref="6" />
+      <nd ref="15" />
+      <tag k="admin_level" v="5" />
+      <tag k="boundary" v="administrative" />
+    </way>
     <way id="-1" version="0">
       <nd ref="-1" />
       <nd ref="9" />
@@ -67,13 +79,13 @@
     </way>
     <way id="-8" version="0">
       <nd ref="20" />
-      <nd ref="14" />
+      <nd ref="16" />
       <tag k="admin_level" v="8" />
       <tag k="boundary" v="administrative" />
     </way>
     <node id="-7" version="0" lat="47.0080000" lon="-71.9800000" />
     <node id="-8" version="0" lat="47.0150000" lon="-71.9800000" />
-    <way id="-11" version="0">
+    <way id="-15" version="0">
       <nd ref="-7" />
       <nd ref="27" />
       <nd ref="28" />
@@ -81,7 +93,7 @@
       <tag k="name" v="Route 999" />
       <tag k="ref" v="999" />
     </way>
-    <way id="-12" version="0">
+    <way id="-16" version="0">
       <nd ref="-8" />
       <nd ref="30" />
       <tag k="highway" v="residential" />
@@ -129,6 +141,38 @@
       <tag k="ref:qc" v="99003" />
       <tag k="type" v="boundary" />
     </relation>
+    <relation id="1200" version="3">
+      <member type="way" ref="133" role="outer" />
+      <member type="way" ref="-13" role="outer" />
+      <member type="way" ref="-14" role="outer" />
+      <member type="way" ref="-6" role="outer" />
+      <member type="way" ref="-4" role="outer" />
+      <member type="way" ref="-1" role="outer" />
+      <member type="way" ref="102" role="outer" />
+      <member type="way" ref="106" role="outer" />
+      <member type="way" ref="107" role="outer" />
+      <tag k="admin_level" v="6" />
+      <tag k="boundary" v="administrative" />
+      <tag k="name" v="MRC du Témoin" />
+      <tag k="ref:qc" v="990" />
+      <tag k="type" v="boundary" />
+    </relation>
+    <relation id="1300" version="3">
+      <member type="way" ref="133" role="outer" />
+      <member type="way" ref="-13" role="outer" />
+      <member type="way" ref="-14" role="outer" />
+      <member type="way" ref="-6" role="outer" />
+      <member type="way" ref="-4" role="outer" />
+      <member type="way" ref="-1" role="outer" />
+      <member type="way" ref="102" role="outer" />
+      <member type="way" ref="106" role="outer" />
+      <member type="way" ref="107" role="outer" />
+      <tag k="admin_level" v="5" />
+      <tag k="boundary" v="administrative" />
+      <tag k="name" v="Région du Témoin" />
+      <tag k="ref:qc" v="99" />
+      <tag k="type" v="boundary" />
+    </relation>
     <way id="107" version="2">
       <nd ref="8" />
       <nd ref="-1" />
@@ -136,8 +180,14 @@
       <tag k="boundary" v="administrative" />
     </way>
     <way id="122" version="2">
-      <nd ref="19" />
+      <nd ref="14" />
       <nd ref="20" />
+      <tag k="admin_level" v="8" />
+      <tag k="boundary" v="administrative" />
+    </way>
+    <way id="133" version="2">
+      <nd ref="14" />
+      <nd ref="15" />
       <tag k="admin_level" v="8" />
       <tag k="boundary" v="administrative" />
     </way>
@@ -192,7 +242,7 @@
     </way>
     <relation id="700" version="3">
       <member type="way" ref="300" role="" />
-      <member type="way" ref="-11" role="" />
+      <member type="way" ref="-15" role="" />
       <tag k="network" v="CA:QC" />
       <tag k="ref" v="999" />
       <tag k="route" v="road" />

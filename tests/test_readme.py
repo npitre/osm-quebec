@@ -297,6 +297,38 @@ class Regions(unittest.TestCase):
         self.assertFalse([ids for w, ids, roles in plan["chemins"]
                           if any(y.get(a) == y.get(b) == P(0, 0)[1] for a, b in zip(ids, ids[1:]))])
 
+    def test_regions_12_mrc_et_region(self):
+        # Lot : A et B. C, au nord, hors du lot, a déjà son tracé du MRNF
+        # dans un seul chemin fermé, 601. La MRC M (A, B et C) a son
+        # ancien contour dans un seul chemin, 600, à une unité au large.
+        limite = {"boundary": "administrative", "admin_level": "8"}
+        idx = index({1: ((0, -1), {}), 2: ((20, -1), {}), 3: ((20, 21), {}), 4: ((0, 21), {}),
+                     5: ((0, 10), {}), 6: ((10, 10), {}), 7: ((20, 10), {}), 8: ((20, 20), {}),
+                     9: ((0, 20), {})},
+                    [(600, [1, 2, 3, 4, 1], dict(limite, admin_level="6")), (601, [5, 6, 7, 8, 9, 5], limite)])
+        m = Rel(300, [600], tags={"name": "M", "admin_level": "6"})
+        c = [P(0, 10), P(10, 10), P(20, 10), P(20, 20), P(0, 20), P(0, 10)]
+        contour = [P(0, 0), P(10, 0), P(20, 0), P(20, 10), P(20, 20), P(0, 20), P(0, 10), P(0, 0)]
+        plan = regions.preparer(self.officiel, {"A": Rel(100, []), "B": Rel(200, [])}, None, idx,
+                                {"C": [[c]]}, {"C": Rel(400, [601])}, usages=lambda ws: {},
+                                chemins_des_noeuds=lambda ns: {n: {601} for n in ns if 5 <= n <= 9},
+                                englobantes={"MRC 99": (m, [[contour]], ["A", "B", "C"])})
+        membres = {x["ref"] for x in plan["membres"]["MRC 99"]}
+        # Les arcs extérieurs du lot (ouest, sud, est) entrent dans M.
+        exterieurs = {w for w, ids, roles in plan["chemins"] if set(roles) in ({"A"}, {"B"})}
+        self.assertEqual(len(exterieurs), 2)
+        self.assertTrue(exterieurs <= membres)
+        # 600 est raccourci à sa partie nord, et deux raccords, au niveau
+        # de M, la relient aux bouts du lot. 601, fermé, garde sa partie
+        # nord.
+        self.assertEqual(plan["voisines"]["modifies"], {600: [3, 4], 601: [7, 8, 9, 5]})
+        raccords = [w for w, ids, roles in plan["chemins"] if set(roles) == {"MRC 99"}]
+        self.assertEqual(len(raccords), 2)
+        self.assertTrue(set(raccords) <= membres)
+        self.assertEqual({w for w in membres if w > 0}, {600})
+        self.assertEqual({plan["etiquettes"][w]["admin_level"] for w in exterieurs | set(raccords)}, {"6"})
+        self.assertIn("MRC 99", plan["modifiees"])
+
 
 # Rues
 

@@ -64,6 +64,7 @@ MUNICIPALITES = {
 
 
 FRONTIERE = [(0, 0), (40, 0)]
+CONTOUR = [(0, 0), (20, 0), (40, 0), (40, 20), (40, 30), (0, 30), (0, 20), (0, 0)]
 
 
 def wkb_polygone(anneau):
@@ -75,14 +76,18 @@ def wkb_polygone(anneau):
 def ecrire_sda(chemin):
     db = sqlite3.connect(chemin)
     db.execute("create table munic_s (MUS_CO_GEO text, MUS_NM_MUN text, MUS_CO_VER text, "
-               "MUS_CO_MRC text, geom blob)")
-    db.execute("create table mrc_s (MRS_CO_MRC text, MRS_NM_MRC text)")
+               "MUS_CO_MRC text, MUS_CO_REG text, geom blob)")
+    db.execute("create table mrc_s (MRS_CO_MRC text, MRS_NM_MRC text, MRS_CO_REG text, geom blob)")
+    db.execute("create table regio_s (RES_CO_REG text, RES_NM_REG text, geom blob)")
+    # En-tête GeoPackage : « GP », version 0, drapeaux (petit-boutiste, sans
+    # enveloppe), SRID 4326, puis le WKB.
+    gpkg = lambda anneau: b"GP\x00\x01" + struct.pack("<i", 4326) + wkb_polygone(anneau)
     for code, (nom, anneau) in MUNICIPALITES.items():
-        # En-tête GeoPackage : « GP », version 0, drapeaux (petit-boutiste,
-        # sans enveloppe), SRID 4326, puis le WKB.
-        geom = b"GP\x00\x01" + struct.pack("<i", 4326) + wkb_polygone(anneau)
-        db.execute("insert into munic_s values (?, ?, ?, ?, ?)", (code, nom, "V2026-09", "99", geom))
-    db.execute("insert into mrc_s values ('99', 'MRC du Témoin')")
+        db.execute("insert into munic_s values (?, ?, ?, ?, ?, ?)", (code, nom, "V2026-09", "99", "99", gpkg(anneau)))
+    # La MRC du Témoin et la région du Témoin : le contour des trois
+    # municipalités.
+    db.execute("insert into mrc_s values ('99', 'MRC du Témoin', '99', ?)", (gpkg(CONTOUR),))
+    db.execute("insert into regio_s values ('99', 'Région du Témoin', ?)", (gpkg(CONTOUR),))
     # Frontière du Québec selon le MRNF (type FROONT, comme l'Ontario).
     db.execute("create table regio_l (RES_CO_TYP text, geom blob)")
     ligne = [(X0 + x / 1000, Y0 + y / 1000) for x, y in FRONTIERE]
@@ -169,6 +174,13 @@ def carte():
                         {"type": "boundary", "boundary": "administrative", "admin_level": "8",
                          "name": "Sainte-Vérification", "ref:qc": "99002"}))
 
+    # La MRC et la région du Témoin : un ancien contour tracé à part,
+    # partagé par les deux relations, et la frontière.
+    c.chemin(133, [(40, -0.5), (40, 30), (0, 30), (0, -0.5)], dict(LIMITE))
+    for ident, niveau, ref, nom in ((1200, "6", "990", "MRC du Témoin"), (1300, "5", "99", "Région du Témoin")):
+        c.relations.append((ident, [("w", 102, "outer"), ("w", 107, "outer"), ("w", 133, "outer")],
+                            {"type": "boundary", "boundary": "administrative", "admin_level": niveau,
+                             "name": nom, "ref:qc": ref}))
     # Le Québec et la province voisine partagent les chemins de la frontière.
     c.relations.append((1100, [("w", 102, "outer"), ("w", 107, "outer")],
                         {"type": "boundary", "boundary": "administrative", "admin_level": "4",

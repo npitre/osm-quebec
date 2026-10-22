@@ -103,9 +103,9 @@ Source : Découpages administratifs du MRNF (1/20 000). Règles : voir le [READM
 | Élément | Nombre |
 |---|---|
 | Nœuds créés | 7872 |
-| Chemins de limite créés | 97 |
-| Relations modifiées | 37 |
-| Chemins retirés des relations | 77 |
+| Chemins de limite créés | 104 |
+| Relations modifiées | 45 |
+| Chemins retirés des relations | 53 |
 | dont supprimés (simples lignes de limite inutilisées) | 53 |
 | Nœuds supprimés | 3615 |
 
@@ -209,6 +209,14 @@ Source : Découpages administratifs du MRNF (1/20 000). Règles : voir le [READM
 - Val-des-Monts : 2 chemin(s) retiré(s), 1 raccord(s), 0 copie(s), 0 chemin(s) coupé(s)
 - Denholm : 1 chemin(s) retiré(s), 2 raccord(s), 0 copie(s), 1 chemin(s) coupé(s)
 - Lac-Sainte-Marie : 1 chemin(s) retiré(s), 1 raccord(s), 0 copie(s), 0 chemin(s) coupé(s)
+- MRC 76 : Argenteuil : 5 chemin(s) retiré(s), 2 raccord(s), 0 copie(s), 0 chemin(s) coupé(s)
+- MRC 78 : Les Laurentides : 5 chemin(s) retiré(s), 2 raccord(s), 0 copie(s), 0 chemin(s) coupé(s)
+- MRC 79 : Antoine-Labelle : 7 chemin(s) retiré(s), 1 raccord(s), 0 copie(s), 0 chemin(s) coupé(s)
+- MRC 80 (Papineau) non modifiée : aucun bout libre sur l'arc commun
+- MRC 82 : Les Collines-de-l'Outaouais : 6 chemin(s) retiré(s), 2 raccord(s), 0 copie(s), 0 chemin(s) coupé(s)
+- MRC 83 : La Vallée-de-la-Gatineau : 2 chemin(s) retiré(s), 1 raccord(s), 0 copie(s), 0 chemin(s) coupé(s)
+- région 07 (Outaouais) non modifiée : aucun bout libre sur l'arc commun
+- région 15 : Laurentides : 15 chemin(s) retiré(s), 1 raccord(s), 0 copie(s), 0 chemin(s) coupé(s)
 
 Chemins supprimés : [478883674](https://www.openstreetmap.org/way/478883674), [503796693](https://www.openstreetmap.org/way/503796693), [503796695](https://www.openstreetmap.org/way/503796695), [503796696](https://www.openstreetmap.org/way/503796696), [503797449](https://www.openstreetmap.org/way/503797449), [503810617](https://www.openstreetmap.org/way/503810617), [503810618](https://www.openstreetmap.org/way/503810618), [503810619](https://www.openstreetmap.org/way/503810619), [503817502](https://www.openstreetmap.org/way/503817502), [503817503](https://www.openstreetmap.org/way/503817503), [503817505](https://www.openstreetmap.org/way/503817505), [503839588](https://www.openstreetmap.org/way/503839588), [521684885](https://www.openstreetmap.org/way/521684885), [521684886](https://www.openstreetmap.org/way/521684886), [521684887](https://www.openstreetmap.org/way/521684887), [521684888](https://www.openstreetmap.org/way/521684888), [521684889](https://www.openstreetmap.org/way/521684889), [521684890](https://www.openstreetmap.org/way/521684890), [521684894](https://www.openstreetmap.org/way/521684894), [521684896](https://www.openstreetmap.org/way/521684896), [521966225](https://www.openstreetmap.org/way/521966225), [521966226](https://www.openstreetmap.org/way/521966226), [521966227](https://www.openstreetmap.org/way/521966227), [521966228](https://www.openstreetmap.org/way/521966228), [521966230](https://www.openstreetmap.org/way/521966230), [521966232](https://www.openstreetmap.org/way/521966232), [521966233](https://www.openstreetmap.org/way/521966233), [521966234](https://www.openstreetmap.org/way/521966234), [521966236](https://www.openstreetmap.org/way/521966236), [524431155](https://www.openstreetmap.org/way/524431155), [524431157](https://www.openstreetmap.org/way/524431157), [524431161](https://www.openstreetmap.org/way/524431161), [524431164](https://www.openstreetmap.org/way/524431164), [524431165](https://www.openstreetmap.org/way/524431165), [524431166](https://www.openstreetmap.org/way/524431166), [524431167](https://www.openstreetmap.org/way/524431167), [524431168](https://www.openstreetmap.org/way/524431168), [524431169](https://www.openstreetmap.org/way/524431169), [524431170](https://www.openstreetmap.org/way/524431170), [524431171](https://www.openstreetmap.org/way/524431171), [524431172](https://www.openstreetmap.org/way/524431172), [524431173](https://www.openstreetmap.org/way/524431173), [524431174](https://www.openstreetmap.org/way/524431174), [524431175](https://www.openstreetmap.org/way/524431175), [524431176](https://www.openstreetmap.org/way/524431176), [524431177](https://www.openstreetmap.org/way/524431177), [524431178](https://www.openstreetmap.org/way/524431178), [524431179](https://www.openstreetmap.org/way/524431179), [524431180](https://www.openstreetmap.org/way/524431180), [524431182](https://www.openstreetmap.org/way/524431182), [524431183](https://www.openstreetmap.org/way/524431183), [524431184](https://www.openstreetmap.org/way/524431184), [524431186](https://www.openstreetmap.org/way/524431186).
 

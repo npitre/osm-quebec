@@ -229,17 +229,30 @@ def regions_comparer(lieu, conf, preparer=False):
     ids = [int(r) for r in cr["osm"].values()] + ([int(cr["exterieur"])] if cr.get("exterieur") else [])
     # Voisines du lot (municipalités hors du lot qui le touchent) et leur
     # relation dans OSM : [regions] voisines, sinon trouvée par ref:qc.
-    vois, ids_voisines = {}, {}
+    vois, ids_voisines, trouvees = {}, {}, None
     if preparer:
         vois = {c: v[2] for c, v in voisines.voisines(chemin_sda(), list(cr["osm"])).items()}
         if vois:
             connues = dict(cr.get("voisines", {}))
             manquantes = [c for c in vois if c not in connues]
             if manquantes and pbf:
-                trouvees = extrait.limites_admin(pbf)
+                trouvees = trouvees or extrait.limites_admin(pbf)
                 connues.update({c: trouvees[c][0] for c in manquantes if c in trouvees})
             ids_voisines = {c: int(connues[c]) for c in vois if c in connues}
             print("Voisines : %d, dont %d avec une relation dans OSM." % (len(vois), len(ids_voisines)))
+    # MRC et régions qui touchent le lot (et ses voisines) : leur relation
+    # dans OSM, trouvée par ref:qc.
+    ids_englobantes = {}
+    englobantes_mrnf = {}
+    if preparer and pbf:
+        englobantes_mrnf = regions.englobantes_mrnf(chemin_sda(), list(cr["osm"]) + list(vois))
+        trouvees = trouvees or extrait.limites_admin(pbf)
+        for cle in englobantes_mrnf:
+            ref, niveau = regions.ref_englobante(cle)
+            if ref in trouvees and trouvees[ref][2] == niveau:
+                ids_englobantes["%s %s" % cle] = trouvees[ref][0]
+        print("MRC et régions : %d, dont %d avec une relation dans OSM." % (len(englobantes_mrnf),
+                                                                           len(ids_englobantes)))
     # Frontière du Québec : gardée telle qu'elle est dans OSM (voir
     # osmqc/frontiere.py); la relation du Québec en donne les chemins.
     quebec = None
@@ -247,8 +260,8 @@ def regions_comparer(lieu, conf, preparer=False):
     if lignes_frontiere and pbf:
         quebec = cr.get("quebec") or extrait.relation_quebec(pbf)
     # Toutes les relations en un seul passage dans l'extrait.
-    commun = osm.Index(extrait.relations(pbf, ids + list(ids_voisines.values()) + ([quebec] if quebec else []))) \
-        if pbf else None
+    commun = osm.Index(extrait.relations(pbf, ids + list(ids_voisines.values()) + list(ids_englobantes.values())
+                                         + ([quebec] if quebec else []))) if pbf else None
     rels = {code: regions.Relation(int(r), pbf, commun) for code, r in cr["osm"].items()}
     officiel = regions.sda(chemin_sda(), list(rels))
     for code, r in sorted(rels.items()):
@@ -285,10 +298,15 @@ def regions_comparer(lieu, conf, preparer=False):
         if quebec and quebec in index.relations:
             frontiere = (lignes_frontiere, [m["ref"] for m in index.relations[quebec]["members"]
                                             if m["type"] == "way"])
+        englobantes = {}
+        for cle, (nom, polys_e, communes) in englobantes_mrnf.items():
+            k = "%s %s" % cle
+            if k in ids_englobantes:
+                englobantes[k] = (regions.Relation(ids_englobantes[k], pbf, commun), polys_e, communes)
         plan = regions.preparer(polys, rels, ext, index, vois, rels_voisines, usages, chemins_des_noeuds,
-                                frontiere)
+                                frontiere, englobantes)
         plan["liens"] = liens
-        toutes = dict(rels, **rels_voisines)
+        toutes = dict(rels, **rels_voisines, **{k: v[0] for k, v in englobantes.items()})
         traitees = [toutes[c].id for c in plan["modifiees"]] + [r.id for r in rels.values()]
         supp = regions.supprimables(plan["retires"], index, traitees, pbf)
         supp = (supp[0], sorted(set(supp[1]) | noeuds_liberes(plan, index, supp[0], pbf)))

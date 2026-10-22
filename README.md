@@ -217,6 +217,19 @@ dans `sortie/LIEU/` (hors du dépôt); les rapports de révision, dans
     du MRNF la rejoignent. Si la
     frontière d'OSM est introuvable à moins de 3 km, la municipalité est
     tracée d'après le MRNF, et le cas est signalé.
+12. **MRC et régions** : leur contour suit les limites municipales. Les
+    relations de la MRC et de la région administrative (`ref:qc` : code
+    de la MRC suivi de 0, au niveau 6; code de la région, au niveau 5)
+    qui touchent le lot sont modifiées en partie comme une voisine
+    (règle 10) : les arcs du lot sur leur contour du MRNF (tables
+    `mrc_s` et `regio_s`) en deviennent membres, les anciens chemins qui
+    les longent en sont retirés, et des raccords provisoires relient le
+    reste de l'ancien contour. La MRC est traitée avant la région, qui
+    reprend ses raccords quand ils sont identiques. Un chemin neuf porte
+    le niveau le plus bas de ses relations (`admin_level=5` pour un
+    chemin de la région). La relation parente d'un lieu (`exterieur =`,
+    règle 4) est traitée de même : quand le lot reprend ses chemins, elle
+    est déjà raccordée et ne change pas.
 
 ### Rues
 
@@ -484,36 +497,33 @@ Liste au 21 octobre 2026, par ordre de priorité.
 
 ### Régions
 
-4. **Relation de la MRC** : la reconstruire à partir des limites
-   extérieures de ses municipalités, pour éviter les tracés doubles le
-   long du contour.
-5. **Relations manquantes ou mal rattachées** : créer celles qui
+4. **Relations manquantes ou mal rattachées** : créer celles qui
    n'existent pas (TNO aquatique), vérifier que chaque municipalité est
    membre de la bonne MRC (Notre-Dame-de-la-Salette).
-6. **Anciennes municipalités** (niveau 9 ou 10) : simple à coder, mais il
+5. **Anciennes municipalités** (niveau 9 ou 10) : simple à coder, mais il
    manque une source autorisée pour les tracés.
-7. **Route qui finit sur la limite** : classée « coupure à ajouter »
+6. **Route qui finit sur la limite** : classée « coupure à ajouter »
    alors qu'il n'y a rien à couper (chemin des Joyeux-Sportifs, dans la
    Petite-Nation).
-8. **Durée** : la préparation des limites de la Petite-Nation lit
+7. **Durée** : la préparation des limites de la Petite-Nation lit
    l'extrait du Québec en entier plusieurs fois (voisines, usage des
    chemins et des nœuds) et prend environ 5 minutes; tout lire en un
    seul passage.
 
 ### Rues
 
-9. **Nommer les voies sans nom** quand une seule voie dessert toutes les
+8. **Nommer les voies sans nom** quand une seule voie dessert toutes les
    adresses d'une rue, si la communauté accepte la règle.
-10. **`addr:place`** pour les adresses sans rue (Île du Canard-Blanc).
+9. **`addr:place`** pour les adresses sans rue (Île du Canard-Blanc).
 
 ### Adresses
 
-11. **Portes d'entrée** de la Chaire Mobilité : l'outil lit son CSV, il
+10. **Portes d'entrée** de la Chaire Mobilité : l'outil lit son CSV, il
     manque les données.
-12. **Interpolations** : ne supprimer une ligne que si sa rue reçoit
+11. **Interpolations** : ne supprimer une ligne que si sa rue reçoit
     vraiment des adresses (aujourd'hui, une rue « à revoir » peut perdre
     son interpolation sans rien recevoir).
-13. **Anomalies du RQA** : les logements douteux sont déjà listés (voir
+12. **Anomalies du RQA** : les logements douteux sont déjà listés (voir
     « Logements douteux du RQA »). Reste à lister, pour les
     signalements au MRNF, les adresses absentes du rôle d'évaluation
     (comme le 34 chemin de la Pointe-à-Baptiste, à Duhamel), à partir

@@ -142,7 +142,7 @@ def raccorder(tous, reste, lot, voisines, sauter, lignes_mrnf, chemins_osm, inde
     reçoivent les morceaux, nœuds existants utilisés, rapport."""
     res = {"arcs": set(), "morceaux": defaultdict(list), "retirer": defaultdict(set), "modifies": {},
            "neufs": {}, "relations": {}, "existants": {}, "rapport": [], "nouveaux_noeuds": {},
-           "frontiere": set()}
+           "frontiere": set(), "noeuds_raccord": set()}
     if not lignes_mrnf or not chemins_osm:
         return res
     chemins_osm = [w for w in chemins_osm if w in index.chemins
@@ -285,6 +285,7 @@ def raccorder(tous, reste, lot, voisines, sauter, lignes_mrnf, chemins_osm, inde
     # de raccord (sans passer par un autre point de raccord).
     candidats = {w for ws in morceaux_de.values() for w in ws} | set(chemins_osm)
     res["frontiere"] = candidats
+    res["noeuds_raccord"] = set(noeud_de_x.values())
     voisins = defaultdict(list)
     for w in candidats:
         ns = index.chemins[w]["nodes"]

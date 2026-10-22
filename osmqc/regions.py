@@ -38,6 +38,43 @@ def frontiere_quebec(chemin):
             if typ in TYPES_FRONTIERE for l in geo.wkb_gpkg_lignes(g)]
 
 
+def englobantes_mrnf(chemin, codes_mun):
+    """MRC et régions administratives des municipalités données, selon le
+    MRNF : {("MRC", code) ou ("région", code): (nom, polygones, codes des
+    municipalités)}. Les
+    relations d'OSM portent ref:qc = code de la MRC suivi de 0 (« 800 »
+    pour Papineau) au niveau 6, et le code de la région au niveau 5."""
+    db = sqlite3.connect("file:%s?mode=ro" % chemin, uri=True)
+    q = ",".join("?" * len(codes_mun))
+    tables = {r[0] for r in db.execute("select name from sqlite_master")}
+    colonnes = lambda t: {r[1] for r in db.execute("pragma table_info(%s)" % t)} if t in tables else set()
+    mun = colonnes("munic_s")
+    mrc = {r[0] for r in db.execute("select distinct MUS_CO_MRC from munic_s where MUS_CO_GEO in (%s)" % q,
+                                    list(codes_mun))} if "MUS_CO_MRC" in mun else set()
+    reg = {r[0] for r in db.execute("select distinct MUS_CO_REG from munic_s where MUS_CO_GEO in (%s)" % q,
+                                    list(codes_mun))} if "MUS_CO_REG" in mun else set()
+    res = {}
+    if "geom" in colonnes("mrc_s") and mrc:
+        for code, nom, g in db.execute("select MRS_CO_MRC, MRS_NM_MRC, geom from mrc_s where MRS_CO_MRC in (%s)"
+                                       % ",".join("?" * len(mrc)), sorted(mrc)):
+            if g:
+                membres = {r[0] for r in db.execute("select MUS_CO_GEO from munic_s where MUS_CO_MRC = ?", (code,))}
+                res[("MRC", code)] = (nom, geo.wkb_gpkg(g), membres)
+    if "geom" in colonnes("regio_s") and reg:
+        for code, nom, g in db.execute("select RES_CO_REG, RES_NM_REG, geom from regio_s where RES_CO_REG in (%s)"
+                                       % ",".join("?" * len(reg)), sorted(reg)):
+            if g:
+                membres = {r[0] for r in db.execute("select MUS_CO_GEO from munic_s where MUS_CO_REG = ?", (code,))}
+                res.setdefault(("région", code), (nom, [], membres))[1].extend(geo.wkb_gpkg(g))
+    return res
+
+
+def ref_englobante(cle):
+    """(ref:qc, admin_level) de la relation d'OSM d'une MRC ou d'une région."""
+    genre, code = cle
+    return (code + "0", "6") if genre == "MRC" else (code, "5")
+
+
 def municipalites_mrc(chemin, mrc):
     """Codes et noms des municipalités d'une MRC selon le MRNF :
     {code: nom}."""
@@ -246,6 +283,7 @@ def _ajouter_arc(pts, code, role, vus, res):
 
 
 PRECISION = 7           # OSM garde 7 décimales de degré (environ 1 cm)
+SUR_M = 1.0             # un sommet à moins de 1 m d'un contour du MRNF le suit
 
 
 def arrondi(p):
@@ -298,7 +336,7 @@ def reconnaitre(pts, candidats, pris):
 
 
 def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rels_voisines=None,
-             usages=None, chemins_des_noeuds=None, frontiere=None):
+             usages=None, chemins_des_noeuds=None, frontiere=None, englobantes=None):
     """Plan de remplacement des limites.
     officiel : {code: polygones du MRNF}; relations : {code: Relation};
     exterieur : Relation parente (MRC) dont on réutilise les chemins pour
@@ -318,6 +356,10 @@ def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rel
     frontiere : (lignes de la frontière du Québec selon le MRNF, chemins
     de la relation du Québec dans OSM) : la frontière d'OSM est gardée et
     les limites s'y raccordent (voir osmqc/frontiere.py).
+    englobantes : {clé (« MRC 80 », « région 07 »): (Relation, polygones du
+    MRNF, codes de ses municipalités)} : relations de MRC et de région qui
+    touchent le lot, modifiées en partie comme une voisine (leur contour
+    suit les limites municipales du lot).
     Renvoie un dict : nouveaux nœuds et chemins, chemins existants
     réutilisés et leurs nœuds, membres des relations, chemins retirés,
     modifications des voisines, rapport."""
@@ -378,8 +420,9 @@ def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rel
     if frontiere is not None and index is not None:
         from . import frontiere as fro
         fr = fro.raccorder(tous, reste, set(officiel), set(rels_voisines), set(reprendre), frontiere[0],
-                           frontiere[1], index, dict(relations, **rels_voisines), noeud, nouveau_chemin,
-                           usages or (lambda ws: {}), arrondi)
+                           frontiere[1], index,
+                           dict(relations, **rels_voisines, **{c: v[0] for c, v in (englobantes or {}).items()}),
+                           noeud, nouveau_chemin, usages or (lambda ws: {}), arrondi)
         rapport += fr["rapport"]
         for n, p in fr["existants"].items():
             par_point[arrondi(p)] = n
@@ -530,11 +573,146 @@ def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rel
             modif_voisines["relations"].setdefault(rid, []).extend(coupes)
         modif_voisines["liberes"] |= res["liberes"]
         rapport += res["rapport"]
+    # MRC et régions : leur contour suit les limites municipales.
+    englobantes = (englobantes or {}) if index is not None else {}
+    raccords_fr = set(fr.get("noeuds_raccord", ()))
+    plan_frontiere, lignes_lot = {}, {}
+    if englobantes:
+        plan_frontiere = {w: index.chemins[w]["nodes"] for ws in fr["morceaux"].values() for w in ws}
+        lignes_lot = {w: ids for w, ids, _ in chemins + reutilises if w not in provisoires}
+        lignes_lot.update(plan_frontiere)
+        for code, lst in membres.items():
+            for t, w, r in lst:
+                if w > 0 and w in index.chemins and w not in lignes_lot and code in officiel:
+                    lignes_lot[w] = index.chemins[w]["nodes"]
+        grille_lot = geo.Grille([pts for pts, _ in tous], pas=0.02)
+    for rel, _, _ in englobantes.values():
+        if not hasattr(rel, "membres_origine"):
+            rel.membres_origine = [dict(m) for m in rel.rel["members"]]
+    par_id_eng = {v[0].id: c for c, v in englobantes.items()}
+    raccords_eng, coupes_eng = {}, set()
+    # Usage de tous les chemins des englobantes, en une seule lecture.
+    usages_eng = (usages or (lambda ws: {}))(sorted({w for v in englobantes.values() for w in v[0].chemins
+                                                     if w > 0})) if englobantes else {}
+    # Les MRC avant les régions : une région partage souvent les chemins
+    # de ses MRC, et part de leur état modifié.
+
+    def inserer(rid, coupes):
+        """Morceaux de chemins coupés, ajoutés en mémoire à une englobante
+        pas encore traitée, juste après le chemin coupé. Faux si rid n'en
+        est pas une."""
+        autre = par_id_eng.get(rid)
+        if autre is None or autre in nouvelles:
+            return False
+        r = englobantes[autre][0]
+        for w, morceaux in coupes:
+            m2 = []
+            for m in r.rel["members"]:
+                m2.append(m)
+                if m["type"] == "way" and m["ref"] == w:
+                    m2 += [{"type": "way", "ref": n, "role": m["role"]} for n in morceaux]
+            r.rel["members"] = m2
+        r.chemins = [m["ref"] for m in r.rel["members"] if m["type"] == "way"]
+        return True
+
+    # Les coupes faites pour les voisines, appliquées en mémoire : les
+    # englobantes partent de cet état.
+    if englobantes:
+        for w, ns in modif_voisines["modifies"].items():
+            if w in index.chemins:
+                index.chemins[w]["nodes"] = ns
+                coupes_eng.add(w)
+        for nw, (ns, tags) in modif_voisines["neufs"].items():
+            index.chemins.setdefault(nw, {"type": "way", "id": nw, "nodes": ns, "tags": dict(tags)})
+        for rid in list(modif_voisines["relations"]):
+            if inserer(rid, modif_voisines["relations"][rid]):
+                del modif_voisines["relations"][rid]
+
+    for cle, (rel, polys, communes) in sorted(englobantes.items()):
+        anneaux_ext = [p[0] for p in polys]
+        anneaux_int = [a for p in polys for a in p[1:]]
+        g_ext, g_int = geo.Grille(anneaux_ext, pas=0.02), geo.Grille(anneaux_int, pas=0.02)
+        communs = []
+        for w, ids in sorted(lignes_lot.items()):
+            pts = [point(n) for n in ids if n not in raccords_fr]
+            if w in plan_frontiere:
+                codes = {c for c, ws in fr["morceaux"].items() if w in ws}
+                if codes & set(communes):
+                    communs.append((w, ids, "outer"))
+                continue
+            # Un arc court qui part de la frontière : son seul autre nœud
+            # suffit (le nœud de raccord est sur la frontière d'OSM, pas
+            # sur le contour du MRNF).
+            if not pts or (len(pts) < 2 and len(ids) < 2):
+                continue
+            if all(g_ext.ecart(p, 0.001) < SUR_M for p in pts):
+                communs.append((w, ids, "outer"))
+            elif anneaux_int and all(g_int.ecart(p, 0.001) < SUR_M for p in pts):
+                communs.append((w, ids, "inner"))
+        if not communs:
+            continue
+        # Le reste du contour selon le MRNF : ce qui n'est pas le long du lot.
+        autres = [[a, b] for anneau in anneaux_ext + anneaux_int for a, b in zip(anneau, anneau[1:])
+                  if not all(grille_lot.ecart(p, 0.001) < SUR_M
+                             for p in (a, b, ((a[0] + b[0]) / 2, (a[1] + b[1]) / 2)))]
+        garder = (fr["frontiere"] & set(rel.chemins)) - {w for w, _, _ in communs}
+        res, raison = vois.modifier(rel, index, communs, autres, point, noeud_neuf, nouveau_chemin,
+                                    lambda ws: {w: usages_eng.get(w, set()) for w in ws}, lot, set(), garder)
+        if res is None:
+            rapport.append("%s (%s) non modifiée : %s" % (cle, rel.tags.get("name", ""), raison))
+            continue
+        # Un chemin déjà coupé (voisine, MRC) est repris dans son état
+        # coupé, appliqué en mémoire.
+        deja = set(res["modifies"]) & set(modif_voisines["modifies"]) - coupes_eng
+        if deja:
+            rapport.append("%s (%s) non modifiée : chemin %s déjà coupé ailleurs" % (
+                cle, rel.tags.get("name", ""), ", ".join(map(str, sorted(deja)))))
+            continue
+        # Un raccord identique à celui d'une MRC déjà traitée (mêmes deux
+        # nœuds) : on reprend le sien.
+        pareils = {}
+        for w, ids, role in res["chemins"]:
+            autre = raccords_eng.get(frozenset(ids)) if len(ids) == 2 else None
+            if autre is not None:
+                pareils[w] = autre
+                continue
+            chemins.append((w, ids, {cle: role}))
+            provisoires.add(w)
+            if len(ids) == 2:
+                raccords_eng[frozenset(ids)] = w
+        for w, autre in pareils.items():
+            for c, ids, r in chemins:
+                if c == autre:
+                    r[cle] = next(rl for x, _, rl in res["chemins"] if x == w)
+        nouvelles[cle] = [dict(m, ref=pareils.get(m["ref"], m["ref"])) if m["type"] == "way" else m
+                          for m in res["membres"]]
+        anciens.update(rel.chemins)
+        modif_voisines["modifies"].update(res["modifies"])
+        modif_voisines["neufs"].update(res["neufs"])
+        modif_voisines["liberes"] |= res["liberes"]
+        # Appliquer en mémoire, pour les relations englobantes suivantes.
+        for w, ns in res["modifies"].items():
+            index.chemins[w]["nodes"] = ns
+            coupes_eng.add(w)
+        for nw, (ns, tags) in res["neufs"].items():
+            index.chemins[nw] = {"type": "way", "id": nw, "nodes": ns, "tags": dict(tags)}
+        for rid, coupes in res["relations"].items():
+            if not inserer(rid, coupes):
+                modif_voisines["relations"].setdefault(rid, []).extend(coupes)
+        rapport += ["%s : %s" % (cle, l) for l in res["rapport"]]
+    # Une voisine ou une englobante non modifiée a pu recevoir en mémoire
+    # des morceaux de chemins coupés (frontière, MRC) : elle est envoyée
+    # avec eux, sinon son anneau s'ouvrirait.
+    for c, rel in dict(rels_voisines, **{c: v[0] for c, v in englobantes.items()}).items():
+        if c not in nouvelles and hasattr(rel, "membres_origine") \
+                and cles_membres(rel.membres_origine) != cles_membres(rel.rel["members"]):
+            nouvelles[c] = list(rel.rel["members"])
     # Un chemin coupé chez une voisine peut servir à une autre relation que
     # l'on modifie déjà (autre voisine, ou lot) : ses morceaux entrent
     # dans ses nouveaux membres, juste après lui, au lieu d'un second envoi
     # de la même relation.
-    par_id = {r.id: c for c, r in dict(relations, **rels_voisines).items() if c in nouvelles}
+    par_id = {r.id: c for c, r in dict(relations, **rels_voisines, **{c: v[0] for c, v in englobantes.items()}).items()
+              if c in nouvelles}
     for rid in list(modif_voisines["relations"]):
         if rid not in par_id:
             continue
@@ -546,6 +724,14 @@ def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rel
                 if m["type"] == "way" and m["ref"] == w:
                     res_m += [{"type": "way", "ref": n, "role": m["role"]} for n in morceaux]
             nouvelles[code] = res_m
+    # Morceaux qu'aucune relation ne garde (une englobante a retiré celui
+    # qu'une autre coupe lui donnait) : ils ne sont pas créés.
+    if englobantes:
+        servis = {m["ref"] for lst in nouvelles.values() for m in lst if m["type"] == "way"}
+        servis |= {n for coupes in modif_voisines["relations"].values() for _, ms in coupes for n in ms}
+        for nw in [nw for nw in modif_voisines["neufs"] if nw not in servis]:
+            ns, _ = modif_voisines["neufs"].pop(nw)
+            modif_voisines["liberes"].update(ns)
     # Nœuds existants auxquels s'accrochent raccords et copies.
     for _, ids, _ in chemins:
         for n in ids:
@@ -553,14 +739,26 @@ def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rel
                 existants[n] = index.point(n)
     gardes = {m["ref"] for lst in nouvelles.values() for m in lst if m["type"] == "way" and m["ref"] > 0}
     retires = sorted(w for w in anciens - gardes if w > 0)
-    toutes = dict(relations, **{c: r for c, r in rels_voisines.items() if c in nouvelles})
+    toutes = dict(relations, **{c: r for c, r in rels_voisines.items() if c in nouvelles},
+                  **{c: v[0] for c, v in englobantes.items() if c in nouvelles})
     modifiees = sorted(c for c, rel in toutes.items()
                        if cles_membres(getattr(rel, "membres_origine", rel.rel["members"]))
                        != cles_membres(nouvelles[c]))
+    # Un chemin neuf membre d'une MRC ou d'une région porte le niveau le
+    # plus bas de ses relations.
+    etiquettes = {}
+    for cle in englobantes:
+        niveau = ref_englobante(tuple(cle.split(" ", 1)))[1]
+        for m in nouvelles.get(cle, ()):
+            if m["type"] == "way" and m["ref"] < 0:
+                t = etiquettes.setdefault(m["ref"], {})
+                if int(t.get("admin_level", "99")) > int(niveau):
+                    t["admin_level"] = niveau
     return {"noeuds": noeuds, "existants": existants, "chemins": chemins, "reutilises": reutilises,
             "membres": nouvelles, "modifiees": modifiees, "retires": retires, "rapport": rapport,
             "lot": sorted(relations), "voisines": modif_voisines, "provisoires": provisoires,
-            "frontiere": {w: index.chemins[w]["nodes"] for ws in fr["morceaux"].values() for w in ws}}
+            "frontiere": {w: index.chemins[w]["nodes"] for ws in fr["morceaux"].values() for w in ws},
+            "etiquettes": etiquettes}
 
 
 def cles_membres(membres):
@@ -679,7 +877,9 @@ def lignes_limites(plan, exterieur=None):
     lignes = [[points[n] for n in ids] for _, ids, _ in plan["chemins"] + plan.get("reutilises", [])]
     lignes += [[points[n] for n in ids] for ids in plan.get("frontiere", {}).values()]
     if exterieur is not None:
-        reutilises = {m["ref"] for lst in plan["membres"].values() for m in lst
+        # Repris par une municipalité du lot (pas gardés par une voisine
+        # ou une englobante qu'on ne modifie qu'en partie).
+        reutilises = {m["ref"] for c in plan["lot"] for m in plan["membres"].get(c, ())
                       if m["type"] == "way" and m["ref"] > 0}
         lignes += [exterieur.index.ligne(w) for w in exterieur.chemins if w in reutilises]
     return lignes
