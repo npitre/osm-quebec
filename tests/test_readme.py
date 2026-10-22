@@ -271,6 +271,32 @@ class Regions(unittest.TestCase):
         self.assertEqual({n for r in raccords for n in r if n > 0}, {1, 3})
         self.assertIn("B", plan["modifiees"])
 
+    def test_regions_11_frontiere_gardee(self):
+        # La frontière : y = 0 au MRNF, y = -1 dans OSM (chemin 900, de
+        # x = 0 à 20, partagé par A, B et la relation de la province 950).
+        idx = index({1: ((0, -1), {}), 2: ((20, -1), {})},
+                    [(900, [1, 2], {"boundary": "administrative", "admin_level": "4"})])
+        rels = {"A": Rel(100, [900]), "B": Rel(200, [900])}
+        plan = regions.preparer(self.officiel, rels, None, idx, usages=lambda ws: {900: {100, 200, 950}},
+                                frontiere=([[P(0, 0), P(20, 0)]], [900]))
+        v = plan["voisines"]
+        (x, coupe), = [(n, p) for p, n in plan["noeuds"].items() if p == P(10, -1)]
+        self.assertEqual(v["modifies"][900], [1, x])               # coupé à x = 10, sans bouger
+        (morceau, (ns, tags)), = v["neufs"].items()
+        self.assertEqual((ns, tags["admin_level"]), ([x, 2], "4"))
+        self.assertEqual(v["relations"], {950: [(900, [morceau])]})
+        self.assertIn({"type": "way", "ref": 900, "role": "outer"}, plan["membres"]["A"])
+        self.assertIn({"type": "way", "ref": morceau, "role": "outer"}, plan["membres"]["B"])
+        self.assertNotIn({"type": "way", "ref": 900, "role": "outer"}, plan["membres"]["B"])
+        # La limite commune descend jusqu'au point de coupe; le sud n'est
+        # pas tracé d'après le MRNF.
+        commune = [ids for w, ids, roles in plan["chemins"] if set(roles) == {"A", "B"}]
+        self.assertEqual(len(commune), 1)
+        self.assertIn(x, (commune[0][0], commune[0][-1]))
+        y = {n: p[1] for p, n in plan["noeuds"].items()}
+        self.assertFalse([ids for w, ids, roles in plan["chemins"]
+                          if any(y.get(a) == y.get(b) == P(0, 0)[1] for a, b in zip(ids, ids[1:]))])
+
 
 # Rues
 

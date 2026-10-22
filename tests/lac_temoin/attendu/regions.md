@@ -9,7 +9,7 @@ Source : Découpages administratifs du MRNF (1/20 000). Règles : voir le [READM
 | Municipalité | Relation | Anneaux | Chemins qui la forment |
 |---|---|---|---|
 | Lac-Témoin | [1001](https://www.openstreetmap.org/relation/1001) | 1 | limite seule 2, waterway=river 1 |
-| Sainte-Vérification | [1002](https://www.openstreetmap.org/relation/1002) | 1 | limite seule 2, waterway=river 1, autre 1 |
+| Sainte-Vérification | [1002](https://www.openstreetmap.org/relation/1002) | 1 | limite seule 3, waterway=river 1, autre 1 |
 
 ## Limites officielles (MRNF)
 
@@ -34,18 +34,21 @@ Source : Découpages administratifs du MRNF (1/20 000). Règles : voir le [READM
 
 | Élément | Nombre |
 |---|---|
-| Nœuds créés | 5 |
+| Nœuds créés | 6 |
 | Chemins de limite créés | 8 |
 | Relations modifiées | 3 |
-| Chemins retirés des relations | 7 |
+| Chemins retirés des relations | 6 |
 | dont supprimés (simples lignes de limite inutilisées) | 3 |
 | Nœuds supprimés | 4 |
 
-- arc de 2 sommets (99001 outer, 99002 outer) : 1 chemin(s) neuf(s)
+- frontière : 1 chemin(s) coupé(s) en 1 point(s), sans être déplacés
+- frontière gardée (99002) : 1 chemin(s) de la frontière d'OSM
+- frontière gardée (99001) : 2 chemin(s) de la frontière d'OSM
+- arc de 3 sommets (99001 outer, 99002 outer) : 1 chemin(s) neuf(s)
 - arc de 2 sommets (99001 outer, 99003 outer) : 1 chemin(s) neuf(s)
 - arc de 3 sommets (99001 outer) : 1 chemin(s) neuf(s)
-- arc de 3 sommets (99002 outer) : 1 chemin(s) neuf(s), 1 chemin(s) existant(s) déjà conforme(s)
 - arc de 3 sommets (99002 outer, 99003 outer) : 1 chemin(s) neuf(s)
+- arc de 3 sommets (99002 outer) : 1 chemin(s) neuf(s), 1 chemin(s) existant(s) déjà conforme(s)
 - Rivière-Contrôle : 2 chemin(s) retiré(s), 2 raccord(s), 1 copie(s), 1 chemin(s) coupé(s)
 
 Chemins supprimés : [101](https://www.openstreetmap.org/way/101), [105](https://www.openstreetmap.org/way/105), [120](https://www.openstreetmap.org/way/120).
@@ -73,7 +76,7 @@ Ces chemins portent une note, un fixme, une description ou une étiquette disput
 
 | Chemin | Étiquettes | Note reportée sur |
 |---|---|---|
-| [104](https://www.openstreetmap.org/way/104) | note=Limite à vérifier sur le terrain | chemin neuf -4 |
+| [104](https://www.openstreetmap.org/way/104) | note=Limite à vérifier sur le terrain | chemin neuf -6 |
 
 ## Lien avec le nœud de lieu
 
@@ -81,7 +84,7 @@ OsmAnd n'utilise une limite que si sa relation a un membre label ou admin_centre
 
 | Municipalité | Statut | Détail |
 |---|---|---|
-| Lac-Témoin | lié | label : node 11 place=village |
+| Lac-Témoin | lié | label : node 13 place=village |
 | Sainte-Vérification | sans lien | aucun membre label ni admin_centre |
 
 ## Routes qui traversent les limites

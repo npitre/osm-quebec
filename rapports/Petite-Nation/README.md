@@ -36,10 +36,17 @@ extrait OSM de Geofabrik du 16 octobre 2026.
 
 ### Remplacement proposé
 
-- 84 chemins de limite neufs, d'après le MRNF (8 542 nœuds) : une limite
+- 80 chemins de limite neufs, d'après le MRNF (7 872 nœuds) : une limite
   commune à deux municipalités est un seul chemin, membre des deux
   relations. Cela vaut aussi pour les limites avec les municipalités
   voisines, hors de la MRC (règle 10 des régions).
+- Frontière avec l'Ontario, dans la rivière des Outaouais : gardée telle
+  qu'elle est dans OSM (règle 11). Les sept municipalités riveraines
+  (Fassett, Montebello, Notre-Dame-de-Bonsecours, Papineauville,
+  Plaisance, Thurso, Lochaber) reprennent les chemins de la frontière
+  d'OSM, coupés en 9 points, sans être déplacés, là où leurs limites du
+  MRNF les rejoignent; les relations du Québec, de l'Ontario et du
+  Canada reçoivent les morceaux.
 - 12 voisines hors de la MRC (Grenville-sur-la-Rouge, Harrington,
   Huberdeau, Amherst, La Minerve, Notre-Dame-du-Laus, Lac-Ernest,
   Gatineau, L'Ange-Gardien, Val-des-Monts, Denholm, Lac-Sainte-Marie)
@@ -49,13 +56,14 @@ extrait OSM de Geofabrik du 16 octobre 2026.
   relient l'arc commun à leurs anciens points triples. Ils disparaîtront
   quand ces voisines seront traitées. Deux autres voisines n'ont pas de
   relation dans OSM (TNO aquatiques).
-- 37 relations modifiées; 85 chemins retirés des relations, dont 53
-  simples lignes de limite devenues inutiles, supprimées. Les rivières ne
-  sont pas touchées.
+- 37 relations modifiées; 77 chemins retirés des relations, dont 53
+  simples lignes de limite devenues inutiles, supprimées. Les rivières
+  qui ne sont pas la frontière ne sont pas touchées.
 - Essai : le fichier d'envoi a été appliqué à une copie de l'extrait du
-  Québec, comme si OSM l'avait accepté. Les 66 relations touchées forment
-  toutes des anneaux fermés, et relancer la préparation ne produit plus
-  rien.
+  Québec, comme si OSM l'avait accepté. Les 68 relations entièrement
+  présentes dans l'extrait forment toutes des anneaux fermés (les 13
+  autres, comme l'Ontario ou le Canada, débordent de l'extrait), et
+  relancer la préparation ne produit plus rien.
 - Vérification : avec les limites proposées, les 20 659 adresses tombent
   dans la bonne municipalité.
 - Lien avec le nœud de lieu : 16 relations sur 25 ont leur membre
@@ -81,10 +89,12 @@ du Lac-Gagnon Est (4), routes 309, 315 et 323. Liste complète dans
 Les coupures à ajouter et à déplacer sont faites dans le fichier
 d'envoi : 143 chemins coupés, 163 nœuds ajoutés sur les routes, 178
 segments neufs, et 19 relations de route mises à jour (détail dans
-[regions.md](regions.md#routes-coupées)). Deux anciennes coupures
-devenues inutiles sont fusionnées (chemin du Marais, chemin Ivall);
-les autres anciennes coupures séparent des segments aux étiquettes
-différentes (un pont, un changement de revêtement) et sont gardées.
+[regions.md](regions.md#routes-coupées)). Une ancienne coupure devenue
+inutile est fusionnée (chemin Ivall). Celle du chemin du Marais est
+gardée : la route traverse trois fois la nouvelle limite, et l'ancienne
+coupure sert encore à l'un de ces croisements. Les autres anciennes
+coupures séparent des segments aux étiquettes différentes (un pont, un
+changement de revêtement) et sont gardées.
 
 ### Questions en suspens
 

@@ -203,6 +203,20 @@ dans `sortie/LIEU/` (hors du dépôt); les rapports de révision, dans
     lignes de limite inutilisées, sont supprimés. Si l'anneau d'une
     voisine ne se refermerait pas, elle n'est pas touchée et le cas est
     signalé dans le rapport.
+11. **Frontière du Québec gardée** : en attendant d'en discuter (voir
+    [rapports/Quebec/](rapports/Quebec/)), la frontière du Québec reste
+    telle qu'elle est dans OSM. Une limite du MRNF qui la suit (table
+    `regio_l` du SDA) n'est pas tracée : la municipalité garde les
+    chemins de la frontière d'OSM. Une limite qui aboutit à la frontière
+    est prolongée ou raccourcie jusqu'à la frontière d'OSM; le chemin de
+    la frontière y est coupé en deux, sans être déplacé (un nœud ajouté
+    au besoin), et toutes les relations qui le contenaient (le Québec,
+    la province ou le pays voisin, des municipalités) reçoivent le
+    morceau neuf juste après lui. Chaque municipalité reçoit les
+    morceaux de la frontière d'OSM entre les deux points où ses limites
+    du MRNF la rejoignent. Si la
+    frontière d'OSM est introuvable à moins de 3 km, la municipalité est
+    tracée d'après le MRNF, et le cas est signalé.
 
 ### Rues
 

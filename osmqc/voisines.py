@@ -67,7 +67,8 @@ def _distance(grille, lignes, p):
     return d
 
 
-def modifier(rel, index, communs, autres, point, noeud, nouveau_chemin, usages, lot):
+def modifier(rel, index, communs, autres, point, noeud, nouveau_chemin, usages, lot, retirer=frozenset(),
+             garder=frozenset()):
     """Modification partielle de la relation rel (une voisine B).
     communs : [(chemin, [nœuds], rôle)] chemins de l'arc commun avec le lot
     (neufs ou réutilisés), qui deviennent membres de B; autres : polylignes
@@ -75,7 +76,9 @@ def modifier(rel, index, communs, autres, point, noeud, nouveau_chemin, usages, 
     nœud neuf ou existant; noeud(p) : nœud neuf à la position p;
     nouveau_chemin() : identifiant négatif libre; usages(chemins) :
     {chemin: {relations}} dans tout OSM; lot : identifiants des relations
-    du lot.
+    du lot; retirer : morceaux de la frontière du Québec attribués au lot,
+    à retirer de B; garder : morceaux de la frontière que B garde, jamais
+    classés le long du lot (voir osmqc/frontiere.py).
     Renvoie (résultat, None) ou (None, raison). Résultat : membres de B,
     chemins neufs de B (raccords et copies), chemins raccourcis ou coupés,
     morceaux neufs et relations où ils entrent, nœuds libérés, chemins
@@ -94,7 +97,7 @@ def modifier(rel, index, communs, autres, point, noeud, nouveau_chemin, usages, 
         return None, "anneau ouvert dans OSM"
     # Déjà raccordée (envoi précédent) : l'arc commun en fait partie et son
     # anneau est fermé. Rien à faire.
-    if all(w in roles for w, _, _ in communs):
+    if all(w in roles for w, _, _ in communs) and not retirer:
         return {"membres": list(rel.rel["members"]), "chemins": [], "modifies": {}, "neufs": {},
                 "relations": {}, "liberes": set(), "retires": [], "rapport": []}, None
 
@@ -102,7 +105,17 @@ def modifier(rel, index, communs, autres, point, noeud, nouveau_chemin, usages, 
     grille_c = geo.Grille(lignes_c)
     grille_o = geo.Grille(autres) if autres else None
 
+    # Morceaux de la frontière du Québec attribués au lot : retirés de B.
+    gardes_b = {n for w in anciens if w not in retirer for n in index.chemins[w]["nodes"]}
+    forces = {n for w in retirer if w in index.chemins for n in index.chemins[w]["nodes"]} - gardes_b
+
+    gardes_fr = {n for w in garder if w in index.chemins for n in index.chemins[w]["nodes"]}
+
     def longe(n):
+        if n in gardes_fr:
+            return False
+        if n in forces:
+            return True
         p = index.point(n)
         if grille_o is None:
             return True

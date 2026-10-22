@@ -192,10 +192,11 @@ class LacTemoin(unittest.TestCase):
                          {self.noeud(x, y) for x, y in ((5, 20), (5, 17), (1, 17), (1, 20))})
         neufs = [o["nodes"] for o in self.nouveaux_chemins_limite().values()]
         self.assertTrue([ns for ns in neufs if self.noeud(0, 20) in ns])
-        # Frontière (102), rivière (103) et chemin avec note (104) : retirés, pas supprimés.
+        # Rivière (103) et chemin avec note (104) : retirés, pas supprimés.
         for rel in (1001, 1002):
             refs = {r for _, r, _ in self.regions[("modify", "relation", rel)]["members"]}
-            self.assertFalse(refs & {101, 102, 103, 104, 105})
+            self.assertFalse(refs & {101, 103, 104, 105})
+        self.assertFalse([k for k in self.regions if k[0] == "delete" and k[2] in (103, 104)])
 
     def test_regions_chemin_deja_conforme(self):
         # Le côté est de Sainte-Vérification suivait déjà le MRNF : gardé
@@ -264,8 +265,8 @@ class LacTemoin(unittest.TestCase):
     def anneaux_fermes(self, extrait_):
         pos, chemins, rels = extrait_
         for rid, (membres, tags) in rels.items():
-            if tags.get("type") != "boundary":
-                continue
+            if tags.get("type") != "boundary" or tags.get("admin_level") != "8":
+                continue                # le Québec et la province voisine sont incomplets ici
             _, ouverts = geo.assembler([chemins[r][0] for t, r, _ in membres if t == "w"])
             self.assertEqual(ouverts, 0, (rid, tags.get("name")))
 
@@ -291,6 +292,32 @@ class LacTemoin(unittest.TestCase):
 
     def test_relance_apres_les_deux_lots(self):
         self.assertEqual(self.relances, [True, True])
+
+    def test_frontiere_gardee(self):
+        # La frontière du Québec (y = -0,5 dans OSM, y = 0 au MRNF) est
+        # gardée : coupée à (20; -0,5), là où la limite commune la rejoint,
+        # sans qu'aucun nœud ne bouge.
+        noeuds = self.crees(self.regions, "node")
+        x = [n for n, o in noeuds.items() if (o["lon"], o["lat"]) == P(20, -0.5)]
+        self.assertEqual(len(x), 1)
+        ouest = self.regions[("modify", "way", 107)]["nodes"]
+        self.assertEqual(ouest, [self.noeud(19, -0.5), x[0]])
+        (morceau,) = [i for i, o in self.crees(self.regions, "way").items()
+                      if o["tags"].get("admin_level") == "4"]
+        self.assertEqual(self.crees(self.regions, "way")[morceau]["nodes"], [x[0], self.noeud(40, -0.5)])
+        for rel in (1100, 1101):            # le Québec et la province voisine
+            membres = [r for _, r, _ in self.regions[("modify", "relation", rel)]["members"]]
+            self.assertEqual(membres, [102, 107, morceau])
+        # Chaque municipalité garde sa part de la frontière.
+        lt = {r for _, r, _ in self.regions[("modify", "relation", 1001)]["members"]}
+        sv = {r for _, r, _ in self.regions[("modify", "relation", 1002)]["members"]}
+        self.assertTrue({102, 107} <= lt and morceau not in lt)
+        self.assertTrue(morceau in sv and not {102, 107} & sv)
+        # La limite commune descend jusqu'à la frontière d'OSM.
+        commune = [o for o in self.nouveaux_chemins_limite().values()
+                   if x[0] in o["nodes"] and o["tags"]["admin_level"] == "8"]
+        self.assertEqual(len(commune), 1)
+        self.assertFalse([k for k in self.regions if k[0] == "delete" and k[2] in (102, 107)])
 
     def test_regions_5_note_reportee(self):
         notes = [o for o in self.nouveaux_chemins_limite().values() if "note" in o["tags"]]

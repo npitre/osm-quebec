@@ -15,6 +15,10 @@
 #        |           |  |                  |
 #    0   +-----------+--+------------------+
 #
+# Au sud, la frontière du Québec avec une province voisine : à y = 0
+# selon le MRNF, 55 m plus au sud (y = -0,5) dans OSM. Elle est gardée
+# telle qu'elle est dans OSM, et coupée là où les limites la rejoignent.
+#
 # Le premier lot (Lac-Témoin.toml) traite les deux municipalités du sud;
 # Rivière-Contrôle, voisine hors du lot, est modifiée en partie. Le
 # second lot (Riviere-Controle.toml) la traite ensuite.
@@ -59,6 +63,9 @@ MUNICIPALITES = {
 }
 
 
+FRONTIERE = [(0, 0), (40, 0)]
+
+
 def wkb_polygone(anneau):
     # Coordonnées brutes, non arrondies, comme celles du MRNF.
     pts = [(X0 + x / 1000, Y0 + y / 1000) for x, y in anneau]
@@ -76,6 +83,11 @@ def ecrire_sda(chemin):
         geom = b"GP\x00\x01" + struct.pack("<i", 4326) + wkb_polygone(anneau)
         db.execute("insert into munic_s values (?, ?, ?, ?, ?)", (code, nom, "V2026-09", "99", geom))
     db.execute("insert into mrc_s values ('99', 'MRC du Témoin')")
+    # Frontière du Québec selon le MRNF (type FROONT, comme l'Ontario).
+    db.execute("create table regio_l (RES_CO_TYP text, geom blob)")
+    ligne = [(X0 + x / 1000, Y0 + y / 1000) for x, y in FRONTIERE]
+    wkb = struct.pack("<BII", 1, 2, len(ligne)) + b"".join(struct.pack("<dd", *p) for p in ligne)
+    db.execute("insert into regio_l values ('FROONT', ?)", (b"GP\x00\x01" + struct.pack("<i", 4326) + wkb,))
     db.commit()
     db.close()
 
@@ -134,10 +146,14 @@ def carte():
     # Limites actuelles d'OSM (règles 2 et 5 des régions).
     # Ligne de limite seule, avec une bosse 333 m au sud du MRNF (y = 17,
     # de x = 1 à 5), où deux routes ont gardé une coupure.
-    c.chemin(101, [(19, 20), (5, 20), (5, 17), (1, 17), (1, 20), (0, 20), (0, 0)], dict(LIMITE))
-    c.chemin(102, [(0, 0), (19, 0)], {"boundary": "administrative", "admin_level": "4"})   # frontière
-    c.chemin(103, [(19, 0), (19, 20)], {"waterway": "river", "name": "Rivière Témoin"})
-    c.chemin(104, [(19, 0), (40, 0)], dict(LIMITE, note="Limite à vérifier sur le terrain"))
+    c.chemin(101, [(19, 20), (5, 20), (5, 17), (1, 17), (1, 20), (0, 20), (0, -0.5)], dict(LIMITE))
+    # La frontière du Québec dans OSM, coupée à l'ancien point triple.
+    frontiere = {"boundary": "administrative", "admin_level": "4"}
+    c.chemin(102, [(0, -0.5), (19, -0.5)], dict(frontiere))
+    c.chemin(107, [(19, -0.5), (40, -0.5)], dict(frontiere))
+    c.chemin(103, [(19, -0.5), (19, 20)], {"waterway": "river", "name": "Rivière Témoin"})
+    # Court bout de limite tordu, avec une note : retiré, jamais supprimé.
+    c.chemin(104, [(40, -0.5), (40.2, -0.2), (40, 0)], dict(LIMITE, note="Limite à vérifier sur le terrain"))
     c.chemin(105, [(40, 20), (19, 20)], dict(LIMITE))
     # Le côté est de Sainte-Vérification suit déjà exactement le MRNF
     # (tracé à la main par quelqu'un) : il est réutilisé tel quel.
@@ -148,10 +164,18 @@ def carte():
                         {"type": "boundary", "boundary": "administrative", "admin_level": "8",
                          "name": "Lac-Témoin", "ref:qc": "99001"}))
     # Sainte-Vérification n'a pas de membre label (règle 8).
-    c.relations.append((1002, [("w", 103, "outer"), ("w", 104, "outer"), ("w", 106, "outer"),
-                               ("w", 105, "outer")],
+    c.relations.append((1002, [("w", 103, "outer"), ("w", 107, "outer"), ("w", 104, "outer"),
+                               ("w", 106, "outer"), ("w", 105, "outer")],
                         {"type": "boundary", "boundary": "administrative", "admin_level": "8",
                          "name": "Sainte-Vérification", "ref:qc": "99002"}))
+
+    # Le Québec et la province voisine partagent les chemins de la frontière.
+    c.relations.append((1100, [("w", 102, "outer"), ("w", 107, "outer")],
+                        {"type": "boundary", "boundary": "administrative", "admin_level": "4",
+                         "name": "Québec", "ISO3166-2": "CA-QC"}))
+    c.relations.append((1101, [("w", 102, "outer"), ("w", 107, "outer")],
+                        {"type": "boundary", "boundary": "administrative", "admin_level": "4",
+                         "name": "Province voisine"}))
 
     # Rivière-Contrôle, voisine du premier lot. Son ancienne limite sud
     # double celle du lot, 67 m plus au nord (y = 20,6) : des tracés

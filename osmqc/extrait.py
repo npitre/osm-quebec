@@ -246,6 +246,15 @@ def appliquer(pbf, osc, sortie, resultat=None):
     return resultat
 
 
+def relation_quebec(pbf):
+    """Relation de la province de Québec (niveau 4) dans l'extrait, ou None."""
+    for o in osmium.FileProcessor(pbf, osmium.osm.RELATION).with_filter(
+            osmium.filter.TagFilter(("admin_level", "4"))):
+        if o.tags.get("ISO3166-2") == "CA-QC" or o.tags.get("name") in ("Québec", "Quebec"):
+            return o.id
+    return None
+
+
 def limites_admin(pbf):
     """Relations boundary=administrative qui ont un code ref:qc :
     {code: (id, nom, admin_level)}."""

@@ -25,6 +25,19 @@ URL_SDA = ("https://diffusion.mern.gouv.qc.ca/diffusion/RGQ/Vectoriel/Theme/Loca
 MAX_NOEUDS = 1900       # sous la limite de 2000 nœuds par chemin
 
 
+TYPES_FRONTIERE = ("FROINT", "FRONB", "FROONT", "FRO52", "FROTN", "FRONT", "FROGSL")
+
+
+def frontiere_quebec(chemin):
+    """Frontière du Québec selon le MRNF (table regio_l du SDA) : liste de
+    polylignes, vide si la table manque."""
+    db = sqlite3.connect("file:%s?mode=ro" % chemin, uri=True)
+    if not db.execute("select 1 from sqlite_master where name = 'regio_l'").fetchone():
+        return []
+    return [l for typ, g in db.execute("select RES_CO_TYP, geom from regio_l")
+            if typ in TYPES_FRONTIERE for l in geo.wkb_gpkg_lignes(g)]
+
+
 def municipalites_mrc(chemin, mrc):
     """Codes et noms des municipalités d'une MRC selon le MRNF :
     {code: nom}."""
@@ -285,7 +298,7 @@ def reconnaitre(pts, candidats, pris):
 
 
 def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rels_voisines=None,
-             usages=None, chemins_des_noeuds=None):
+             usages=None, chemins_des_noeuds=None, frontiere=None):
     """Plan de remplacement des limites.
     officiel : {code: polygones du MRNF}; relations : {code: Relation};
     exterieur : Relation parente (MRC) dont on réutilise les chemins pour
@@ -302,6 +315,9 @@ def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rel
     chemins_des_noeuds : fonction {nœud: {chemins}} (tout OSM). Un nœud
     existant pile au bout d'un arc du MRNF (un point triple déjà juste)
     est réutilisé s'il ne sert qu'à des chemins de limite.
+    frontiere : (lignes de la frontière du Québec selon le MRNF, chemins
+    de la relation du Québec dans OSM) : la frontière d'OSM est gardée et
+    les limites s'y raccordent (voir osmqc/frontiere.py).
     Renvoie un dict : nouveaux nœuds et chemins, chemins existants
     réutilisés et leurs nœuds, membres des relations, chemins retirés,
     modifications des voisines, rapport."""
@@ -355,6 +371,26 @@ def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rel
             milieu = ligne[len(ligne) // 2]
             k = min(fermes, key=lambda k: geo.distance_ligne(milieu, tous[k][0]))
             reprendre.setdefault(k, []).append(w)
+    # Frontière du Québec : gardée telle qu'elle est dans OSM, coupée là où
+    # les limites la rejoignent.
+    fr = {"arcs": set(), "morceaux": {}, "retirer": {}, "modifies": {}, "neufs": {}, "relations": {},
+          "existants": {}, "rapport": [], "frontiere": set()}
+    if frontiere is not None and index is not None:
+        from . import frontiere as fro
+        fr = fro.raccorder(tous, reste, set(officiel), set(rels_voisines), set(reprendre), frontiere[0],
+                           frontiere[1], index, dict(relations, **rels_voisines), noeud, nouveau_chemin,
+                           usages or (lambda ws: {}), arrondi)
+        rapport += fr["rapport"]
+        for n, p in fr["existants"].items():
+            par_point[arrondi(p)] = n
+            existants[n] = p
+        for code, ws in fr["morceaux"].items():
+            for w in ws:
+                membres[code].append(("way", w, "outer"))
+                for n in index.chemins[w]["nodes"]:
+                    if n > 0:
+                        existants[n] = index.point(n)
+            rapport.append("frontière gardée (%s) : %d chemin(s) de la frontière d'OSM" % (code, len(ws)))
     # Nœuds existants pile aux bouts des arcs (points triples déjà justes) :
     # réutilisés s'ils ne servent qu'à des lignes de limite, pour que la
     # voisine se raccorde sans chemin de longueur nulle.
@@ -380,7 +416,7 @@ def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rel
     pris = set()
     conformes = {}
     for k, (pts, roles) in enumerate(tous):
-        if k in reprendre or not candidats:
+        if k in reprendre or k in fr["arcs"] or not candidats:
             continue
         if pts[0] == pts[-1]:
             # Anneau fermé : le faire commencer au bout d'un chemin existant.
@@ -395,6 +431,8 @@ def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rel
                 existants[n] = index.point(n)
                 par_point[arrondi(existants[n])] = n
     for k, (pts, roles) in enumerate(tous):
+        if k in fr["arcs"]:
+            continue
         if k in reprendre:
             (code, role), = roles.items()
             for w in reprendre[k]:
@@ -454,18 +492,21 @@ def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rel
         positions.setdefault(n, arrondi(p))
         return n
     from . import voisines as vois
-    modif_voisines = {"modifies": {}, "neufs": {}, "relations": {}, "liberes": set()}
+    modif_voisines = {"modifies": dict(fr["modifies"]), "neufs": dict(fr["neufs"]),
+                      "relations": {r: list(v) for r, v in fr["relations"].items()}, "liberes": set()}
     provisoires = set()
     lot = [r.id for r in relations.values()]
     # Usage de tous les chemins des voisines, en une seule lecture.
     tous_usages = (usages or (lambda ws: {}))(sorted({w for r in rels_voisines.values() for w in r.chemins}))
     for code, rel in sorted(rels_voisines.items()):
-        if not membres[code]:
+        if not membres[code] and not fr["retirer"].get(code):
             continue
         lignes = {w: ids for w, ids, _ in chemins + reutilises}
         communs = [(i, lignes[i], r) for t, i, r in membres[code]]
         res, raison = vois.modifier(rel, index, communs, reste.get(code, []), point, noeud_neuf,
-                                    nouveau_chemin, lambda ws: {w: tous_usages.get(w, set()) for w in ws}, lot)
+                                    nouveau_chemin, lambda ws: {w: tous_usages.get(w, set()) for w in ws}, lot,
+                                    fr["retirer"].get(code, set()),
+                                    (fr["frontiere"] & set(rel.chemins)) - fr["retirer"].get(code, set()))
         if res is None:
             rapport.append("voisine %s non modifiée : %s" % (rel.tags.get("name", code), raison))
             for _, _, roles in chemins + reutilises:
@@ -511,13 +552,15 @@ def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rel
             if n > 0 and n not in existants:
                 existants[n] = index.point(n)
     gardes = {m["ref"] for lst in nouvelles.values() for m in lst if m["type"] == "way" and m["ref"] > 0}
-    retires = sorted(anciens - gardes)
+    retires = sorted(w for w in anciens - gardes if w > 0)
     toutes = dict(relations, **{c: r for c, r in rels_voisines.items() if c in nouvelles})
     modifiees = sorted(c for c, rel in toutes.items()
-                       if cles_membres(rel.rel["members"]) != cles_membres(nouvelles[c]))
+                       if cles_membres(getattr(rel, "membres_origine", rel.rel["members"]))
+                       != cles_membres(nouvelles[c]))
     return {"noeuds": noeuds, "existants": existants, "chemins": chemins, "reutilises": reutilises,
             "membres": nouvelles, "modifiees": modifiees, "retires": retires, "rapport": rapport,
-            "lot": sorted(relations), "voisines": modif_voisines, "provisoires": provisoires}
+            "lot": sorted(relations), "voisines": modif_voisines, "provisoires": provisoires,
+            "frontiere": {w: index.chemins[w]["nodes"] for ws in fr["morceaux"].values() for w in ws}}
 
 
 def cles_membres(membres):
@@ -612,6 +655,7 @@ def anneaux_proposes(plan, exterieur):
     chaque adresse tombe dans la bonne municipalité. {code: anneaux}."""
     points = points_du_plan(plan)
     chemins = {wid: ids for wid, ids, _ in plan["chemins"] + plan.get("reutilises", [])}
+    chemins.update(plan.get("frontiere", {}))
     if exterieur is not None:
         for w in exterieur.chemins:
             chemins[w] = exterieur.index.chemins[w]["nodes"]
@@ -633,6 +677,7 @@ def lignes_limites(plan, exterieur=None):
     """Polylignes des limites proposées (chemins neufs et réutilisés)."""
     points = points_du_plan(plan)
     lignes = [[points[n] for n in ids] for _, ids, _ in plan["chemins"] + plan.get("reutilises", [])]
+    lignes += [[points[n] for n in ids] for ids in plan.get("frontiere", {}).values()]
     if exterieur is not None:
         reutilises = {m["ref"] for lst in plan["membres"].values() for m in lst
                       if m["type"] == "way" and m["ref"] > 0}

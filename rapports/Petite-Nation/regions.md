@@ -102,18 +102,25 @@ Source : Découpages administratifs du MRNF (1/20 000). Règles : voir le [READM
 
 | Élément | Nombre |
 |---|---|
-| Nœuds créés | 8542 |
-| Chemins de limite créés | 101 |
+| Nœuds créés | 7872 |
+| Chemins de limite créés | 97 |
 | Relations modifiées | 37 |
-| Chemins retirés des relations | 85 |
+| Chemins retirés des relations | 77 |
 | dont supprimés (simples lignes de limite inutilisées) | 53 |
 | Nœuds supprimés | 3615 |
 
-- arc de 21 sommets (80005 outer) : 1 chemin(s) neuf(s)
+- frontière : 8 chemin(s) coupé(s) en 9 point(s), sans être déplacés
+- frontière gardée (80005) : 2 chemin(s) de la frontière d'OSM
+- frontière gardée (80060) : 3 chemin(s) de la frontière d'OSM
+- frontière gardée (80015) : 2 chemin(s) de la frontière d'OSM
+- frontière gardée (80055) : 3 chemin(s) de la frontière d'OSM
+- frontière gardée (80045) : 2 chemin(s) de la frontière d'OSM
+- frontière gardée (80050) : 2 chemin(s) de la frontière d'OSM
+- frontière gardée (80010) : 1 chemin(s) de la frontière d'OSM
 - arc de 15 sommets (76052 outer, 80005 outer) : 1 chemin(s) neuf(s)
-- arc de 118 sommets (80005 outer, 80015 outer) : 1 chemin(s) neuf(s)
+- arc de 116 sommets (80005 outer, 80015 outer) : 1 chemin(s) neuf(s)
 - arc de 19 sommets (80010 outer, 80037 outer) : 1 chemin(s) neuf(s)
-- arc de 18 sommets (80010 outer) : 1 chemin(s) neuf(s)
+- arc de 2 sommets (80010 outer) : 1 chemin(s) neuf(s)
 - arc de 139 sommets (80010 outer, 80015 outer) : 1 chemin(s) neuf(s)
 - arc de 161 sommets (79924 outer, 80135 outer) : 1 chemin(s) neuf(s)
 - arc de 36 sommets (79005 outer, 80135 outer) : 1 chemin(s) neuf(s)
@@ -133,9 +140,8 @@ Source : Découpages administratifs du MRNF (1/20 000). Règles : voir le [READM
 - arc de 53 sommets (80065 outer, 80070 outer) : 1 chemin(s) neuf(s)
 - arc de 54 sommets (80065 outer, 80085 outer) : 1 chemin(s) neuf(s)
 - arc de 26 sommets (80060 outer, 82005 outer) : 1 chemin(s) neuf(s)
-- arc de 25 sommets (80060 outer, 81017 outer) : 1 chemin(s) neuf(s)
-- arc de 193 sommets (80060 outer) : 1 chemin(s) neuf(s)
-- arc de 12 sommets (80050 outer, 80060 outer) : 1 chemin(s) neuf(s)
+- arc de 26 sommets (80060 outer, 81017 outer) : 1 chemin(s) neuf(s)
+- arc de 11 sommets (80050 outer, 80060 outer) : 1 chemin(s) neuf(s)
 - arc de 17 sommets (80055 outer, 80060 outer) : 1 chemin(s) neuf(s)
 - arc de 46 sommets (80078 outer, 80090 outer) : 1 chemin(s) neuf(s)
 - arc de 56 sommets (80078 outer, 80085 outer) : 1 chemin(s) neuf(s)
@@ -159,7 +165,6 @@ Source : Découpages administratifs du MRNF (1/20 000). Règles : voir le [READM
 - arc de 2 sommets (80015 outer, 80110 outer) : 1 chemin(s) neuf(s)
 - arc de 103 sommets (80015 outer, 80020 outer) : 1 chemin(s) neuf(s)
 - arc de 136 sommets (80015 outer, 80037 outer) : 1 chemin(s) neuf(s)
-- arc de 13 sommets (80015 outer) : 1 chemin(s) neuf(s)
 - arc de 119 sommets (76052 outer, 80015 outer) : 1 chemin(s) neuf(s)
 - arc de 47 sommets (76065 outer, 80015 outer) : 1 chemin(s) neuf(s)
 - arc de 103 sommets (80015 outer, 80115 outer) : 1 chemin(s) neuf(s)
@@ -185,14 +190,13 @@ Source : Découpages administratifs du MRNF (1/20 000). Règles : voir le [READM
 - arc de 55 sommets (79005 outer, 80145 outer) : 1 chemin(s) neuf(s)
 - arc de 108 sommets (80090 outer, 80095 outer) : 1 chemin(s) neuf(s)
 - arc de 361 sommets (80050 outer, 80055 outer) : 1 chemin(s) neuf(s)
-- arc de 86 sommets (80055 outer) : 1 chemin(s) neuf(s)
-- arc de 33 sommets (80045 outer, 80055 outer) : 1 chemin(s) neuf(s)
-- arc de 436 sommets (80045 outer) : 1 chemin(s) neuf(s)
+- arc de 34 sommets (80045 outer, 80055 outer) : 1 chemin(s) neuf(s)
 - arc de 52 sommets (80037 outer, 80045 outer) : 1 chemin(s) neuf(s)
-- arc de 53 sommets (80050 outer) : 1 chemin(s) neuf(s)
 - arc de 193 sommets (80087 outer, 82015 outer) : 1 chemin(s) neuf(s)
 - arc de 36 sommets (80087 outer, 82005 outer) : 1 chemin(s) neuf(s)
 - arc de 39 sommets (80037 outer) : 1 chemin(s) neuf(s)
+- arc de 2 sommets (80005 outer) : 1 chemin(s) neuf(s)
+- arc de 136 sommets (80045 outer) : 1 chemin(s) neuf(s)
 - Grenville-sur-la-Rouge : 2 chemin(s) retiré(s), 2 raccord(s), 0 copie(s), 0 chemin(s) coupé(s)
 - Harrington : 2 chemin(s) retiré(s), 2 raccord(s), 0 copie(s), 2 chemin(s) coupé(s)
 - Huberdeau : 1 chemin(s) retiré(s), 1 raccord(s), 0 copie(s), 0 chemin(s) coupé(s)
@@ -362,7 +366,6 @@ Le littoral et les autres objets retirés des relations ne sont pas modifiés : 
 
 Sur une ancienne limite, deux segments d'une même route aux étiquettes et aux relations identiques sont réunis en un seul chemin.
 
-- way 106187751 et way 106188558 (Chemin du Marais) fusionnés : way 106188558 supprimé
 - way 190501172 et way 190501173 (Chemin Ivall) fusionnés : way 190501173 supprimé
 
 ## Lien avec le nœud de lieu

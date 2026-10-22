@@ -240,8 +240,15 @@ def regions_comparer(lieu, conf, preparer=False):
                 connues.update({c: trouvees[c][0] for c in manquantes if c in trouvees})
             ids_voisines = {c: int(connues[c]) for c in vois if c in connues}
             print("Voisines : %d, dont %d avec une relation dans OSM." % (len(vois), len(ids_voisines)))
+    # Frontière du Québec : gardée telle qu'elle est dans OSM (voir
+    # osmqc/frontiere.py); la relation du Québec en donne les chemins.
+    quebec = None
+    lignes_frontiere = regions.frontiere_quebec(chemin_sda()) if preparer else []
+    if lignes_frontiere and pbf:
+        quebec = cr.get("quebec") or extrait.relation_quebec(pbf)
     # Toutes les relations en un seul passage dans l'extrait.
-    commun = osm.Index(extrait.relations(pbf, ids + list(ids_voisines.values()))) if pbf else None
+    commun = osm.Index(extrait.relations(pbf, ids + list(ids_voisines.values()) + ([quebec] if quebec else []))) \
+        if pbf else None
     rels = {code: regions.Relation(int(r), pbf, commun) for code, r in cr["osm"].items()}
     officiel = regions.sda(chemin_sda(), list(rels))
     for code, r in sorted(rels.items()):
@@ -274,7 +281,12 @@ def regions_comparer(lieu, conf, preparer=False):
             if pbf:
                 return extrait.usages(pbf, nids, [])[0]
             return regions._usages_api(nids)[0]
-        plan = regions.preparer(polys, rels, ext, index, vois, rels_voisines, usages, chemins_des_noeuds)
+        frontiere = None
+        if quebec and quebec in index.relations:
+            frontiere = (lignes_frontiere, [m["ref"] for m in index.relations[quebec]["members"]
+                                            if m["type"] == "way"])
+        plan = regions.preparer(polys, rels, ext, index, vois, rels_voisines, usages, chemins_des_noeuds,
+                                frontiere)
         plan["liens"] = liens
         toutes = dict(rels, **rels_voisines)
         traitees = [toutes[c].id for c in plan["modifiees"]] + [r.id for r in rels.values()]

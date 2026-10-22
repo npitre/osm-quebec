@@ -17,7 +17,7 @@ construits à la main, au moins un par règle du
 | Règle | Tests |
 |---|---|
 | Ordre des étapes, 2 | `test_rues_4_adresses_apres_renommage`, `test_adresses_4_rue_dans_osm` |
-| Régions, 1 à 10 | `test_regions_1_trace_du_mrnf` à `test_regions_10_voisine_hors_du_lot` (règle 5 : suppression, chemins protégés, report de la note, étiquettes des relations; règle 7 : nœud ajouté au croisement, chemin coupé, relation de route mise à jour) |
+| Régions, 1 à 11 | `test_regions_1_trace_du_mrnf` à `test_regions_10_voisine_hors_du_lot` (règle 11 : `test_frontiere_gardee`, dans Lac-Témoin) (règle 5 : suppression, chemins protégés, report de la note, étiquettes des relations; règle 7 : nœud ajouté au croisement, chemin coupé, relation de route mise à jour) |
 | Rues, 1 à 4 | `test_rues_1_nom_officiel` (dont les abréviations) à `test_rues_4_adresses_apres_renommage` (règle 2 : `old_name` et `alt_name`) |
 | Adresses, 1 à 8 | `test_adresses_1_logements_et_suffixes` à `test_adresses_8_positions_et_entree` |
 | Groupe de modifications | `test_groupe` (`import=yes`, discussion obligatoire pour un envoi réel) |
@@ -41,7 +41,9 @@ hors du lot (Rivière-Contrôle) dont l'ancienne limite double celle du
 lot, faite en partie d'un ruisseau et d'un chemin partagé avec une aire
 protégée, et une ancienne limite en bosse où deux routes ont gardé une
 coupure (l'une fusionnée, l'autre non : un sentier de motoneige ne suit
-qu'un de ses deux segments). Le tout tourne en mode hors ligne.
+qu'un de ses deux segments). Au sud, la frontière du Québec avec une
+province voisine, 55 m plus au sud dans OSM qu'au MRNF : gardée, et
+coupée là où la limite commune la rejoint. Le tout tourne en mode hors ligne.
 
 Le test enchaîne aussi deux lots, comme on enverra une région par
 bouchées : le premier (Lac-Témoin et Sainte-Vérification, fichier
