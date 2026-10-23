@@ -8,11 +8,11 @@ Source : Référentiel québécois des adresses (MRNF), version AQ20261001. Règ
 
 | Résultat | Nombre |
 |---|---|
-| Nouvelles adresses | 19430 |
+| Nouvelles adresses | 19429 |
 | Déjà dans OSM, corrigées | 173 |
 | Déjà dans OSM, inchangées | 52 |
-| À revoir (non créées) | 1544 |
-| Exclues | 1 |
+| À revoir (non créées) | 1538 |
+| Exclues | 8 |
 | Logements douteux écartés | 363 |
 | Objets OSM modifiés | 185 |
 | Lignes d'interpolation supprimées | 3925 |
@@ -24,7 +24,7 @@ Source des positions : RQA 21200.
 
 Ces adresses ne sont pas créées tant que la rue n'est pas réglée dans OSM.
 
-### Rue absente ou sans nom dans OSM (1520 adresses)
+### Rue absente ou sans nom dans OSM (1514 adresses)
 
 | Nom officiel (RQA) | Adresses |
 |---|---|
@@ -69,7 +69,6 @@ Ces adresses ne sont pas créées tant que la rue n'est pas réglée dans OSM.
 | Chemin des Vergers | 8 |
 | Chemin du Lac-Brûlé | 8 |
 | Rang Gustave | 7 |
-| Place Joseph-Papineau | 7 |
 | Chemin Armand-Lanoie | 7 |
 | Chemin Beaulne | 7 |
 | Chemin Jean-Guy | 7 |
@@ -138,6 +137,7 @@ Ces adresses ne sont pas créées tant que la rue n'est pas réglée dans OSM.
 | Chemin du Domaine-Émile-Tessier | 3 |
 | Rang Sainte-Augustine | 3 |
 | Route 321 Nord | 3 |
+| Place Joseph-Papineau | 3 |
 | Rue Galipeau | 3 |
 | 4e rang du Gore | 3 |
 | Chemin Amyot | 3 |
@@ -352,12 +352,10 @@ Ces adresses ne sont pas créées tant que la rue n'est pas réglée dans OSM.
 | Chemin du Lac-Papineau | 1 |
 | Chemin du Lac-au-Loup | 1 |
 | Impasse Cameron | 1 |
-| Île du Lac-à-la-Croix | 1 |
 | Chemin des Pionniers | 1 |
 | Rang des Pruniers | 1 |
 | Chemin du Lac-Hudon | 1 |
 | Chemin du Lac-de-la-Carpe | 1 |
-| Club-des-Douze | 1 |
 | Montée Duchesne | 1 |
 | Chemin Filion | 1 |
 | Chemin Normandin | 1 |

@@ -228,7 +228,7 @@ def comparer(adresses, officiel, osm_rel):
     off = [(c, p, geo.boite([pt for a in p for pt in a])) for c, polys in officiel.items() for p in polys]
     rel = [(c, anneaux, geo.boite([pt for a in anneaux for pt in a])) for c, anneaux in osm_rel.items()]
     for a in adresses:
-        if a.fin or not a.principale:
+        if a.retiree or not a.principale:
             continue
         m = next((c for c, p, b in off if geo.dans_boite(a.point, b) and geo.dedans(a.point, p)), None)
         o = next((c for c, an, b in rel if geo.dans_boite(a.point, b) and geo.dedans(a.point, an)), None)

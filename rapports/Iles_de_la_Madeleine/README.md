@@ -139,10 +139,11 @@ prévus (section 2) :
 
 | Résultat | Nombre |
 |---|---|
-| Nouvelles, prêtes à créer | 7 221 |
+| Nouvelles, prêtes à créer | 7 218 |
 | Déjà dans OSM, corrigées | 48 |
 | Déjà dans OSM, inchangées | 35 |
 | À revoir, non créées | 129 |
+| Exclues : pas encore certifiées au RQA | 3 |
 
 - Logements et suffixes fusionnés à leur numéro de base : 628 adresses
   en avaient. Les logements vont dans `addr:unit` (509 adresses), les

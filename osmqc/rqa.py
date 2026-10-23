@@ -36,6 +36,21 @@ class Adresse:
     fin: str            # date_fin : adresse qui n'existe plus
     categorie: str = ""  # catégorie d'utilisation du rôle (RESI, VILL, COMM...)
     nombre_unite: str = ""  # nombre de logements selon le rôle d'évaluation
+    etat: str = ""      # Certifiée, Non certifiée (projetée, en construction) ou Détruite
+    reseau: str = None  # identifiant_reseau_routier (None : colonne absente)
+
+    @property
+    def retiree(self):
+        """Raison d'ignorer l'adresse, ou "" : terminée (date_fin, une
+        adresse détruite), pas encore certifiée, ou sans clé de jumelage
+        avec le réseau routier (elle n'est pas encore rattachée à sa rue)."""
+        if self.fin:
+            return "terminée"
+        if self.etat and self.etat != "Certifiée":
+            return self.etat.lower()
+        if self.reseau == "":
+            return "sans clé de jumelage avec le réseau routier"
+        return ""
 
     @property
     def point(self):
@@ -109,6 +124,8 @@ def adresse(r):
         fin=r["date_fin"],
         categorie=r.get("categorie", ""),
         nombre_unite=r.get("nombre_unite", ""),
+        etat=r.get("etat", ""),
+        reseau=r.get("identifiant_reseau_routier"),
     )
 
 

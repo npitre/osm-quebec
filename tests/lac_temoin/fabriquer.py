@@ -273,7 +273,8 @@ COLONNES = ["identifiant_unique_adresse", "date_diffusion_version", "date_creati
             "particule_odonyme", "specifique_odonyme", "point_cardinal_odonyme",
             "odonyme_recompose_normal", "discriminant_odonyme", "qualite_positionnement_geometrique",
             "categorie", "nombre_unite", "numero_lot", "matricule_unite_evaluation",
-            "code_municipalite", "nom_municipalite", "longitude", "latitude"]
+            "code_municipalite", "nom_municipalite", "etat", "identifiant_reseau_routier",
+            "longitude", "latitude"]
 
 RUES = {    # nom officiel : (seqodo, municipalité)
     "Chemin du Lac": ("1", "99001"),
@@ -303,8 +304,12 @@ ADRESSES = [
     ("Chemin du Lac", "30", 3.4, 5, {}),                    # doublon à corriger
     ("Chemin du Lac", "40", 3.4, 6, {}),                    # doublon inchangé
     ("Chemin du Lac", "50", 3.45, 7, {}),                   # dans un bâtiment numéroté
-    ("Chemin du Lac", "60", 3.4, 8, {"date_fin": "20240101"}),
+    ("Chemin du Lac", "60", 3.4, 8, {"date_fin": "20240101", "etat": "Détruite",
+                                     "identifiant_reseau_routier": ""}),
     ("Chemin du Lac", "70", 3.4, 9, {}),                    # exclu dans le fichier du lieu
+    ("Chemin du Lac", "80", 3.4, 9.4, {"etat": "Non certifiée",            # projetée
+                                       "identifiant_reseau_routier": ""}),
+    ("Chemin du Lac", "90", 3.4, 9.7, {"identifiant_reseau_routier": ""}),  # pas encore jumelée
     ("Chemin du Lac", "110", 3.4, 10, {}),
     ("Chemin du Lac", "250", 3.4, 11, {"nombre_unite": "2", "matricule_unite_evaluation": matricule(250)}),
     ("Chemin du Lac", "250", 3.4, 11, {"numero_unite": "1", "matricule_unite_evaluation": matricule(251)}),
@@ -377,6 +382,8 @@ def lignes_rqa():
             "numero_lot": str(1000000 + i) if autres.get("matricule_unite_evaluation") else "",
             "code_municipalite": mun,
             "nom_municipalite": MUNICIPALITES[mun][0],
+            "etat": "Certifiée",
+            "identifiant_reseau_routier": "%d" % (100000 + int(seqodo)),
             "longitude": repr(lon),
             "latitude": repr(lat),
         })

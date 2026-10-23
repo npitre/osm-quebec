@@ -8,11 +8,11 @@ Source : Référentiel québécois des adresses (MRNF), version AQ20261001. Règ
 
 | Résultat | Nombre |
 |---|---|
-| Nouvelles adresses | 7221 |
+| Nouvelles adresses | 7218 |
 | Déjà dans OSM, corrigées | 48 |
 | Déjà dans OSM, inchangées | 35 |
 | À revoir (non créées) | 129 |
-| Exclues | 0 |
+| Exclues | 3 |
 | Logements douteux écartés | 14 |
 | Objets OSM modifiés | 48 |
 | Lignes d'interpolation supprimées | 12 |

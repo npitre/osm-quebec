@@ -443,6 +443,11 @@ class LacTemoin(unittest.TestCase):
 
     def test_adresses_2_terminees(self):
         self.assertFalse([l for l in self.lignes if l["numero"] == "60" and l["rue"] == "Chemin du Lac"])
+        # Pas encore certifiée, ou sans clé de jumelage avec le réseau
+        # routier : signalée comme exclue, jamais créée.
+        for num, raison in (("80", "non certifiée"), ("90", "sans clé de jumelage avec le réseau routier")):
+            self.assertEqual((self.ligne(num)["statut"], self.ligne(num)["detail"]), ("exclu", raison))
+            self.assertIsNone(self.adresse(num))
 
     def test_adresses_3_exclusions(self):
         self.assertEqual(self.ligne("70")["statut"], "exclu")

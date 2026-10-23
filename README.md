@@ -32,8 +32,8 @@ communauté. Pour chaque lieu, `rapports/LIEU/` contient :
 
 | Lieu | Municipalités | Limites : adresses mal placées dans OSM | Rues à renommer | Adresses prêtes | Adresses à revoir |
 |---|---|---|---|---|---|
-| [Îles-de-la-Madeleine](rapports/Iles_de_la_Madeleine/) | 2 | 3 sur 7 394 (0 après correction) | 28 segments | 7 221 | 129 |
-| [La Petite-Nation (MRC de Papineau)](rapports/Petite-Nation/) | 25 | 23 sur 20 659 (0 après correction) | 45 segments | 19 430 | 1 544 |
+| [Îles-de-la-Madeleine](rapports/Iles_de_la_Madeleine/) | 2 | 3 sur 7 394 (0 après correction) | 28 segments | 7 218 | 129 |
+| [La Petite-Nation (MRC de Papineau)](rapports/Petite-Nation/) | 25 | 23 sur 20 659 (0 après correction) | 45 segments | 19 429 | 1 538 |
 
 Pour tout le Québec, avant le remplacement des limites :
 [rapports/Quebec/](rapports/Quebec/) compare les frontières du Québec
@@ -284,7 +284,12 @@ dans `sortie/LIEU/` (hors du dépôt); les rapports de révision, dans
    À valider : un suffixe en lettre que Postes Canada traite comme un
    logement devrait aller dans `addr:unit` plutôt que dans
    `addr:housenumber`.
-2. **Adresses terminées** (`date_fin` remplie) : ignorées.
+2. **Adresses terminées ou pas encore établies** : une adresse détruite
+   (`date_fin` remplie) est ignorée. Une adresse pas encore certifiée
+   (`etat` « Non certifiée » : projetée ou en construction) ou sans clé
+   de jumelage avec le réseau routier (`identifiant_reseau_routier`
+   vide) n'est pas créée et figure parmi les exclues du rapport; elle le
+   sera quand le RQA l'aura certifiée et rattachée à sa rue.
 3. **Exclusions** : une liste explicite, avec la raison, dans le fichier
    du lieu (par exemple une adresse absente du rôle d'évaluation).
 4. **La rue doit exister dans OSM** sous exactement son nom officiel

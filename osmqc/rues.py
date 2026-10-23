@@ -66,7 +66,7 @@ def analyser(adresses, index):
     """Compare chaque rue du RQA avec OSM. Renvoie [Rue]."""
     par_rue = defaultdict(dict)     # une adresse par numéro de base
     for a in adresses:
-        if not a.fin:
+        if not a.retiree:
             par_rue[(a.municipalite, a.rue)].setdefault(a.numero, a.point)
     par_rue = {k: list(v.values()) for k, v in par_rue.items()}
     nommes = segments_nommes(index)

@@ -47,13 +47,13 @@ class Rel:
 
 def adr(numero, rue="Chemin du Tour-du-Lac", dx=1, dy=0.3, suffixe="", unite="", fin="",
         municipalite="80135", categorie="RESI", nom_municipalite="Duhamel", matricule="",
-        lot="", logements=""):
+        lot="", logements="", etat="", reseau=None):
     p = P(dx, dy)
     return rqa.Adresse(ident="x", municipalite=municipalite, nom_municipalite=nom_municipalite,
                        odonyme="1", rue=rue, numero=numero, suffixe=suffixe, unite=unite,
                        code_postal="J0V 1G0", lon=p[0], lat=p[1], qualite="Bâtiment",
                        lot=lot, matricule=matricule, date_creation="20211211", fin=fin,
-                       categorie=categorie, nombre_unite=logements)
+                       categorie=categorie, nombre_unite=logements, etat=etat, reseau=reseau)
 
 
 def rue_osm(nom="Chemin du Tour-du-Lac"):
@@ -463,6 +463,16 @@ class Adresses(unittest.TestCase):
         p = adresses.preparer([adr("480", fin="20250101")], rue_osm(), {})
         self.assertEqual(p.creer, [])
         self.assertEqual(p.rapport, [])
+
+    def test_adresses_2_pas_encore_certifiees(self):
+        # Projetée ou en construction, ou pas encore jumelée au réseau
+        # routier : signalée comme exclue, jamais créée.
+        p = adresses.preparer([adr("12", etat="Non certifiée", reseau=""), adr("14", reseau=""),
+                               adr("16", etat="Certifiée", reseau="4567")], rue_osm(), {})
+        self.assertEqual([t["addr:housenumber"] for t, *_ in p.creer], ["16"])
+        self.assertEqual(sorted((l.numero, l.statut, l.detail) for l in p.rapport if l.statut == "exclu"),
+                         [("12", "exclu", "non certifiée"),
+                          ("14", "exclu", "sans clé de jumelage avec le réseau routier")])
 
     def test_adresses_3_exclusions(self):
         conf = {"exclure": [{"municipalite": "80135", "rue": "Chemin du Tour-du-Lac",

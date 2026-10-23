@@ -231,7 +231,12 @@ def preparer(adresses, index, conf, positions=None):
         exclus[(x["municipalite"], cle_nom(x["rue"]), x["numero"])] = x.get("raison", "")
     gardees = []
     for a in adresses:
-        if a.fin:
+        if a.retiree:
+            # Une adresse détruite est simplement ignorée; une adresse pas
+            # encore certifiée ou sans clé de jumelage est signalée.
+            if a.retiree != "terminée" and a.principale:
+                plan.rapport.append(Ligne(a.municipalite, a.rue, a.numero, a.code_postal, a.lon,
+                                          a.lat, a.qualite, "exclu", a.retiree))
             continue
         cle = (a.municipalite, cle_nom(a.rue), a.numero)
         if cle in exclus:

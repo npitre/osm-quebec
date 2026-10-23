@@ -12,13 +12,13 @@ Source : Référentiel québécois des adresses (MRNF), version AQ20261001. Règ
 | Déjà dans OSM, corrigées | 1 |
 | Déjà dans OSM, inchangées | 2 |
 | À revoir (non créées) | 6 |
-| Exclues | 1 |
+| Exclues | 3 |
 | Logements douteux écartés | 1 |
 | Objets OSM modifiés | 1 |
 | Lignes d'interpolation supprimées | 1 |
 | Nœuds d'interpolation supprimés | 2 |
 
-Source des positions : RQA 36, portes 3.
+Source des positions : RQA 38, portes 3.
 
 ## À revoir
 
@@ -44,7 +44,7 @@ Logements du RQA sans lot ni matricule, sur une adresse qui n'a qu'un logement s
 
 | Municipalité | Adresse | Créé le | Identifiant RQA |
 |---|---|---|---|
-| Lac-Témoin | 9999-260 Chemin du Lac | 2021-12-11 | 000000000000000000000000007e000d |
+| Lac-Témoin | 9999-260 Chemin du Lac | 2021-12-11 | 000000000000000000000000007e000f |
 
 ## Objets OSM modifiés
 

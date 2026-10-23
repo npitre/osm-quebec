@@ -162,11 +162,11 @@ changement de revêtement) et sont gardées.
 
 | Résultat | Nombre |
 |---|---|
-| Nouvelles, prêtes à créer | 19 430 |
+| Nouvelles, prêtes à créer | 19 429 |
 | Déjà dans OSM, corrigées | 173 |
 | Déjà dans OSM, inchangées | 52 |
-| À revoir, non créées | 1 544 |
-| Exclues | 1 |
+| À revoir, non créées | 1 538 |
+| Exclues | 8 (une à la main, sept pas encore certifiées au RQA) |
 
 - Les chiffres tiennent compte des renommages de rues prévus.
 - Logements et suffixes fusionnés : 1 263 adresses en avaient; 676
@@ -199,7 +199,7 @@ changement de revêtement) et sont gardées.
    numéros deviennent exacts, mais la position reste approximative. Les
    portes d'entrée de la Chaire Mobilité couvrent l'est du Québec, pas
    l'Outaouais.
-2. **Ampleur** : 19 430 nœuds et 3 925 interpolations supprimées en un
+2. **Ampleur** : 19 429 nœuds et 3 925 interpolations supprimées en un
    seul envoi, ou par municipalité?
 
 ## 4. Prochaines étapes
