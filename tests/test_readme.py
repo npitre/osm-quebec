@@ -199,6 +199,20 @@ class Regions(unittest.TestCase):
         d = essai([1, 2], [2, 3], rue, rels={11: [70]})          # autobus d'un seul côté
         self.assertIn("relations différentes", d["fusions"][0])
 
+    def test_regions_7_fusion_apres_coupure_neuve(self):
+        # La rue 10 est coupée à x = 7,5 (limite proposée), et son ancienne
+        # coupure avec 11, au nœud 4, ne sert plus : c'est le morceau neuf
+        # qui finit au nœud 4 qui rejoint 11, sans saut ni recouvrement.
+        rue = {"highway": "residential", "name": "Rue A"}
+        idx = index({1: ((0, 0), {}), 2: ((5, 0), {}), 3: ((10, 0), {}), 4: ((15, 0), {}), 5: ((20, 0), {})},
+                    [(10, [1, 2, 3, 4], rue), (11, [4, 5], rue)])
+        d = regions.decouper(idx, [("coupure à ajouter", "Rue A", 10, P(7.5, 0), None, 10)], {}, -1, -1)
+        regions.fusionner(idx, [(4, 10, 11)], d, {}, {})
+        x = next(iter(d["noeuds"]))
+        self.assertEqual(d["modifies"], {10: [1, 2, x], 11: [x, 3, 4, 5]})
+        self.assertEqual(d["chemins"], {})
+        self.assertEqual(d["supprimes"], [])
+
     def test_regions_7_coupure_encore_utile(self):
         # Une rue coupée au nœud 2, sur l'ancienne limite (x = 5). Elle
         # traverse plus loin la nouvelle limite (coupure à déplacer), mais

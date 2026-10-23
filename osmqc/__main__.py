@@ -319,7 +319,11 @@ def regions_comparer(lieu, conf, preparer=False):
         # supprimés; leur note passe au chemin neuf le plus proche.
         proteges = [w for w in plan["retires"] if regions.protege(index.chemins[w].get("tags", {}))]
         plan["proteges"] = regions.reporter_notes(proteges, index, plan)
-        actuelles = {c: osm.objets("relation", [toutes[c].id])[0] for c in sorted(set(rels) | set(plan["modifiees"]))}
+        # Les versions actuelles de toutes les relations modifiées, en une
+        # demande (par lots de 100 à l'API, une lecture de l'extrait hors ligne).
+        codes = sorted(set(rels) | set(plan["modifiees"]))
+        par_id = {e["id"]: e for e in osm.objets("relation", sorted({toutes[c].id for c in codes}))}
+        actuelles = {c: par_id[toutes[c].id] for c in codes}
         progres.etape("Vérification des adresses avec les limites proposées")
         apres, _ = regions.comparer(charger_adresses(lieu), polys, regions.anneaux_proposes(plan, ext))
         plan["verification"] = apres
@@ -437,8 +441,16 @@ def routes_autour(lieu, lignes):
     traversent), gardées dans donnees/LIEU/osm_limites.json."""
     chemin = os.path.join(dossier("donnees", lieu), "osm_limites.json")
     pbf = chemin_pbf()
-    # Relu si l'extrait est plus récent (mis à jour, ou envoi appliqué).
-    if not os.path.exists(chemin) or (pbf and os.path.getmtime(pbf) > os.path.getmtime(chemin)):
+    # Relu si l'extrait a changé (mis à jour, envoi appliqué, ou retour à
+    # un extrait d'avant) : la taille et la date de l'extrait lu sont
+    # notées à côté.
+    cle = chemin + ".source"
+    source = "%s %d %d" % (os.path.abspath(pbf), os.path.getsize(pbf), os.stat(pbf).st_mtime_ns) if pbf else "API"
+    try:
+        ancienne = open(cle).read().strip()
+    except OSError:
+        ancienne = None
+    if not os.path.exists(chemin) or ancienne != source:
         pts = []
         for l in lignes:
             pas = max(1, len(l) // 200)
@@ -448,6 +460,8 @@ def routes_autour(lieu, lignes):
         with open(chemin, "w") as fh:
             json.dump(elems, fh)
             fh.write("\n")
+        with open(cle, "w") as fh:
+            fh.write(source + "\n")
     with open(chemin) as fh:
         return osm.Index(json.load(fh))
 

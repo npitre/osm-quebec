@@ -209,12 +209,19 @@ def appliquer(pbf, osc, sortie, resultat=None):
     correspondances utilisées."""
     racine = ET.parse(osc).getroot() if isinstance(osc, str) else osc
     racine = ET.fromstring(ET.tostring(racine))
+    idx = index_usages(pbf, construire=False)
+    maxi = None
     if resultat is None:
         resultat = {}
-        maxi = {"node": 0, "way": 0, "relation": 0}
-        for o in progres.suivre(osmium.FileProcessor(pbf), pbf, "identifiants libres"):
-            g = TYPES[o.type_str()]
-            maxi[g] = max(maxi[g], o.id)
+        # Les plus grands identifiants de l'extrait : gardés dans l'index
+        # d'usage par un envoi simulé précédent, sinon cherchés dans tout
+        # l'extrait (quelques minutes pour le Québec).
+        maxi = dict(getattr(idx, "maxi", None) or {})
+        if not maxi:
+            maxi = {"node": 0, "way": 0, "relation": 0}
+            for o in progres.suivre(osmium.FileProcessor(pbf), pbf, "identifiants libres"):
+                g = TYPES[o.type_str()]
+                maxi[g] = max(maxi[g], o.id)
         for bloc in racine:
             for e in bloc:
                 ident, version = int(e.get("id")), int(e.get("version") or 0)
@@ -251,9 +258,8 @@ def appliquer(pbf, osc, sortie, resultat=None):
         lecteur.close()
     finally:
         os.unlink(fh.name)
-    idx = index_usages(pbf, construire=False)
     if idx is not None:
-        _mettre_a_jour_index(idx, racine, sortie)
+        _mettre_a_jour_index(idx, racine, sortie, maxi)
     return resultat
 
 
@@ -368,7 +374,7 @@ def _construire_index(pbf, cle):
     return IndexUsages(cle, par_noeud, chemins_de, membres)
 
 
-def _mettre_a_jour_index(idx, racine, sortie):
+def _mettre_a_jour_index(idx, racine, sortie, maxi=None):
     """Index de l'extrait sortie : celui de l'extrait d'origine, avec les
     changements du fichier osmChange racine (identifiants définitifs)."""
     par_noeud = {n: list(ws) for n, ws in idx.par_noeud.items()}
@@ -406,6 +412,9 @@ def _mettre_a_jour_index(idx, racine, sortie):
         elif e.tag == "relation" and action != "delete":
             membres.update(int(m.get("ref")) for m in e.iter("member") if m.get("type") == "node")
     nouveau = IndexUsages(_cle(sortie), par_noeud, chemins_de, membres)
+    # Les plus grands identifiants après l'envoi simulé, pour le suivant
+    # (après un vrai envoi, ceux de l'API ne sont pas connus : cherchés).
+    nouveau.maxi = maxi
     _ecrire_index(nouveau, sortie + ".usages")
     _INDEX[sortie] = nouveau
 

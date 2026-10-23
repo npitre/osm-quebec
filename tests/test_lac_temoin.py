@@ -291,6 +291,9 @@ class LacTemoin(unittest.TestCase):
         orphelins = [w for w, (_, t) in chemins.items()
                      if t.get("boundary") and w not in membres and w not in self.carte_tags]
         self.assertEqual(orphelins, [])
+        # Ni nœud créé dont aucun chemin ne se sert.
+        servent = {n for ns, _ in chemins.values() for n in ns}
+        self.assertEqual([n for n in pos if n not in servent and n not in self.carte.noeuds], [])
 
     def test_anneaux_fermes_apres_chaque_envoi(self):
         self.anneaux_fermes(self.extrait_lot1)

@@ -785,6 +785,12 @@ def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rel
                 t = etiquettes.setdefault(m["ref"], {})
                 if int(t.get("admin_level", "99")) > int(niveau):
                     t["admin_level"] = niveau
+    # Seuls les nœuds neufs dont un chemin se sert sont créés : une voisine
+    # ou une englobante qu'on renonce à modifier laisse les siens derrière.
+    servent = {n for _, ids, _ in chemins for n in ids}
+    servent |= {n for ns, _ in modif_voisines["neufs"].values() for n in ns}
+    servent |= {n for ns in modif_voisines["modifies"].values() for n in ns}
+    noeuds = {p: n for p, n in noeuds.items() if n in servent}
     return {"noeuds": noeuds, "existants": existants, "chemins": chemins, "reutilises": reutilises,
             "membres": nouvelles, "modifiees": modifiees, "retires": retires, "rapport": rapport,
             "lot": sorted(relations), "voisines": modif_voisines, "provisoires": provisoires,
@@ -1001,7 +1007,8 @@ def decouper(index, coupures_, relations_routes, prochain_noeud, prochain_chemin
     for action, nom, _, p, _, wid in coupures_:
         if action in ("coupure à ajouter", "coupure à déplacer") and wid in index.chemins:
             a_couper[wid].append(p)
-    res = {"noeuds": {}, "chemins": {}, "modifies": {}, "relations": {}, "rapport": [], "coupes": []}
+    res = {"noeuds": {}, "chemins": {}, "modifies": {}, "relations": {}, "rapport": [], "coupes": [],
+           "morceaux": {}}
     nid, wnid = prochain_noeud, prochain_chemin
     for wid, points in sorted(a_couper.items()):
         w = index.chemins[wid]
@@ -1044,6 +1051,7 @@ def decouper(index, coupures_, relations_routes, prochain_noeud, prochain_chemin
             if nouveaux != membres:
                 res["relations"][rid] = nouveaux
         res["coupes"].append(wid)
+        res["morceaux"][wid] = neufs
         res["rapport"].append("way %d (%s) coupé en %d morceaux" % (
             wid, w.get("tags", {}).get("name", ""), len(morceaux)))
     return res
@@ -1090,6 +1098,24 @@ def fusions_possibles(index, coupures_, anciennes, nouvelles=()):
     return res
 
 
+def _morceau_au_bout(w, n, index, decoupe):
+    """(chemin, nœuds) du chemin w, ou de l'un de ses morceaux neufs, qui
+    finit au nœud n; (w, None) s'il n'y en a pas."""
+    ns = decoupe["modifies"].get(w, index.chemins[w]["nodes"])
+    if n in (ns[0], ns[-1]):
+        return w, ns
+    for m in decoupe.get("morceaux", {}).get(w, ()):
+        ns = decoupe["chemins"][m][0]
+        if n in (ns[0], ns[-1]):
+            return m, ns
+    return w, None
+
+
+def origine(w, decoupe):
+    """Le chemin existant dont w est un morceau neuf (ou w lui-même)."""
+    return next((o for o, ms in decoupe.get("morceaux", {}).items() if w in ms), w)
+
+
 def fusionner(index, candidats, decoupe, rels_par_chemin, rels_actuelles):
     """Fusionne les deux chemins de chaque coupure inutile, après les
     coupures neuves (decoupe, modifié sur place). Le chemin le plus ancien
@@ -1097,23 +1123,32 @@ def fusionner(index, candidats, decoupe, rels_par_chemin, rels_actuelles):
     étiquettes ou les relations diffèrent (une ligne d'autobus qui ne
     couvre qu'un côté, par exemple), ou s'il faudrait retourner un chemin
     à sens unique."""
-    decoupe.setdefault("supprimes", [])
-    decoupe.setdefault("fusions", [])
+    for k, v in (("supprimes", []), ("fusions", []), ("chemins", {}), ("morceaux", {})):
+        decoupe.setdefault(k, v)
     for n, a, b in candidats:
         if a in decoupe["supprimes"] or b in decoupe["supprimes"]:
             continue
         nom = index.chemins[a]["tags"].get("name", "")
-        na = decoupe["modifies"].get(a, index.chemins[a]["nodes"])
-        nb = decoupe["modifies"].get(b, index.chemins[b]["nodes"])
         ta, tb = index.chemins[a].get("tags", {}), index.chemins[b].get("tags", {})
+        rels_a = rels_par_chemin.get(a, set())
+        # Une coupure neuve sur l'un des chemins (decouper) peut laisser la
+        # coupure n au bout d'un de ses morceaux neufs : on fusionne les
+        # deux morceaux qui s'y rejoignent vraiment.
+        (a, na), (b, nb) = _morceau_au_bout(a, n, index, decoupe), _morceau_au_bout(b, n, index, decoupe)
+        if na is None or nb is None:
+            decoupe["fusions"].append("way %s et way %s (%s) : fusion refusée, coupure introuvable après "
+                                      "les coupures neuves" % (a, b, nom))
+            continue
         raison = None
         if ta != tb:
             raison = "étiquettes différentes"
-        elif rels_par_chemin.get(a, set()) != rels_par_chemin.get(b, set()):
+        elif rels_a != rels_par_chemin.get(origine(b, decoupe), set()):
             raison = "relations différentes"
-        elif any(sorted(m["role"] for m in rels_actuelles[r]["members"] if m["type"] == "way" and m["ref"] == a) !=
-                 sorted(m["role"] for m in rels_actuelles[r]["members"] if m["type"] == "way" and m["ref"] == b)
-                 for r in rels_par_chemin.get(a, set())):
+        elif any(sorted(m["role"] for m in rels_actuelles[r]["members"] if m["type"] == "way"
+                        and m["ref"] == origine(a, decoupe)) !=
+                 sorted(m["role"] for m in rels_actuelles[r]["members"] if m["type"] == "way"
+                        and m["ref"] == origine(b, decoupe))
+                 for r in rels_a):
             raison = "rôles différents"
         if raison is None:
             if na[-1] == n and nb[0] == n:
@@ -1131,10 +1166,29 @@ def fusionner(index, candidats, decoupe, rels_par_chemin, rels_actuelles):
         if raison:
             decoupe["fusions"].append("way %d et way %d (%s) : fusion refusée, %s" % (a, b, nom, raison))
             continue
-        decoupe["modifies"][a] = noeuds
-        decoupe["modifies"].pop(b, None)
-        decoupe["supprimes"].append(b)
-        for r in rels_par_chemin.get(b, set()):
-            membres = decoupe["relations"].get(r, rels_actuelles[r]["members"])
-            decoupe["relations"][r] = [m for m in membres if not (m["type"] == "way" and m["ref"] == b)]
-        decoupe["fusions"].append("way %d et way %d (%s) fusionnés : way %d supprimé" % (a, b, nom, b))
+        # On garde un chemin existant, le plus ancien; un morceau neuf qui
+        # disparaît n'est simplement pas créé.
+        noms = (origine(a, decoupe), origine(b, decoupe))
+        garde, autre = sorted((a, b), key=lambda w: (w < 0, w))
+        if garde < 0:
+            garde, autre = sorted((a, b), reverse=True)
+        if garde in decoupe["chemins"]:
+            decoupe["chemins"][garde] = (noeuds, decoupe["chemins"][garde][1])
+        else:
+            decoupe["modifies"][garde] = noeuds
+        if autre in decoupe["chemins"]:
+            del decoupe["chemins"][autre]
+            for o, ms in decoupe["morceaux"].items():
+                if autre in ms:
+                    ms.remove(autre)
+            for r, membres in decoupe["relations"].items():
+                decoupe["relations"][r] = [m for m in membres if not (m["type"] == "way" and m["ref"] == autre)]
+            texte = "morceau neuf %d non créé" % autre
+        else:
+            decoupe["modifies"].pop(autre, None)
+            decoupe["supprimes"].append(autre)
+            for r in rels_par_chemin.get(autre, set()):
+                membres = decoupe["relations"].get(r, rels_actuelles[r]["members"])
+                decoupe["relations"][r] = [m for m in membres if not (m["type"] == "way" and m["ref"] == autre)]
+            texte = "way %d supprimé" % autre
+        decoupe["fusions"].append("way %d et way %d (%s) fusionnés : %s" % (noms[0], noms[1], nom, texte))
