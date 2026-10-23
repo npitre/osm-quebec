@@ -112,11 +112,20 @@ def lancer(d, pbf, lieu, journal):
     return r.stdout.splitlines()
 
 
-def verifier(osc, pbf_apres):
+def verifier(osc, pbf_avant, pbf_apres):
     """Anneaux des relations touchées et chemins orphelins, après l'envoi
-    simulé. Renvoie (relations, incomplètes, [ouvertes], [orphelins])."""
+    simulé. Renvoie (relations, incomplètes, [ouvertes], [orphelins]); une
+    relation qui garde un chemin supprimé compte parmi les ouvertes."""
     racine = ET.parse(osc).getroot()
-    ids = [int(e.get("id")) for e in racine.iter("relation")]
+    ids = {int(e.get("id")) for e in racine.iter("relation")}
+    # Et toute relation dont un chemin a été raccourci ou supprimé, même si
+    # elle n'est pas dans le fichier d'envoi : elle pourrait s'être ouverte.
+    touches = [int(w.get("id")) for b in racine if b.tag in ("modify", "delete") for w in b.iter("way")]
+    supprimes = {int(w.get("id")) for b in racine if b.tag == "delete" for w in b.iter("way")}
+    if touches:
+        # Lu dans l'extrait d'avant : un chemin supprimé n'y a plus de relation après.
+        ids |= {r for rs in extrait.usages(pbf_avant, [], touches)[2].values() for r in rs}
+    ids = sorted(ids)
     idx = osm.Index(extrait.relations(pbf_apres, ids))
     ouvertes, incompletes = [], 0
     for rid in ids:
@@ -124,6 +133,9 @@ def verifier(osc, pbf_apres):
         if rel["tags"].get("type") != "boundary":
             continue
         ws = [m["ref"] for m in rel["members"] if m["type"] == "way"]
+        if set(ws) & supprimes:
+            ouvertes.append("%d %s (garde un chemin supprimé)" % (rid, rel["tags"].get("name", "")))
+            continue
         if any(w not in idx.chemins for w in ws):
             incompletes += 1            # hors de l'extrait (Ontario, Canada...)
             continue
@@ -226,7 +238,7 @@ def main():
              "non_modifiees": [x.strip() for x in sortie if "non modifiée" in x]}
         neuf = os.path.join(d, "extrait.neuf.osm.pbf")
         extrait.appliquer(pbf, osc, neuf)
-        r["relations"], _, r["ouvertes"], r["orphelins"] = verifier(osc, neuf)
+        r["relations"], _, r["ouvertes"], r["orphelins"] = verifier(osc, pbf, neuf)
         echec = [m for m, c in (("plus de %d objets" % LIMITE, r["objets"] > LIMITE),
                                 ("anneaux ouverts", r["ouvertes"]), ("orphelins", r["orphelins"])) if c]
         if not echec and o["relance"]:

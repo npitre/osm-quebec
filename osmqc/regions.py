@@ -283,7 +283,9 @@ def _ajouter_arc(pts, code, role, vus, res):
 
 
 PRECISION = 7           # OSM garde 7 décimales de degré (environ 1 cm)
+MEME_POINT_M = 0.05     # un nœud d'OSM à moins de 5 cm d'un sommet du MRNF est au même point
 SUR_M = 1.0             # un sommet à moins de 1 m d'un contour du MRNF le suit
+CHAINE_COURTE_M = 200   # une chaîne isolée plus courte, retenue par le seul tracé, est écartée
 
 
 def arrondi(p):
@@ -438,21 +440,65 @@ def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rel
     # réutilisés s'ils ne servent qu'à des lignes de limite, pour que la
     # voisine se raccorde sans chemin de longueur nulle.
     if index is not None and chemins_des_noeuds is not None:
-        bouts = {arrondi(pts[k]) for pts, _ in tous for k in (0, -1)}
-        ici = {}
+        # À quelques centimètres près : un nœud d'OSM et un sommet du MRNF
+        # au même endroit peuvent différer d'un ou deux 1e-7 degré après
+        # arrondi.
+        bouts = defaultdict(list)
+        for pts, _ in tous:
+            for k in (0, -1):
+                b = arrondi(pts[k])
+                bouts[(round(b[0], 5), round(b[1], 5))].append(b)
+        # Pour chaque bout, le nœud le plus proche : deux nœuds peuvent être
+        # à 2 cm l'un de l'autre près d'un même bout.
+        meilleur = {}
         for rel in list(relations.values()) + list(rels_voisines.values()):
             for w in rel.chemins:
                 for n in index.chemins.get(w, {}).get("nodes", []):
-                    if n in index.noeuds and arrondi(index.point(n)) in bouts:
-                        ici[n] = arrondi(index.point(n))
+                    if n not in index.noeuds:
+                        continue
+                    q = index.point(n)
+                    cx, cy = round(q[0], 5), round(q[1], 5)
+                    for dx in (-1e-5, 0, 1e-5):
+                        for dy in (-1e-5, 0, 1e-5):
+                            for b in bouts.get((round(cx + dx, 5), round(cy + dy, 5)), ()):
+                                d = geo.distance(b, q)
+                                if d < MEME_POINT_M and (b not in meilleur or d < meilleur[b][0]):
+                                    meilleur[b] = (d, n)
+        ici = {n: b for b, (d, n) in meilleur.items()}
         if ici:
             usage = chemins_des_noeuds(sorted(ici))
+            # Les chemins qui s'en servent sans être dans l'index (la limite
+            # d'une municipalité plus loin, par exemple) : leurs étiquettes,
+            # lues en une fois.
+            ailleurs = sorted({w for ws in usage.values() for w in ws if w not in index.chemins})
+            tags_de = {w: e.get("tags", {}) for w, e in index.chemins.items()}
+            if ailleurs:
+                tags_de.update({e["id"]: e.get("tags", {}) for e in osm.objets("way", ailleurs)})
+            exacts = {}
             for n, p in ici.items():
                 ws = usage.get(n, set())
                 if not index.noeuds[n].get("tags") and ws and all(
-                        w in index.chemins and ligne_de_limite(index.chemins[w].get("tags", {})) for w in ws):
-                    par_point.setdefault(p, n)
-                    existants[n] = index.point(n)
+                        w in tags_de and ligne_de_limite(tags_de[w]) for w in ws):
+                    q = arrondi(index.point(n))
+                    if exacts.setdefault(p, q) == q:
+                        par_point.setdefault(q, n)
+                        existants[n] = index.point(n)
+            # Les arcs qui finissent à ce point prennent la position exacte
+            # du nœud existant : sinon, un centimètre d'écart empêcherait de
+            # reconnaître le chemin, à la relance, comme conforme (règle 9).
+            if exacts:
+                for k, (pts, roles) in enumerate(tous):
+                    debut, fin = exacts.get(arrondi(pts[0])), exacts.get(arrondi(pts[-1]))
+                    if debut or fin:
+                        pts = list(pts)
+                        if debut:
+                            pts[0] = debut
+                        if fin:
+                            pts[-1] = fin
+                        # Un sommet voisin à moins d'un centimètre tombe
+                        # maintenant au même point : un seul sommet.
+                        pts = [p for i, p in enumerate(pts) if i == 0 or arrondi(p) != arrondi(pts[i - 1])]
+                        tous[k] = (pts, roles)
     # Chemins existants déjà conformes au MRNF : d'abord les reconnaître
     # tous, pour que les chemins neufs se raccordent à leurs nœuds.
     candidats = candidats_conformes(dict(relations, **rels_voisines), index) if index is not None else {}
@@ -647,7 +693,7 @@ def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rel
         anneaux_ext = [p[0] for p in polys]
         anneaux_int = [a for p in polys for a in p[1:]]
         g_ext, g_int = geo.Grille(anneaux_ext, pas=0.02), geo.Grille(anneaux_int, pas=0.02)
-        communs = []
+        communs, par_trace = [], set()
         for w, ids in sorted(lignes_lot.items()):
             pts = [point(n) for n in ids if n not in raccords_fr]
             if w in plan_frontiere:
@@ -678,8 +724,17 @@ def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rel
                 continue
             if all(g_ext.ecart(p, 0.001) < SUR_M for p in pts):
                 communs.append((w, ids, "outer"))
+                par_trace.add(w)
             elif anneaux_int and all(g_int.ecart(p, 0.001) < SUR_M for p in pts):
                 communs.append((w, ids, "inner"))
+                par_trace.add(w)
+        # Une chaîne courte retenue par le seul tracé (aucun côté connu
+        # n'est hors de l'englobante) : un arc qui touche le contour là où
+        # il longe surtout autre chose (une réserve absente d'OSM, par
+        # exemple). Isolée, elle ne peut pas se raccorder : écartée,
+        # l'englobante garde là son ancien tracé.
+        if par_trace:
+            communs = sans_chaines_courtes(communs, point, par_trace)
         if not communs:
             continue
         # Le reste du contour selon le MRNF : ce qui n'est pas le long du lot.
@@ -796,6 +851,28 @@ def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rel
             "lot": sorted(relations), "voisines": modif_voisines, "provisoires": provisoires,
             "frontiere": {w: index.chemins[w]["nodes"] for ws in fr["morceaux"].values() for w in ws},
             "etiquettes": etiquettes}
+
+
+def sans_chaines_courtes(communs, point, seulement=None):
+    """L'arc commun sans ses chaînes isolées de moins de CHAINE_COURTE_M,
+    s'il en reste d'autres : quelques dizaines de mètres de limite commune
+    entre deux bouts qui bordent autre chose (une réserve absente d'OSM,
+    par exemple) ne peuvent pas se raccorder. La relation y garde son
+    ancien tracé. seulement : ne retirer que des chaînes faites de ces
+    chemins."""
+    chaines = geo.assembler([ids for _, ids, _ in communs])[0]
+    if len(chaines) < 2:
+        return communs
+    courts = set()
+    for chaine in chaines:
+        ns = set(chaine)
+        ws = [w for w, ids, _ in communs if ids[0] in ns and ids[-1] in ns]
+        longueur = sum(geo.distance(point(a), point(b)) for a, b in zip(chaine, chaine[1:]))
+        if longueur < CHAINE_COURTE_M and ws and (seulement is None or all(w in seulement for w in ws)):
+            courts.update(ws)
+    if len(courts) == len(communs):
+        return communs
+    return [c for c in communs if c[0] not in courts]
 
 
 def prendre_coupes(modif, modifies):

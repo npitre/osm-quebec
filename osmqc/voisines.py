@@ -84,13 +84,18 @@ def _distance(grille, lignes, p, plafond=None):
 def _une_portion_par_chaine(anneaux, bouts, nb_chaines, point, index, imposes):
     """Chaque portion d'un anneau qui longe le lot est remplacée par une
     chaîne de l'arc commun, raccordée à ses deux bouts. anneaux : [(V,
-    le_long)], tous les anneaux de la relation. S'il y a plus de portions
-    que de chaînes, l'ancien tracé ne fait que frôler le lot ailleurs (le
-    long d'une frontière gardée, par exemple) : seules restent retirées
-    les portions dont les extrémités sont les plus proches des bouts de
-    chaîne; les autres sont gardées. Une portion qui contient un nœud
-    imposé (morceau de frontière à retirer) reste retirée. Renvoie les
-    le_long corrigés."""
+    le_long)], tous les anneaux de la relation; bouts : les deux bouts de
+    chaque chaîne, à la suite. Renvoie les le_long corrigés :
+    - s'il y a plus de portions que de chaînes, l'ancien tracé ne fait
+      que frôler le lot ailleurs (le long d'une frontière gardée, par
+      exemple) : seules restent retirées les portions dont les extrémités
+      sont les plus proches des bouts de chaîne, les autres sont gardées;
+      une portion qui contient un nœud imposé (morceau de frontière à
+      retirer) reste retirée;
+    - une chaîne qu'aucune portion ne sert (l'ancien tracé passe au large
+      de cet arc par un long segment, sans nœud près de lui) : on retire
+      les nœuds de l'anneau le plus proche compris entre ceux qui sont les
+      plus proches de ses deux bouts, par le plus court chemin."""
     portions = []           # (anneau, indices)
     for k, (V, le_long) in enumerate(anneaux):
         n = len(V)
@@ -103,41 +108,48 @@ def _une_portion_par_chaine(anneaux, bouts, nb_chaines, point, index, imposes):
                 portions.append((k, [j]))
             elif le_long[j]:
                 portions[-1][1].append(j)
-    pos = lambda m: point(m) if m < 0 else index.point(m)
-    if not portions and bouts:
-        # Aucun nœud ne longe le lot : l'ancien tracé passe au large de
-        # l'arc commun par un long segment. On retire, pour chaque chaîne,
-        # les nœuds de l'anneau le plus proche compris entre ceux qui sont
-        # les plus proches de ses deux bouts, par le plus court chemin.
-        res = [list(l) for _, l in anneaux]
-        for a, b in zip(bouts[::2], bouts[1::2]):
-            k = min(range(len(anneaux)), key=lambda k: min(geo.distance(pos(n), point(a)) for n in anneaux[k][0]))
-            V = anneaux[k][0]
-            ia = min(range(len(V)), key=lambda i: geo.distance(pos(V[i]), point(a)))
-            ib = min(range(len(V)), key=lambda i: geo.distance(pos(V[i]), point(b)))
-            avant = (ib - ia) % len(V)
-            js = [(ia + d) % len(V) for d in range(avant + 1)] if avant <= len(V) - avant \
-                else [(ib + d) % len(V) for d in range(len(V) - avant + 1)]
-            if len(js) < len(V):
-                for j in js:
-                    res[k][j] = True
-        return res
-    if len(portions) <= max(nb_chaines, 1) or not bouts:
+    if not bouts:
         return [l for _, l in anneaux]
+    pos = lambda m: point(m) if m < 0 else index.point(m)
 
-    def ecart(p):
+    def extremites(p):
         # Les nœuds gardés juste avant et juste après la portion.
         V = anneaux[p[0]][0]
-        a, b = V[(p[1][0] - 1) % len(V)], V[(p[1][-1] + 1) % len(V)]
-        return max(min(geo.distance(pos(a), point(c)) for c in bouts),
-                   min(geo.distance(pos(b), point(c)) for c in bouts))
-    forcees = [p for p in portions if any(anneaux[p[0]][0][j] in imposes for j in p[1])]
-    libres = sorted((p for p in portions if p not in forcees), key=ecart)
-    retirees = forcees + libres[:max(0, nb_chaines - len(forcees))]
+        return V[(p[1][0] - 1) % len(V)], V[(p[1][-1] + 1) % len(V)]
+
+    def ecart(p):
+        return max(min(geo.distance(pos(m), point(c)) for c in bouts) for m in extremites(p))
+    if len(portions) > max(nb_chaines, 1):
+        forcees = [p for p in portions if any(anneaux[p[0]][0][j] in imposes for j in p[1])]
+        libres = sorted((p for p in portions if p not in forcees), key=ecart)
+        retirees = forcees + libres[:max(0, nb_chaines - len(forcees))]
+    else:
+        retirees = portions
     res = [[False] * len(V) if any(le_long) and not all(le_long) else list(le_long) for V, le_long in anneaux]
     for k, js in retirees:
         for j in js:
             res[k][j] = True
+    # Les chaînes qu'aucune portion ne sert : il en manque une par chaîne en
+    # trop. Ce sont les plus éloignées de toute extrémité de portion.
+    bords = [m for p in retirees for m in extremites(p)]
+    def isolement(c):
+        return min((geo.distance(pos(m), point(bouts[i])) for m in bords for i in (2 * c, 2 * c + 1)),
+                   default=1e12)
+    orphelines = sorted(range(nb_chaines), key=isolement, reverse=True)[:max(0, nb_chaines - len(retirees))]
+    for c in orphelines:
+        a, b = bouts[2 * c], bouts[2 * c + 1]
+        k = min(range(len(anneaux)), key=lambda k: min(geo.distance(pos(n), point(a)) for n in anneaux[k][0]))
+        V = anneaux[k][0]
+        if all(res[k]):
+            continue
+        ia = min(range(len(V)), key=lambda i: geo.distance(pos(V[i]), point(a)))
+        ib = min(range(len(V)), key=lambda i: geo.distance(pos(V[i]), point(b)))
+        avant = (ib - ia) % len(V)
+        js = [(ia + d) % len(V) for d in range(avant + 1)] if avant <= len(V) - avant \
+            else [(ib + d) % len(V) for d in range(len(V) - avant + 1)]
+        if len(js) < len(V) and not any(V[j] in imposes for j in js):
+            for j in js:
+                res[k][j] = True
     return res
 
 

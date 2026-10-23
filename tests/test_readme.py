@@ -307,6 +307,25 @@ class Regions(unittest.TestCase):
                 for m in plan["membres"][code] if m["type"] == "way"]
         return geo.assembler(segs)[1] == 0
 
+    def test_regions_9_point_triple_a_un_centimetre(self):
+        # Le point triple de B (nœud 1) est à 2e-7 degré (environ 2 cm) du
+        # sommet du MRNF (10, 0) : il est réutilisé, au lieu d'un nœud neuf
+        # au même endroit qui demanderait un raccord de longueur nulle.
+        idx = index({2: ((10, 10), {}), 3: ((20, 10), {}), 4: ((20, 0), {}),
+                     5: ((0, 0), {}), 6: ((0, 10), {})},
+                    [(700, [1, 2, 3, 4, 1], {}), (710, [1, 5, 6, 2], {})])
+        lon, lat = P(10, 0)
+        idx.noeuds[1] = {"type": "node", "id": 1, "lon": round(lon + 2e-7, 7), "lat": lat, "version": 1, "tags": {}}
+        b = Rel(200, [700])
+        b.tags = {"name": "B"}
+        plan = regions.preparer({"A": self.officiel["A"]}, {"A": Rel(100, [710])}, None, idx,
+                                {"B": self.officiel["B"]}, {"B": b}, lambda ws: {},
+                                chemins_des_noeuds=lambda ns: {n: {700, 710} for n in ns})
+        commun = [ids for w, ids, roles in plan["chemins"] if set(roles) == {"A", "B"}]
+        self.assertEqual(len(commun), 1)
+        self.assertIn(1, (commun[0][0], commun[0][-1]))
+        self.assertIn("B", plan["modifiees"])
+
     def test_regions_10_voisine_sans_noeud_le_long(self):
         # L'ancien tracé de B passe au large de l'arc commun (x = 10) par un
         # long segment, de (12, -3) à (12, 13), sans sommet près de lui : ces
