@@ -45,8 +45,8 @@ class Rel:
                     "members": list(autres) + [{"type": "way", "ref": w, "role": "outer"} for w in chemins]}
 
 
-def adr(numero, rue="Chemin du Tour-du-Lac", dx=1, dy=0.3, suffixe="", unite="", fin="",
-        municipalite="80135", categorie="RESI", nom_municipalite="Duhamel", matricule="",
+def adr(numero, rue="Chemin du Lac-Témoin", dx=1, dy=0.3, suffixe="", unite="", fin="",
+        municipalite="99001", categorie="RESI", nom_municipalite="Lac-Témoin", matricule="",
         lot="", logements="", etat="", reseau=None):
     p = P(dx, dy)
     return rqa.Adresse(ident="x", municipalite=municipalite, nom_municipalite=nom_municipalite,
@@ -56,7 +56,7 @@ def adr(numero, rue="Chemin du Tour-du-Lac", dx=1, dy=0.3, suffixe="", unite="",
                        categorie=categorie, nombre_unite=logements, etat=etat, reseau=reseau)
 
 
-def rue_osm(nom="Chemin du Tour-du-Lac"):
+def rue_osm(nom="Chemin du Lac-Témoin"):
     """Une rue est-ouest le long de y = 0, de x = 0 à x = 10."""
     return index({1: ((0, 0), {}), 2: ((5, 0), {}), 3: ((10, 0), {})},
                  [(10, [1, 2], {"highway": "residential", "name": nom}),
@@ -213,10 +213,10 @@ class Regions(unittest.TestCase):
         self.assertEqual(regions.fusions_possibles(idx, c, [ancienne], [proche]), [])
 
     def test_regions_8_lien_lieu(self):
-        idx = index({1: ((0, 0), {"place": "village", "name": "Duhamel"}),
-                     2: ((0, 0), {"place": "village", "name": "Duhamel (village)"}),
+        idx = index({1: ((0, 0), {"place": "village", "name": "Lac-Témoin"}),
+                     2: ((0, 0), {"place": "village", "name": "Lac-Témoin (village)"}),
                      3: ((0, 0), {})}, [])
-        rel = lambda ref: {"tags": {"name": "Duhamel"},
+        rel = lambda ref: {"tags": {"name": "Lac-Témoin"},
                            "members": [{"type": "node", "ref": ref, "role": "label"}] if ref else []}
         self.assertEqual(regions.lien_lieu(rel(1), idx)[0], "lié")
         self.assertEqual(regions.lien_lieu(rel(2), idx)[0], "noms différents")
@@ -410,8 +410,8 @@ class Rues(unittest.TestCase):
         self.assertEqual(r.renommer, [])
 
     def test_rues_4_adresses_apres_renommage(self):
-        idx = rue_osm("Chemin du Tour du Lac")
-        a = [adr("480")]
+        idx = rue_osm("Chemin du Lac Témoin")
+        a = [adr("10")]
         avant = adresses.preparer(a, idx, {})
         self.assertEqual(avant.creer, [])
         plan, _ = rues.plan_renommage(rues.analyser(a, idx))
@@ -427,17 +427,17 @@ class Adresses(unittest.TestCase):
         groupe = adresses.regrouper([adr("329"), adr("329", unite="2"), adr("329", suffixe="1"),
                                      adr("120"), adr("120", suffixe="A"),
                                      adr("120", suffixe="B", dx=2)])     # à 77 m : distinct
-        base, autres = groupe[("80135", "1", "329")]
+        base, autres = groupe[("99001", "1", "329")]
         self.assertEqual(adresses.numeros("329", base, autres), ("329", "1;2"))
-        base, autres = groupe[("80135", "1", "120")]
+        base, autres = groupe[("99001", "1", "120")]
         self.assertEqual(adresses.numeros("120", base, autres), ("120;120A", None))
-        base, autres = groupe[("80135", "1", "120B")]
+        base, autres = groupe[("99001", "1", "120B")]
         self.assertEqual(adresses.numeros("120B", base, autres), ("120B", None))
         p = adresses.preparer([adr("120"), adr("120", suffixe="B", dx=2)], rue_osm(), {})
         self.assertEqual(sorted(t["addr:housenumber"] for t, _ in p.creer), ["120", "120B"])
         # Des suffixes sans numéro de base : pas de « 300 » inventé.
         groupe = adresses.regrouper([adr("300", suffixe="A"), adr("300", suffixe="B")])
-        self.assertEqual(adresses.numeros("300", *groupe[("80135", "1", "300")]), ("300A;300B", None))
+        self.assertEqual(adresses.numeros("300", *groupe[("99001", "1", "300")]), ("300A;300B", None))
 
     def test_adresses_1_logements_douteux(self):
         # Logement 2, ni lot ni matricule, sur une maison d'un seul logement
@@ -460,7 +460,7 @@ class Adresses(unittest.TestCase):
             self.assertEqual(p.douteux, [])
 
     def test_adresses_2_terminees(self):
-        p = adresses.preparer([adr("480", fin="20250101")], rue_osm(), {})
+        p = adresses.preparer([adr("10", fin="20250101")], rue_osm(), {})
         self.assertEqual(p.creer, [])
         self.assertEqual(p.rapport, [])
 
@@ -475,35 +475,35 @@ class Adresses(unittest.TestCase):
                           ("14", "exclu", "sans clé de jumelage avec le réseau routier")])
 
     def test_adresses_3_exclusions(self):
-        conf = {"exclure": [{"municipalite": "80135", "rue": "Chemin du Tour-du-Lac",
+        conf = {"exclure": [{"municipalite": "99001", "rue": "Chemin du Lac-Témoin",
                              "numero": "131", "raison": "absent du rôle"}]}
         p = adresses.preparer([adr("131"), adr("131", rue="Chemin du Geai-Bleu")], rue_osm(), conf)
-        self.assertEqual([l.statut for l in p.rapport if l.rue == "Chemin du Tour-du-Lac"], ["exclu"])
+        self.assertEqual([l.statut for l in p.rapport if l.rue == "Chemin du Lac-Témoin"], ["exclu"])
         with self.assertRaises(SystemExit):
             adresses.preparer([], rue_osm(), {"exclure": [{"municipalite": "1", "numero": "1"}]})
 
     def test_adresses_4_rue_dans_osm(self):
-        p = adresses.preparer([adr("480")], rue_osm("Chemin des Pins"), {})
+        p = adresses.preparer([adr("10")], rue_osm("Chemin des Pins"), {})
         self.assertEqual(p.creer, [])
         self.assertEqual(p.rapport[0].statut, "à revoir")
 
     def test_adresses_5_doublons(self):
         idx = rue_osm()
         idx.noeuds[50] = {"type": "node", "id": 50, "lon": P(1, 0.4)[0], "lat": P(1, 0.4)[1],
-                          "version": 3, "tags": {"addr:housenumber": "480", "addr:street": "Ch. Tour du Lac"}}
-        p = adresses.preparer([adr("480")], idx, {})
+                          "version": 3, "tags": {"addr:housenumber": "10", "addr:street": "Ch. Lac Témoin"}}
+        p = adresses.preparer([adr("10")], idx, {})
         self.assertEqual(p.creer, [])
-        self.assertEqual(p.modifier[("node", 50)], {"addr:street": "Chemin du Tour-du-Lac",
+        self.assertEqual(p.modifier[("node", 50)], {"addr:street": "Chemin du Lac-Témoin",
                                                    "addr:postcode": "J0V 1G0"})
 
     def test_adresses_6_etiquettes(self):
-        p = adresses.preparer([adr("480")], rue_osm(), {})
+        p = adresses.preparer([adr("10")], rue_osm(), {})
         (tags, _), = p.creer
         self.assertEqual(set(tags), {"addr:housenumber", "addr:street", "addr:postcode"})
 
-    def _interpolation(self, ville="Duhamel", dy=0.5, partage=False):
+    def _interpolation(self, ville="Lac-Témoin", dy=0.5, partage=False):
         idx = rue_osm()
-        bout = {"addr:street": "Chemin du Tour-du-Lac", "addr:city": ville,
+        bout = {"addr:street": "Chemin du Lac-Témoin", "addr:city": ville,
                 "source": "NRCan-CanVec-7.0", "addr:housenumber": "400"}
         idx.noeuds[60] = {"type": "node", "id": 60, "lon": P(0, dy)[0], "lat": P(0, dy)[1], "version": 1, "tags": bout}
         idx.noeuds[61] = {"type": "node", "id": 61, "lon": P(9, dy)[0], "lat": P(9, dy)[1], "version": 1, "tags": bout}
@@ -511,7 +511,7 @@ class Adresses(unittest.TestCase):
                            "tags": {"addr:interpolation": "even"}}
         if partage:
             idx.chemins[71] = {"type": "way", "id": 71, "nodes": [61, 3], "version": 1, "tags": {"highway": "service"}}
-        return adresses.preparer([adr("480")], idx, {}).supprimer_chemins
+        return adresses.preparer([adr("10")], idx, {}).supprimer_chemins
 
     def test_adresses_7_interpolations(self):
         self.assertEqual(self._interpolation(), [70])
@@ -534,15 +534,15 @@ class Adresses(unittest.TestCase):
                 if geo.distance(self.p, a.point) > 150:
                     return a.point, "RQA", "point portes ignoré"
                 return self.p, "portes", "%.0f m du point RQA" % geo.distance(self.p, a.point)
-        p = adresses.preparer([adr("480")], idx, {}, Portes(P(1.5, 1)))
+        p = adresses.preparer([adr("10")], idx, {}, Portes(P(1.5, 1)))
         (tags, pt), = p.creer
         self.assertEqual(pt, P(1.5, 1))
         self.assertEqual(tags["entrance"], "home")
-        p = adresses.preparer([adr("480", categorie="COMM")], idx, {}, Portes(P(1.5, 1)))
+        p = adresses.preparer([adr("10", categorie="COMM")], idx, {}, Portes(P(1.5, 1)))
         self.assertEqual(p.creer[0][0]["entrance"], "shop")
-        p = adresses.preparer([adr("480")], idx, {}, Portes(P(1.5, 0.5)))   # pas sur le contour
+        p = adresses.preparer([adr("10")], idx, {}, Portes(P(1.5, 0.5)))   # pas sur le contour
         self.assertNotIn("entrance", p.creer[0][0])
-        p = adresses.preparer([adr("480")], idx, {}, Portes(P(1.5, 30)))    # trop loin
+        p = adresses.preparer([adr("10")], idx, {}, Portes(P(1.5, 30)))    # trop loin
         self.assertEqual(p.rapport[0].position, "RQA")
 
     def test_adresses_8_portes_chaire_mobilite(self):
@@ -551,25 +551,25 @@ class Adresses(unittest.TestCase):
         porte = P(1.5, 1)
         ewkb = struct.pack("<BII", 1, 0x20000001, 4326).hex() + struct.pack("<dd", *porte).hex()
         lignes = ["id_provinc,geog,geog_changed_entrance_aligned,geog_approximate,is_ignored",
-                  "80135%s,%s,true,false,false" % ("1" * 18, ewkb),
-                  "80135%s,SRID=4326;POINT(%r %r),t,f,f" % ("2" * 18, *P(3, 1)),
-                  "80135%s,SRID=4326;POINT(%r %r),false,false,false" % ("3" * 18, *P(4, 1)),
-                  "80135%s,SRID=4326;POINT(%r %r),true,true,false" % ("4" * 18, *P(5, 1)),
-                  "80135%s,SRID=4326;POINT(%r %r),true,false,true" % ("5" * 18, *P(6, 1)),
-                  "80135%s,SRID=4326;POINT(%r %r),true,false,false" % ("6" * 18, *P(30, 1))]
+                  "99001%s,%s,true,false,false" % ("1" * 18, ewkb),
+                  "99001%s,SRID=4326;POINT(%r %r),t,f,f" % ("2" * 18, *P(3, 1)),
+                  "99001%s,SRID=4326;POINT(%r %r),false,false,false" % ("3" * 18, *P(4, 1)),
+                  "99001%s,SRID=4326;POINT(%r %r),true,true,false" % ("4" * 18, *P(5, 1)),
+                  "99001%s,SRID=4326;POINT(%r %r),true,false,true" % ("5" * 18, *P(6, 1)),
+                  "99001%s,SRID=4326;POINT(%r %r),true,false,false" % ("6" * 18, *P(30, 1))]
         with tempfile.NamedTemporaryFile("w", suffix=".csv", delete=False) as fh:
             fh.write("\n".join(lignes) + "\n")
         self.addCleanup(os.unlink, fh.name)
         pos = positions.Positions({"fichier": fh.name})
         self.assertEqual(pos.champ, "id_provinc")
-        self.assertEqual(set(pos.points), {"80135" + c * 18 for c in "126"})
+        self.assertEqual(set(pos.points), {"99001" + c * 18 for c in "126"})
         self.assertEqual(pos.ecartes, {"pas sur la porte": 1, "approximatif": 1, "ignoré": 1})
-        a = [adr("480", matricule="1" * 18), adr("490", dx=3, matricule="2" * 18),
+        a = [adr("10", matricule="1" * 18), adr("490", dx=3, matricule="2" * 18),
              adr("492", dx=3, matricule="2" * 18), adr("500", dx=4, matricule="3" * 18),
              adr("600", dx=6, matricule="6" * 18), adr("600", dx=6, unite="2", matricule="6" * 18)]
         p = adresses.preparer(a, rue_osm(), {}, pos)
         source = {l.numero: l.position for l in p.rapport}
-        self.assertEqual(source, {"480": "portes", "490": "RQA", "492": "RQA", "500": "RQA",
+        self.assertEqual(source, {"10": "portes", "490": "RQA", "492": "RQA", "500": "RQA",
                                   "600": "portes"})
         # Porte vérifiée à près de 2 km du RQA : gardée et signalée; les
         # logements du même numéro la partagent.
