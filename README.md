@@ -43,6 +43,10 @@ nombre d'objets à envoyer pour chaque municipalité
 (`outils/inventaire.py`), et son découpage répartit le Québec
 méridional en bouchées d'au plus 8 000 objets estimés, chacune avec son
 fichier de lieu dans `lieux/quebec/` (`outils/bouchees.py`).
+`outils/chaine.py` prépare ces bouchées l'une après l'autre, hors ligne,
+chacune sur l'extrait où les précédentes ont été appliquées comme si
+OSM les avait acceptées, et vérifie chacune (taille de l'envoi, anneaux
+fermés, aucun chemin orphelin, relance vide).
 
 ## Licences
 
@@ -501,9 +505,10 @@ Liste au 21 octobre 2026, par ordre de priorité.
    lieu, envoyée par bouchées de municipalités voisines, chacune
    laissant OSM valide (règle 10 des régions). Même chose pour les
    adresses, avec la même discussion inscrite sur chaque groupe.
-2. **Enchaîner les bouchées.** Après chaque envoi, appliquer à
+2. **Enchaîner les envois.** La chaîne simulée existe
+   (`outils/chaine.py`). Pour de vrai : après chaque envoi, appliquer à
    l'extrait local ce qui vient d'être envoyé, avec les identifiants et
-   versions renvoyés par l'API (`extrait.appliquer` est prêt), puis
+   versions renvoyés par l'API (`extrait.appliquer` les accepte), puis
    préparer la bouchée suivante. Une relance ne prépare déjà que ce qui
    reste (règle 9), ce qui règle la reprise après un envoi interrompu.
 3. **Fraîcheur de l'extrait.** Lancer `pyosmium-up-to-date`
