@@ -25,7 +25,7 @@ Au MRNF, la municipalité des Îles couvre 33 924 km², eaux du golfe
 comprises; ses trois trous sont exactement les trois morceaux de
 Grosse-Île (mêmes 5 714 sommets), dont le contour suit la rive.
 
-Avec les limites actuelles d'OSM, 3 adresses sur 7 394 tombent du
+Avec les limites actuelles d'OSM, 3 adresses sur 7 391 tombent du
 mauvais côté :
 
 - 127 chemin du Parc et 50 chemin du Quai : hors de toute municipalité
@@ -43,7 +43,7 @@ mauvais côté :
 - Les 482 chemins du littoral sont retirés des relations, sans être
   modifiés. Deux simples lignes de limite devenues inutiles sont
   supprimées.
-- Vérification : avec les limites proposées, les 7 394 adresses tombent
+- Vérification : avec les limites proposées, les 7 391 adresses tombent
   dans la bonne municipalité.
 - Lien avec le nœud de lieu : la relation des Îles-de-la-Madeleine a son
   membre `label`; celle de **Grosse-Île n'en a pas**, et OsmAnd

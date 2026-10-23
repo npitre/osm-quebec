@@ -26,7 +26,7 @@ extrait OSM de Geofabrik du 16 octobre 2026.
   Papineauville, Plaisance, Thurso, Lochaber, Lochaber-Partie-Ouest)
   utilisent aussi le tracé de la rivière (`waterway=river`) : le cas à
   éviter.
-- Avec les limites actuelles d'OSM, **23 adresses sur 20 659** tombent du
+- Avec les limites actuelles d'OSM, **23 adresses sur 20 652** tombent du
   mauvais côté ou hors de toute municipalité. Par exemple :
   - chemin de la Plage (Val-des-Bois), placé dans Notre-Dame-de-la-Salette;
   - chemin du Ruisseau (Notre-Dame-de-la-Salette), placé dans Val-des-Bois;
@@ -70,7 +70,7 @@ extrait OSM de Geofabrik du 16 octobre 2026.
   présentes dans l'extrait forment toutes des anneaux fermés (les 13
   autres, comme l'Ontario ou le Canada, débordent de l'extrait), et
   relancer la préparation ne produit plus rien.
-- Vérification : avec les limites proposées, les 20 659 adresses tombent
+- Vérification : avec les limites proposées, les 20 652 adresses tombent
   dans la bonne municipalité.
 - Lien avec le nœud de lieu : 16 relations sur 25 ont leur membre
   `label`. Sept n'en ont pas (Lochaber-Partie-Ouest, Mulgrave-et-Derry,

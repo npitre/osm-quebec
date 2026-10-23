@@ -14,6 +14,7 @@
 
 import datetime
 import os
+import pickle
 import tempfile
 import xml.etree.ElementTree as ET
 
@@ -250,6 +251,9 @@ def appliquer(pbf, osc, sortie, resultat=None):
         lecteur.close()
     finally:
         os.unlink(fh.name)
+    idx = index_usages(pbf, construire=False)
+    if idx is not None:
+        _mettre_a_jour_index(idx, racine, sortie)
     return resultat
 
 
@@ -275,17 +279,159 @@ def limites_admin(pbf):
     return res
 
 
+# Index de l'usage des nœuds des limites administratives : pour chaque
+# nœud d'un chemin membre d'une relation boundary=administrative, les
+# chemins qui l'utilisent dans tout l'extrait; et les nœuds membres d'une
+# relation. Trouver les chemins d'un nœud demande sinon de parcourir les
+# nœuds de tous les chemins du Québec (environ 2 minutes). L'index est
+# calculé une fois et gardé à côté de l'extrait (FICHIER.usages); un
+# envoi simulé (appliquer) le tient à jour pour l'extrait qu'il écrit.
+
+class IndexUsages:
+    def __init__(self, cle, par_noeud, chemins_de, membres):
+        self.cle = cle                  # (taille, date) de l'extrait
+        self.par_noeud = par_noeud      # nœud de limite -> [chemins]
+        self.chemins_de = chemins_de    # chemin qui touche un de ces nœuds -> nœuds
+        self.membres = membres          # nœuds membres d'une relation
+
+    def couvre(self, nids):
+        """Tous ces nœuds sont connus (un nœud neuf, d'identifiant négatif,
+        ne sert encore à rien dans OSM)."""
+        return all(n < 0 or n in self.par_noeud for n in nids)
+
+
+_INDEX = {}
+
+
+def _cle(pbf):
+    st = os.stat(pbf)
+    return (st.st_size, st.st_mtime_ns)
+
+
+def index_usages(pbf, construire=True):
+    """L'index de l'usage des nœuds de l'extrait pbf : en mémoire, sur
+    disque s'il est à jour, sinon calculé (si construire)."""
+    cle = _cle(pbf)
+    idx = _INDEX.get(pbf)
+    if idx is not None and idx.cle == cle:
+        return idx
+    fichier = pbf + ".usages"
+    try:
+        with open(fichier, "rb") as fh:
+            idx = pickle.load(fh)
+        if idx.cle != cle:
+            idx = None
+    except (OSError, EOFError, pickle.UnpicklingError, AttributeError):
+        idx = None
+    if idx is None:
+        if not construire:
+            return None
+        idx = _construire_index(pbf, cle)
+        _ecrire_index(idx, fichier)
+    _INDEX[pbf] = idx
+    return idx
+
+
+def _ecrire_index(idx, fichier):
+    tmp = fichier + ".tmp"
+    with open(tmp, "wb") as fh:
+        pickle.dump(idx, fh, protocol=pickle.HIGHEST_PROTOCOL)
+    os.replace(tmp, fichier)
+
+
+def _construire_index(pbf, cle):
+    limites, membres = set(), set()
+    for o in progres.suivre(osmium.FileProcessor(pbf, osmium.osm.RELATION), pbf,
+                            "index d'usage : relations"):
+        admin = o.tags.get("boundary") == "administrative"
+        for m in o.members:
+            if m.type == "n":
+                membres.add(m.ref)
+            elif m.type == "w" and admin:
+                limites.add(m.ref)
+    filtre = osmium.filter.IdFilter(list(limites))
+    filtre.enable_for(osmium.osm.WAY)
+    noeuds = set()
+    for o in progres.suivre(osmium.FileProcessor(pbf, osmium.osm.WAY).with_filter(filtre), pbf,
+                            "index d'usage : chemins de limite"):
+        noeuds.update(n.ref for n in o.nodes)
+    par_noeud = {n: [] for n in noeuds}
+    chemins_de = {}
+    for o in progres.suivre(osmium.FileProcessor(pbf, osmium.osm.WAY), pbf,
+                            "index d'usage : %d nœuds dans tous les chemins" % len(noeuds)):
+        refs = [n.ref for n in o.nodes]
+        touches = [n for n in refs if n in noeuds]
+        if touches:
+            chemins_de[o.id] = refs
+            for n in set(touches):
+                par_noeud[n].append(o.id)
+    return IndexUsages(cle, par_noeud, chemins_de, membres)
+
+
+def _mettre_a_jour_index(idx, racine, sortie):
+    """Index de l'extrait sortie : celui de l'extrait d'origine, avec les
+    changements du fichier osmChange racine (identifiants définitifs)."""
+    par_noeud = {n: list(ws) for n, ws in idx.par_noeud.items()}
+    chemins_de = dict(idx.chemins_de)
+    membres = set(idx.membres)
+    blocs = [(b.tag, e) for b in racine for e in b]
+    # Les nœuds des chemins de limite créés ou modifiés entrent dans
+    # l'index (un chemin membre d'une relation de limite modifiée, ou
+    # étiqueté boundary=administrative).
+    dans_limite = {int(m.get("ref")) for action, e in blocs if e.tag == "relation" and action != "delete"
+                   and any(t.get("k") == "boundary" and t.get("v") == "administrative" for t in e.iter("tag"))
+                   for m in e.iter("member") if m.get("type") == "way"}
+    for action, e in blocs:
+        if e.tag == "way" and action != "delete":
+            w = int(e.get("id"))
+            tags = {t.get("k"): t.get("v") for t in e.iter("tag")}
+            if w in dans_limite or tags.get("boundary") == "administrative":
+                for nd in e.iter("nd"):
+                    par_noeud.setdefault(int(nd.get("ref")), [])
+    for action, e in blocs:
+        if e.tag == "way":
+            w = int(e.get("id"))
+            for n in set(chemins_de.pop(w, ())):
+                if n in par_noeud and w in par_noeud[n]:
+                    par_noeud[n].remove(w)
+            if action != "delete":
+                refs = [int(nd.get("ref")) for nd in e.iter("nd")]
+                touches = {n for n in refs if n in par_noeud}
+                if touches:
+                    chemins_de[w] = refs
+                    for n in touches:
+                        par_noeud[n].append(w)
+        elif e.tag == "node" and action == "delete":
+            par_noeud.pop(int(e.get("id")), None)
+        elif e.tag == "relation" and action != "delete":
+            membres.update(int(m.get("ref")) for m in e.iter("member") if m.get("type") == "node")
+    nouveau = IndexUsages(_cle(sortie), par_noeud, chemins_de, membres)
+    _ecrire_index(nouveau, sortie + ".usages")
+    _INDEX[sortie] = nouveau
+
+
 def usages(pbf, nids, wids=()):
     """Usage d'objets dans tout l'extrait : pour chaque nœud donné, les
     chemins qui l'utilisent; les nœuds membres d'une relation; pour chaque
     chemin donné, les relations dont il est membre.
-    Renvoie ({nœud: {chemins}}, {nœuds membres}, {chemin: {relations}})."""
+    Renvoie ({nœud: {chemins}}, {nœuds membres}, {chemin: {relations}}).
+    Les nœuds des limites administratives sont cherchés dans l'index
+    (voir IndexUsages); il ne reste alors que les relations à lire."""
     nids = set(nids)
     wids = set(wids)
+    if nids:
+        idx = index_usages(pbf)
+        if idx.couvre(nids):
+            chemins = {n: set(idx.par_noeud.get(n, ())) for n in nids}
+            membres = nids & idx.membres
+            rels = usages(pbf, (), wids)[2] if wids else {}
+            return chemins, membres, rels
     chemins = {n: set() for n in nids}
     membres = set()
     rels = {w: set() for w in wids}
-    fp = osmium.FileProcessor(pbf, osmium.osm.WAY | osmium.osm.RELATION)
+    # Sans nœud à chercher, les relations suffisent : leur lecture saute
+    # les blocs de nœuds et de chemins, bien plus rapide.
+    fp = osmium.FileProcessor(pbf, osmium.osm.WAY | osmium.osm.RELATION if nids else osmium.osm.RELATION)
     for o in progres.suivre(fp, pbf, "usage de %d nœuds et %d chemins" % (len(nids), len(wids))):
         if o.is_way():
             if nids:

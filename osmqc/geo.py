@@ -216,7 +216,16 @@ class Grille:
         """Distance en mètres au segment le plus proche dans le rayon
         (None s'il n'y en a pas)."""
         meilleur = None
-        for c in self._cases(p[0] - rayon_deg, p[1] - rayon_deg, p[0] + rayon_deg, p[1] + rayon_deg):
+        o, s_, e, n = p[0] - rayon_deg, p[1] - rayon_deg, p[0] + rayon_deg, p[1] + rayon_deg
+        cote = int(2 * rayon_deg / self.pas) + 2
+        if cote * cote > len(self.cases):
+            # Grand rayon, grille clairsemée : parcourir les cases occupées
+            # plutôt que toutes celles du carré.
+            i0, i1, j0, j1 = int(o // self.pas), int(e // self.pas), int(s_ // self.pas), int(n // self.pas)
+            cases = (c for c in self.cases if i0 <= c[0] <= i1 and j0 <= c[1] <= j1)
+        else:
+            cases = self._cases(o, s_, e, n)
+        for c in cases:
             for a, b in self.cases.get(c, ()):
                 d = distance_segment(p, a, b)
                 if meilleur is None or d < meilleur:

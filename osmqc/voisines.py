@@ -20,6 +20,7 @@
 # Si l'anneau de B ne se referme pas, B n'est pas touchée et le cas est
 # signalé.
 
+import math
 import sqlite3
 
 from . import geo
@@ -60,11 +61,24 @@ def voisines(chemin, codes):
     return res
 
 
-def _distance(grille, lignes, p):
+def _distance(grille, lignes, p, plafond=None):
+    """Distance en mètres de p aux lignes, par la grille. Au-delà de 0,01°,
+    le rayon de recherche s'élargit; une distance trouvée n'y est sûre que
+    si elle est plus petite que le rayon (un segment hors du carré
+    pourrait être plus proche). En dernier recours, toutes les lignes.
+    plafond : au-delà, la distance exacte n'importe pas (1e12 est rendu
+    dès que rien n'est plus proche)."""
     d = grille.distance(p, rayon_deg=0.01)
-    if d is None:
-        d = min((geo.distance_ligne(p, l) for l in lignes if len(l) > 1), default=1e12)
-    return d
+    if d is not None:
+        return d
+    for rayon in (0.04, 0.16, 0.64):
+        d = grille.distance(p, rayon_deg=rayon)
+        sur = rayon * 111000 * math.cos(math.radians(p[1]))
+        if d is not None and d <= sur:
+            return d
+        if plafond is not None and sur >= plafond:
+            return 1e12
+    return min((geo.distance_ligne(p, l) for l in lignes if len(l) > 1), default=1e12)
 
 
 def _une_portion_par_chaine(anneaux, bouts, nb_chaines, point, index, imposes):
@@ -179,7 +193,8 @@ def modifier(rel, index, communs, autres, point, noeud, nouveau_chemin, usages, 
         p = index.point(n)
         if grille_o is None:
             return True
-        return _distance(grille_c, lignes_c, p) + EPS_M < _distance(grille_o, autres, p)
+        d_autres = _distance(grille_o, autres, p)
+        return _distance(grille_c, lignes_c, p, plafond=d_autres) + EPS_M < d_autres
 
     # Bouts libres de l'arc commun : là où les raccords s'accrochent.
     chaines, _ = geo.assembler([ids for _, ids, _ in communs])

@@ -22,9 +22,9 @@ Source : Découpages administratifs du MRNF (1/20 000). Règles : voir le [READM
 
 | Limite | Bonne municipalité | Autre ou aucune |
 |---|---|---|
-| MRNF | 7394 | 0 |
-| OSM actuel | 7391 | 3 |
-| OSM après le remplacement proposé | 7394 | 0 |
+| MRNF | 7391 | 0 |
+| OSM actuel | 7388 | 3 |
+| OSM après le remplacement proposé | 7391 | 0 |
 
 | Adresse | Municipalité (RQA) | Selon le MRNF | Selon OSM |
 |---|---|---|---|

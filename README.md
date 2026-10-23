@@ -32,8 +32,8 @@ communauté. Pour chaque lieu, `rapports/LIEU/` contient :
 
 | Lieu | Municipalités | Limites : adresses mal placées dans OSM | Rues à renommer | Adresses prêtes | Adresses à revoir |
 |---|---|---|---|---|---|
-| [Îles-de-la-Madeleine](rapports/Iles_de_la_Madeleine/) | 2 | 3 sur 7 394 (0 après correction) | 28 segments | 7 218 | 129 |
-| [La Petite-Nation (MRC de Papineau)](rapports/Petite-Nation/) | 25 | 23 sur 20 659 (0 après correction) | 45 segments | 19 429 | 1 538 |
+| [Îles-de-la-Madeleine](rapports/Iles_de_la_Madeleine/) | 2 | 3 sur 7 391 (0 après correction) | 28 segments | 7 218 | 129 |
+| [La Petite-Nation (MRC de Papineau)](rapports/Petite-Nation/) | 25 | 23 sur 20 652 (0 après correction) | 45 segments | 19 429 | 1 538 |
 
 Pour tout le Québec, avant le remplacement des limites :
 [rapports/Quebec/](rapports/Quebec/) compare les frontières du Québec
@@ -521,11 +521,13 @@ Liste au 21 octobre 2026, par ordre de priorité.
    alors qu'il n'y a rien à couper (chemin des Joyeux-Sportifs, dans la
    Petite-Nation).
 7. **Durée** : la préparation des limites de la Petite-Nation prend
-   environ 8 minutes. Deux lectures de l'usage des nœuds (points
-   triples, puis nœuds libérés) coûtent près de 2 minutes chacune, et le
-   calcul de chaque région administrative (des dizaines de milliers de
-   sommets) près d'une minute. Tout lire en un seul passage, et ne
-   comparer que la partie du contour proche du lot.
+   environ une minute. L'usage des nœuds des limites vient d'un index
+   calculé une fois par extrait (environ 2 minutes, gardé à côté de
+   l'extrait) et tenu à jour par chaque envoi simulé. La première
+   préparation d'un lieu lit aussi les routes autour de lui (environ
+   une minute). Le calcul d'une région administrative entière, des
+   dizaines de milliers de sommets, prend encore une dizaine de
+   secondes; ne comparer que la partie du contour proche du lot.
 
 ### Rues
 

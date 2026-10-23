@@ -76,6 +76,9 @@ def envoi_simule(dossier, section, lieu=LIEU):
     neuf = os.path.join(dossier, "neuf.osm.pbf")
     extrait.appliquer(pbf, os.path.join(dossier, "sortie", lieu, section + ".osc"), neuf)
     os.replace(neuf, pbf)
+    # L'index de l'usage des nœuds, tenu à jour par l'envoi, suit l'extrait.
+    if os.path.exists(neuf + ".usages"):
+        os.replace(neuf + ".usages", pbf + ".usages")
 
 
 def lire_extrait(dossier):
@@ -89,6 +92,15 @@ def lire_extrait(dossier):
         else:
             rels[o.id] = ([(m.type, m.ref, m.role) for m in o.members], dict(o.tags))
     return pos, chemins, rels
+
+
+def index_compare(pbf):
+    """(index tenu à jour par l'envoi simulé, index recalculé de l'extrait),
+    sous une forme comparable."""
+    forme = lambda i: ({n: sorted(ws) for n, ws in i.par_noeud.items()}, i.membres)
+    extrait._INDEX.clear()
+    tenu = extrait.index_usages(pbf, construire=False)
+    return (forme(tenu) if tenu else None), forme(extrait._construire_index(pbf, None))
 
 
 def vide(chemin):
@@ -111,6 +123,7 @@ class LacTemoin(unittest.TestCase):
         shutil.copytree(cls.dossier, cls.apres)
         envoi_simule(cls.apres, "regions")
         cls.extrait_lot1 = lire_extrait(cls.apres)
+        cls.index_lot1 = index_compare(os.path.join(cls.apres, "lac-temoin.osm.pbf"))
         lancer(cls.apres, ["regions preparer"])
         cls.regions_apres = ET.parse(os.path.join(cls.apres, "sortie", LIEU, "regions.osc")).getroot()
         lancer(cls.apres, ["adresses extraire", "regions preparer"], LOT2)
@@ -324,6 +337,19 @@ class LacTemoin(unittest.TestCase):
                 if w not in frontiere:
                     for n in set(chemins[w][0]) - sur_frontiere:
                         self.assertLess(geo.distance_ligne(pos[n], contour), 0.01, (rid, w))
+
+    def test_index_usages_tenu_a_jour(self):
+        # L'envoi simulé tient à jour l'index de l'usage des nœuds : pour
+        # chaque nœud de limite de l'extrait, les mêmes chemins que l'index
+        # recalculé. Il peut garder en plus des nœuds qui ne sont plus de
+        # limite (ceux de la rivière 103, retirée des relations), avec leur
+        # usage exact, et des nœuds membres en surplus.
+        tenu, recalcule = self.index_lot1
+        self.assertIsNotNone(tenu)
+        par_noeud, membres_tenus = tenu
+        attendu, membres = recalcule
+        self.assertEqual({n: par_noeud.get(n) for n in attendu}, attendu)
+        self.assertTrue(membres <= membres_tenus)
 
     def test_relance_apres_les_deux_lots(self):
         self.assertEqual(self.relances, [True, True])
