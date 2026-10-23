@@ -174,7 +174,13 @@ dans `sortie/LIEU/` (hors du dépôt); les rapports de révision, dans
    (une ligne d'autobus ou un sentier qui ne suit qu'un côté empêche la
    fusion), et sans jamais retourner un chemin à sens unique; un refus
    est signalé dans le rapport. Une route modifiée dans OSM depuis
-   l'extrait est laissée de côté.
+   l'extrait est laissée de côté. Une route qui croise la limite à
+   moins de 200 m d'un autre de ses croisements la longe plutôt que de
+   la traverser (le tracé du MRNF passe d'un côté à l'autre de la
+   chaussée, le long d'une autoroute par exemple) : c'est une « voie à
+   cheval », comme dans le Pifodrome de BANO. Elle n'est pas coupée,
+   seulement signalée, à revoir à la main; la couper à chaque croisement
+   la hacherait en morceaux de quelques dizaines de mètres.
 8. **Lien avec le nœud de lieu** : chaque relation municipale doit avoir
    un membre `label` (ou `admin_centre`) qui pointe vers un nœud `place`
    portant exactement le même `name` que la relation. Sans ce lien,

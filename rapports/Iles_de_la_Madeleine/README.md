@@ -40,9 +40,9 @@ mauvais côté :
 - Le contour extérieur des Îles, en mer, reprend les 7 chemins de la
   relation de la Communauté maritime (8405826) au lieu d'en tracer de
   nouveaux.
-- Les 482 chemins du littoral sont retirés des relations, sans être
-  modifiés. Deux simples lignes de limite devenues inutiles sont
-  supprimées.
+- 487 chemins sont retirés des relations, sans être modifiés : les 482
+  du littoral et 5 autres. Deux simples lignes de limite devenues
+  inutiles sont supprimées.
 - Vérification : avec les limites proposées, les 7 391 adresses tombent
   dans la bonne municipalité.
 - Lien avec le nœud de lieu : la relation des Îles-de-la-Madeleine a son

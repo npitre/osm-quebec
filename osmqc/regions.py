@@ -889,7 +889,8 @@ def geojson(officiel, osm_rel, ecarts, noms, coupures=None):
                                  "municipalite_rqa": a.municipalite,
                                  "selon_mrnf": m or "aucune", "selon_osm": o or "aucune"}})
     couleurs = {"déjà coupée": "#2ca02c", "coupure à déplacer": "#ff7f0e",
-                "coupure à ajouter": "#d62728", "coupure devenue inutile": "#9467bd"}
+                "coupure à ajouter": "#d62728", "coupure devenue inutile": "#9467bd",
+                "voie à cheval": "#8c564b"}
     for action, nom, wid, p, d, _ in coupures or []:
         f.append({"type": "Feature", "geometry": {"type": "Point", "coordinates": list(p)},
                   "properties": {"coupure": action, "rue": nom, "objet": "way/%d" % wid,
@@ -919,6 +920,7 @@ def anneaux_proposes(plan, exterieur):
 
 
 COUPURE_M = 25          # une route coupée à moins de 25 m d'une limite y est coupée
+A_CHEVAL_M = 200        # deux croisements plus proches : la route longe la limite
 
 
 def lignes_limites(plan, exterieur=None):
@@ -965,21 +967,35 @@ def coupures(index, nouvelles, anciennes):
                 identiques.add((nom, ws[0], index.point(n)))
     res = []
     vus = set()
-    # Croisements avec les limites proposées : il faut une coupure tout près.
+    croisements = []        # (nom, point, chemin)
     for w in routes:
         nom = w["tags"]["name"]
         for p in grille_n.croisements(index.ligne(w["id"])):
             cle = (nom, round(p[0], 4), round(p[1], 4))
-            if cle in vus:
-                continue
-            vus.add(cle)
-            proches = sorted((geo.distance(p, b), wid) for b, wid in bouts[nom] if geo.distance(p, b) < 500)
-            if proches and proches[0][0] < COUPURE_M:
-                res.append(("déjà coupée", nom, proches[0][1], p, proches[0][0], w["id"]))
-            elif proches:
-                res.append(("coupure à déplacer", nom, proches[0][1], p, proches[0][0], w["id"]))
-            else:
-                res.append(("coupure à ajouter", nom, w["id"], p, None, w["id"]))
+            if cle not in vus:
+                vus.add(cle)
+                croisements.append((nom, p, w["id"]))
+    par_nom = defaultdict(list)
+    for nom, p, _ in croisements:
+        par_nom[nom].append(p)
+    # Croisements avec les limites proposées : il faut une coupure tout près.
+    for nom, p, wid in croisements:
+        # Une route qui croise la limite à moins de A_CHEVAL_M d'un autre de
+        # ses croisements la longe plutôt que de la traverser (le tracé du
+        # MRNF passe d'un côté à l'autre de la chaussée) : une voie à
+        # cheval, comme les appelle le Pifodrome de BANO. Elle n'est pas
+        # coupée, seulement signalée, à revoir à la main.
+        autres = [geo.distance(p, q) for q in par_nom[nom] if q != p]
+        if autres and min(autres) < A_CHEVAL_M:
+            res.append(("voie à cheval", nom, wid, p, min(autres), wid))
+            continue
+        proches = sorted((geo.distance(p, b), x) for b, x in bouts[nom] if geo.distance(p, b) < 500)
+        if proches and proches[0][0] < COUPURE_M:
+            res.append(("déjà coupée", nom, proches[0][1], p, proches[0][0], wid))
+        elif proches:
+            res.append(("coupure à déplacer", nom, proches[0][1], p, proches[0][0], wid))
+        else:
+            res.append(("coupure à ajouter", nom, wid, p, None, wid))
     # Coupures au droit d'une limite actuelle qui ne correspondent plus à
     # aucune limite proposée. Seulement si les deux chemins ont les mêmes
     # étiquettes : sinon la coupure sert à autre chose (pont, revêtement).

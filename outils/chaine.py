@@ -94,7 +94,7 @@ def extraire_adresses(d, lieux):
     for l in manquants:
         sortie = os.path.join(d, "donnees", l["nom"])
         os.makedirs(sortie, exist_ok=True)
-        rqa.ecrire_extrait(par_lieu[l["nom"]], os.path.join(sortie, "rqa.csv"))
+        rqa.ecrire_extrait(par_lieu[l["nom"]], os.path.join(sortie, "rqa.csv"), list(lignes[0]) if lignes else None)
 
 
 def lancer(d, pbf, lieu, journal):

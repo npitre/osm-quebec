@@ -200,9 +200,13 @@ def regions(lieu, conf, officiel, rels, compte, ecarts, plan, supp):
               "côtés : Nominatim et Photon rattachent chaque segment de rue à une seule "
               "municipalité. Les coupures « à ajouter » et « à déplacer » sont faites dans le "
               "fichier d'envoi; une coupure « devenue inutile », et l'ancienne coupure d'une "
-              "coupure déplacée, sont fusionnées quand c'est possible (voir plus haut).\n\n" % 25)
+              "coupure déplacée, sont fusionnées quand c'est possible (voir plus haut). Une "
+              "« voie à cheval », qui croise la limite à moins de %d m d'un autre de ses "
+              "croisements, la longe plutôt que de la traverser : elle n'est pas coupée, à "
+              "revoir à la main.\n\n" % (25, 200))
         s += tableau(["Situation", "Nombre"], [[k, n[k]] for k in (
-            "déjà coupée", "coupure à déplacer", "coupure à ajouter", "coupure devenue inutile")])
+            "déjà coupée", "coupure à déplacer", "coupure à ajouter", "coupure devenue inutile",
+            "voie à cheval")])
         autres = [x for x in c if x[0] != "déjà coupée"]
         if autres:
             s += "\n" + tableau(["Situation", "Rue", "Chemin", "Position", "Écart"], [

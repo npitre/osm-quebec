@@ -148,9 +148,11 @@ def lire_zip(chemin, municipalites, odonymes=None):
     return lignes
 
 
-def ecrire_extrait(lignes, chemin):
+def ecrire_extrait(lignes, chemin, colonnes=None):
+    """colonnes : celles du RQA, pour un extrait sans adresse (un lieu
+    fait de territoires non organisés, par exemple)."""
     with open(chemin, "w", newline="", encoding="utf-8") as fh:
-        w = csv.DictWriter(fh, fieldnames=list(lignes[0].keys()))
+        w = csv.DictWriter(fh, fieldnames=list(lignes[0].keys()) if lignes else list(colonnes or []))
         w.writeheader()
         w.writerows(lignes)
 
