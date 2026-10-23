@@ -577,7 +577,7 @@ def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rel
         for w, ids, role in res["chemins"]:
             chemins.append((w, ids, {code: role}))
             provisoires.add(w)
-        modif_voisines["modifies"].update(res["modifies"])
+        prendre_coupes(modif_voisines, res["modifies"])
         modif_voisines["neufs"].update(res["neufs"])
         for w, ns in res["modifies"].items():
             index.chemins[w]["nodes"] = ns
@@ -718,7 +718,7 @@ def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rel
         nouvelles[cle] = [dict(m, ref=pareils.get(m["ref"], m["ref"])) if m["type"] == "way" else m
                           for m in res["membres"]]
         anciens.update(rel.chemins)
-        modif_voisines["modifies"].update(res["modifies"])
+        prendre_coupes(modif_voisines, res["modifies"])
         modif_voisines["neufs"].update(res["neufs"])
         modif_voisines["liberes"] |= res["liberes"]
         # Appliquer en mémoire, pour les relations englobantes suivantes.
@@ -796,6 +796,18 @@ def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rel
             "lot": sorted(relations), "voisines": modif_voisines, "provisoires": provisoires,
             "frontiere": {w: index.chemins[w]["nodes"] for ws in fr["morceaux"].values() for w in ws},
             "etiquettes": etiquettes}
+
+
+def prendre_coupes(modif, modifies):
+    """Ajoute les chemins raccourcis par une voisine ou une englobante.
+    Un morceau neuf d'une coupe précédente (identifiant négatif), recoupé
+    à son tour, garde sa place parmi les morceaux à créer, avec ses
+    nouveaux nœuds : il n'existe pas encore dans OSM."""
+    for w, ns in modifies.items():
+        if w < 0 and w in modif["neufs"]:
+            modif["neufs"][w] = (ns, modif["neufs"][w][1])
+        else:
+            modif["modifies"][w] = ns
 
 
 def inserer_morceaux(r, coupes):

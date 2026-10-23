@@ -366,7 +366,8 @@ def noeuds_liberes(plan, index, chemins_supprimes, pbf):
     """Nœuds retirés d'un chemin de limite raccourci (voisine) qui ne
     servent plus à rien : sans étiquette, dans aucun autre chemin ni
     aucune relation."""
-    liberes = sorted(n for n in plan["voisines"]["liberes"] if not index.noeuds[n].get("tags"))
+    # Un nœud neuf (négatif) n'existe pas encore : il n'y a rien à supprimer.
+    liberes = sorted(n for n in plan["voisines"]["liberes"] if n > 0 and not index.noeuds[n].get("tags"))
     if not liberes:
         return set()
     if pbf:

@@ -202,7 +202,20 @@ def main():
         nom = l["nom"]
         progres.etape("Bouchée %d sur %d : %s" % (l["numero"], len(lieux), l["conf"].get("nom", nom)))
         journal = os.path.join(d, "journaux", nom + ".log")
-        sortie = lancer(d, pbf, nom, journal)
+        try:
+            sortie = lancer(d, pbf, nom, journal)
+        except RuntimeError as e:
+            # Plantage de la préparation : noté comme un échec de la bouchée.
+            r = {"bouchee": l["numero"], "lieu": nom, "objets": 0, "relations": 0, "ouvertes": [],
+                 "orphelins": [], "relance": "", "non_modifiees": [], "statut": "échec : préparation (%s)" % e,
+                 "duree": duree(time.monotonic() - debut)}
+            progres.etape("  %s" % r["statut"])
+            resultats.append(r)
+            json.dump(resultats, open(etat_f, "w"), ensure_ascii=False, indent=1)
+            bilan(d, resultats)
+            if not o["continuer"]:
+                sys.exit("Arrêt à la bouchée %d (%s)." % (l["numero"], r["statut"]))
+            continue
         # Le fichier d'envoi et son rapport de révision, gardés avant que la
         # relance ne les remplace.
         osc = os.path.join(d, "envois", nom + ".osc")
