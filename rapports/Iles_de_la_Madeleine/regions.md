@@ -1,6 +1,6 @@
 # Limites municipales : Les Îles-de-la-Madeleine
 
-Données OSM : extrait quebec-latest.osm.pbf du 2026-10-16.
+Données OSM : extrait quebec-latest.osm.pbf du 2026-10-24.
 
 Source : Découpages administratifs du MRNF (1/20 000). Règles : voir le [README](../../README.md#régions). Carte : [regions.geojson](regions.geojson) (propriété `source` : MRNF ou OSM actuel). Commentaires : [README](README.md).
 
@@ -75,7 +75,7 @@ OsmAnd n'utilise une limite que si sa relation a un membre label ou admin_centre
 
 ## Routes qui traversent les limites
 
-Une route nommée est coupée exactement là où elle traverse une limite municipale (à moins de 25 m), même si ses étiquettes sont identiques des deux côtés : Nominatim et Photon rattachent chaque segment de rue à une seule municipalité. Les coupures « à ajouter » et « à déplacer » sont faites dans le fichier d'envoi; une coupure « devenue inutile », et l'ancienne coupure d'une coupure déplacée, sont fusionnées quand c'est possible (voir plus haut).
+Une route nommée est coupée exactement là où elle traverse une limite municipale (à moins de 25 m), même si ses étiquettes sont identiques des deux côtés : Nominatim et Photon rattachent chaque segment de rue à une seule municipalité. Les coupures « à ajouter » et « à déplacer » sont faites dans le fichier d'envoi; une coupure « devenue inutile », et l'ancienne coupure d'une coupure déplacée, sont fusionnées quand c'est possible (voir plus haut). Une « voie à cheval », qui croise la limite à moins de 200 m d'un autre de ses croisements, la longe plutôt que de la traverser : elle n'est pas coupée, à revoir à la main.
 
 | Situation | Nombre |
 |---|---|
@@ -83,6 +83,7 @@ Une route nommée est coupée exactement là où elle traverse une limite munici
 | coupure à déplacer | 1 |
 | coupure à ajouter | 0 |
 | coupure devenue inutile | 1 |
+| voie à cheval | 0 |
 
 | Situation | Rue | Chemin | Position | Écart |
 |---|---|---|---|---|

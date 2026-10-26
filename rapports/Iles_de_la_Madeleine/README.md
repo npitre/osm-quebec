@@ -10,7 +10,8 @@ Rapports générés : [régions](regions.md), [rues](rues.md) et
 Configuration : [lieux/Iles_de_la_Madeleine.toml](../../lieux/Iles_de_la_Madeleine.toml).
 
 Données : RQA version AQ20261001, Découpages administratifs V2026-09,
-extrait OSM de Geofabrik du 16 octobre 2026.
+extrait OSM de Geofabrik du 16 octobre 2026 (du 24 octobre pour les
+limites, préparées de nouveau avant l'envoi).
 
 ## 1. Régions
 

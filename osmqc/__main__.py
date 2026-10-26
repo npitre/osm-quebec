@@ -71,6 +71,13 @@ def noter_source(lieu, texte):
         fh.write(texte + "\n")
 
 
+def source_a_jour(lieu, conf):
+    """La configuration, avec la source des données OSM telle que la
+    préparation vient de la noter (l'extrait qu'elle a lu, et sa date)."""
+    conf["_source_osm"] = source_osm(lieu)
+    return conf
+
+
 def source_osm(lieu):
     try:
         return open(os.path.join("donnees", lieu, "osm_source.txt")).read().strip()
@@ -179,7 +186,7 @@ def adresses_preparer(lieu, conf):
     rapport.ecrire_geojson_compact(rapport.geojson_allege(complet),
                              os.path.join(dossier("rapports", lieu), "adresses.geojson"))
     rapport.ecrire(os.path.join("rapports", lieu, "adresses.md"),
-                   rapport.adresses(lieu, conf, plan, version_rqa(lieu)))
+                   rapport.adresses(lieu, source_a_jour(lieu, conf), plan, version_rqa(lieu)))
     print("Positions : %s" % ", ".join("%s %d" % kv for kv in Counter(l.position for l in plan.rapport).most_common()))
     print("Statuts : %s" % ", ".join("%s %d" % kv for kv in Counter(l.statut for l in plan.rapport).most_common()))
     print("Import : %d nœuds créés, %d objets modifiés, %d interpolations et %d nœuds supprimés."
@@ -358,7 +365,7 @@ def regions_comparer(lieu, conf, preparer=False):
                                              plan.get("coupures") if plan else None),
                              os.path.join(dossier("rapports", lieu), "regions.geojson"))
     rapport.ecrire(os.path.join("rapports", lieu, "regions.md"),
-                   rapport.regions(lieu, conf, officiel, rels, compte, ecarts, plan, supp))
+                   rapport.regions(lieu, source_a_jour(lieu, conf), officiel, rels, compte, ecarts, plan, supp))
     print("Révision : rapports/%s/regions.md" % lieu)
 
 
@@ -513,7 +520,7 @@ def rues_preparer(lieu, conf):
     out = dossier("sortie", lieu)
     osmchange.ecrire_osc(racine, os.path.join(out, "rues.osc"))
     rapport.ecrire(os.path.join(dossier("rapports", lieu), "rues.md"),
-                   rapport.rues(lieu, conf, liste, changes, conflits))
+                   rapport.rues(lieu, source_a_jour(lieu, conf), liste, changes, conflits))
     rapport.ecrire_geojson_compact(rapport.rues_geojson(liste, changes, index),
                              os.path.join("rapports", lieu, "rues.geojson"))
     print("Rues : %s" % ", ".join("%s %d" % kv for kv in Counter(r.statut for r in liste).most_common()))
