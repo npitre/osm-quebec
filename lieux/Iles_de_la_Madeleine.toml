@@ -20,7 +20,7 @@ exterieur = 8405826
 [regions.groupe]
 comment = "Limites municipales des Îles-de-la-Madeleine et de Grosse-Île d'après les Découpages administratifs du MRNF, sur des chemins distincts du littoral"
 source = "Découpages administratifs (MRNF), version V2026-09"
-discussion = ""
+discussion = "https://community.openstreetmap.org/t/149154"
 
 [adresses]
 supprimer_interpolations = true

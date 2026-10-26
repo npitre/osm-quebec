@@ -86,6 +86,12 @@ python3 -m osmqc adresses preparer lieux/Iles_de_la_Madeleine.toml   # import de
 python3 -m osmqc adresses envoyer lieux/Iles_de_la_Madeleine.toml --test
 ```
 
+Avant d'envoyer les limites d'un lieu, `python3 outils/valider.py
+lieux/LIEU.toml` applique son fichier d'envoi à une copie de l'extrait,
+comme si OSM l'avait accepté, et vérifie que toutes les relations
+touchées restent des anneaux fermés, qu'aucun chemin ni nœud créé n'est
+orphelin et qu'une relance ne produit plus rien.
+
 `--test` envoie au serveur de test d'OSM; `--reel` à OpenStreetMap, ce
 qui est refusé tant que la discussion publique n'est pas inscrite dans
 la section `groupe` correspondante du lieu. Pour l'authentification,
