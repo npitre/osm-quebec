@@ -9,6 +9,12 @@ Rapports générés : [régions](regions.md), [rues](rues.md) et
 [rues.geojson](rues.geojson), [adresses.geojson](adresses.geojson)).
 Configuration : [lieux/Iles_de_la_Madeleine.toml](../../lieux/Iles_de_la_Madeleine.toml).
 
+Fichier d'envoi des limites, tel qu'il serait envoyé à OSM :
+[regions.osc](regions.osc) (osmChange, 5 730 objets, un seul groupe de
+modifications). Il s'ouvre dans JOSM (Fichier, Ouvrir) pour examiner
+les changements avant l'envoi; les objets créés y ont des identifiants
+négatifs. Validé par `outils/valider.py` sur l'extrait du 24 octobre.
+
 Données : RQA version AQ20261001, Découpages administratifs V2026-09,
 extrait OSM de Geofabrik du 16 octobre 2026 (du 24 octobre pour les
 limites, préparées de nouveau avant l'envoi).
