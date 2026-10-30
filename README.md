@@ -16,9 +16,12 @@ Discussions : [compte-rendu de la rencontre du 16 octobre 2026](https://communit
 
 ## Résultats
 
-État au 17 octobre 2026 (extrait OSM du 16 octobre). Rien n'a encore
-été envoyé à OSM : ces résultats sont soumis à la révision de la
-communauté. Pour chaque lieu, `rapports/LIEU/` contient :
+État au 17 octobre 2026 (extrait OSM du 16 octobre). Seules les
+limites municipales des Îles-de-la-Madeleine ont été envoyées à OSM, le
+30 octobre 2026 (groupe de modifications
+[191246581](https://www.openstreetmap.org/changeset/191246581)); le
+reste est soumis à la révision de la communauté. Pour chaque lieu,
+`rapports/LIEU/` contient :
 
 - `README.md`, un commentaire rédigé : statistiques, exceptions à
   valider, questions en suspens;

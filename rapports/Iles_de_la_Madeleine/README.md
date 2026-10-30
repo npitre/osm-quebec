@@ -2,18 +2,21 @@
 
 Banc d'essai convenu à la [rencontre du 16 octobre 2026](https://community.openstreetmap.org/t/148901).
 Deux municipalités : Les Îles-de-la-Madeleine (01023) et Grosse-Île (01042).
-Rien n'a encore été envoyé à OSM.
+Limites municipales envoyées à OSM le 30 octobre 2026 : groupe de
+modifications [191246581](https://www.openstreetmap.org/changeset/191246581)
+(5 730 objets). Une nouvelle préparation, sur l'extrait mis à jour avec
+cet envoi, ne produit plus rien. Les rues et les adresses ne sont pas
+encore envoyées.
 
 Rapports générés : [régions](regions.md), [rues](rues.md) et
 [adresses](adresses.md), avec leurs cartes ([regions.geojson](regions.geojson),
 [rues.geojson](rues.geojson), [adresses.geojson](adresses.geojson)).
 Configuration : [lieux/Iles_de_la_Madeleine.toml](../../lieux/Iles_de_la_Madeleine.toml).
 
-Fichier d'envoi des limites, tel qu'il serait envoyé à OSM :
+Fichier d'envoi des limites, tel qu'il a été envoyé :
 [regions.osc](regions.osc) (osmChange, 5 730 objets, un seul groupe de
-modifications). Il s'ouvre dans JOSM (Fichier, Ouvrir) pour examiner
-les changements avant l'envoi; les objets créés y ont des identifiants
-négatifs. Validé par `outils/valider.py` sur l'extrait du 24 octobre.
+modifications); les objets créés y ont des identifiants négatifs.
+Validé par `outils/valider.py` sur les extraits du 24 et du 28 octobre.
 
 Données : RQA version AQ20261001, Découpages administratifs V2026-09,
 extrait OSM de Geofabrik du 16 octobre 2026 (du 24 octobre pour les
