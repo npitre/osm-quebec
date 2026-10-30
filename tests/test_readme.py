@@ -636,6 +636,37 @@ class Groupe(unittest.TestCase):
             envoi.etiquettes({"comment": "A", "source": "B"}, "reel")
         self.assertNotIn("discussion", envoi.etiquettes({"comment": "A", "source": "B"}, "test"))
 
+    def test_groupe_envoi(self):
+        # Un envoi réel est confirmé; refusé par l'API, son groupe de
+        # modifications est fermé aussitôt; accepté, la réponse est gardée.
+        osc = ET.fromstring('<osmChange version="0.6"><create><node id="-1" version="0" lat="46" lon="-75"/>'
+                            '</create></osmChange>')
+        appels = []
+
+        def requete(url, data=None, methode="GET", jeton=None, type_contenu=None):
+            appels.append(url.rsplit("/", 1)[-1])
+            if url.endswith("/create"):
+                return b"42"
+            if url.endswith("/upload") and refus:
+                raise SystemExit("Erreur 409")
+            return b'<diffResult><node old_id="-1" new_id="900" new_version="1"/></diffResult>'
+        tags = {"comment": "A", "source": "B"}
+        with mock.patch.object(envoi, "requete", requete), mock.patch.object(envoi, "jeton", lambda m: "j"), \
+                mock.patch("builtins.print"), tempfile.TemporaryDirectory() as d:
+            refus = False
+            with self.assertRaises(SystemExit):
+                envoi.envoyer(osc, tags, "reel", confirmer=lambda q: "non")
+            self.assertEqual(appels, [])
+            refus = True
+            with self.assertRaises(SystemExit):
+                envoi.envoyer(osc, tags, "reel", confirmer=lambda q: "oui")
+            self.assertEqual(appels, ["create", "upload", "close"])
+            appels.clear()
+            refus = False
+            f = os.path.join(d, "resultat.xml")
+            self.assertEqual(envoi.envoyer(osc, tags, "reel", f, confirmer=lambda q: "oui"), "42")
+            self.assertEqual(envoi.correspondances(f), {("node", -1): (900, 1)})
+
 
 if __name__ == "__main__":
     unittest.main()

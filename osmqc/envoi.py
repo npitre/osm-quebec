@@ -100,15 +100,28 @@ def etiquettes(groupe, mode, section=""):
     return tags
 
 
-def envoyer(osc, etiquettes, mode):
+def envoyer(osc, etiquettes, mode, resultat=None, confirmer=input):
     """osc : élément XML osmChange. etiquettes : celles du groupe de
-    modifications. mode : « test » ou « reel »."""
+    modifications. mode : « test » ou « reel ». resultat : fichier où
+    garder la réponse de l'API (identifiants définitifs et nouvelles
+    versions, pour tenir l'extrait local à jour). Un envoi réel est
+    résumé, puis confirmé par confirmer (« oui »). Si l'API refuse
+    l'envoi, le groupe de modifications est fermé aussitôt; l'envoi est
+    tout ou rien, rien n'a changé dans OSM."""
     api = SITES[mode][1]
     if mode == "test":
         # Les objets existants n'existent pas sur le serveur de test.
         for bloc in osc.findall("modify") + osc.findall("delete"):
             osc.remove(bloc)
         print("Mode test : seules les créations sont envoyées.")
+    compte = {b.tag: len(b) for b in osc}
+    print("Envoi à %s : %s objets (créés %d, modifiés %d, supprimés %d)." % (
+        SITES[mode][0], sum(compte.values()), compte.get("create", 0), compte.get("modify", 0),
+        compte.get("delete", 0)))
+    for k, v in etiquettes.items():
+        print("  %s = %s" % (k, v))
+    if mode == "reel" and confirmer("Envoyer à OpenStreetMap? (oui/non) ").strip().lower() != "oui":
+        sys.exit("Rien n'a été envoyé.")
     j = jeton(mode)
     cs = ET.Element("osm")
     c = ET.SubElement(cs, "changeset")
@@ -119,7 +132,30 @@ def envoyer(osc, etiquettes, mode):
     for el in osc.iter():
         if el.tag in ("node", "way", "relation"):
             el.set("changeset", cid)
-    requete(api + "/changeset/%s/upload" % cid, ET.tostring(osc), "POST", j, "text/xml")
+    try:
+        reponse = requete(api + "/changeset/%s/upload" % cid, ET.tostring(osc), "POST", j, "text/xml")
+    except SystemExit:
+        requete(api + "/changeset/%s/close" % cid, None, "PUT", j)
+        print("Groupe de modifications %s fermé : l'envoi a été refusé, rien n'a changé dans OSM." % cid)
+        raise
+    if resultat:
+        with open(resultat, "wb") as fh:
+            fh.write(reponse)
     requete(api + "/changeset/%s/close" % cid, None, "PUT", j)
     print("Envoyé et fermé : %s/changeset/%s" % (SITES[mode][0], cid))
+    if resultat:
+        print("Réponse de l'API (identifiants et versions) : %s" % resultat)
     return cid
+
+
+def correspondances(resultat):
+    """La réponse de l'API à un envoi (diffResult) : {(type, ancien id):
+    (nouvel id, nouvelle version)}, pour extrait.appliquer. Un objet
+    supprimé garde son identifiant."""
+    res = {}
+    for e in ET.parse(resultat).getroot():
+        ancien = int(e.get("old_id"))
+        nouveau = int(e.get("new_id")) if e.get("new_id") else ancien
+        version = int(e.get("new_version")) if e.get("new_version") else 0
+        res[(e.tag, ancien)] = (nouveau, version)
+    return res

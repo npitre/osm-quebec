@@ -536,7 +536,8 @@ def envoyer(lieu, conf, section, args):
         sys.exit("Ajoutez --test (serveur de test) ou --reel (OpenStreetMap).")
     tags = envoi.etiquettes(conf[section]["groupe"], mode, section)
     osc = ET.parse(os.path.join("sortie", lieu, section + ".osc")).getroot()
-    envoi.envoyer(osc, tags, mode)
+    envoi.envoyer(osc, tags, mode, os.path.join("sortie", lieu, "%s.resultat%s.xml"
+                                                % (section, "" if mode == "reel" else "-test")))
 
 
 def main():
