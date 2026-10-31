@@ -152,7 +152,7 @@
     </node>
   </create>
   <modify>
-    <node id="52" version="1" lat="47.0050000" lon="-71.9965500">
+    <node id="57" version="1" lat="47.0050000" lon="-71.9965500">
       <tag k="addr:housenumber" v="30" />
       <tag k="addr:postcode" v="J0T 1A0" />
       <tag k="addr:street" v="Chemin du Lac" />
@@ -160,7 +160,7 @@
   </modify>
   <delete>
     <way id="400" version="2" />
-    <node id="58" version="1" lat="47.0090000" lon="-71.9972000" />
-    <node id="59" version="1" lat="47.0120000" lon="-71.9972000" />
+    <node id="63" version="1" lat="47.0090000" lon="-71.9972000" />
+    <node id="64" version="1" lat="47.0120000" lon="-71.9972000" />
   </delete>
 </osmChange>

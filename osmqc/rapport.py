@@ -196,14 +196,14 @@ def regions(lieu, conf, officiel, rels, compte, ecarts, plan, supp):
         n = Counter(x[0] for x in c)
         s += "\n## Routes qui traversent les limites\n\n"
         s += ("Une route nommée est coupée exactement là où elle traverse une limite "
-              "municipale (à moins de %d m), même si ses étiquettes sont identiques des deux "
+              "municipale (à %d m près), même si ses étiquettes sont identiques des deux "
               "côtés : Nominatim et Photon rattachent chaque segment de rue à une seule "
               "municipalité. Les coupures « à ajouter » et « à déplacer » sont faites dans le "
               "fichier d'envoi; une coupure « devenue inutile », et l'ancienne coupure d'une "
               "coupure déplacée, sont fusionnées quand c'est possible (voir plus haut). Une "
               "« voie à cheval », qui croise la limite à moins de %d m d'un autre de ses "
               "croisements, la longe plutôt que de la traverser : elle n'est pas coupée, à "
-              "revoir à la main.\n\n" % (25, 200))
+              "revoir à la main.\n\n" % (1, 200))
         s += tableau(["Situation", "Nombre"], [[k, n[k]] for k in (
             "déjà coupée", "coupure à déplacer", "coupure à ajouter", "coupure devenue inutile",
             "voie à cheval")])

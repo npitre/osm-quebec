@@ -217,6 +217,14 @@ def carte():
     c.relations.append((700, [("w", 300, ""), ("w", 301, "")],
                         {"type": "route", "route": "road", "ref": "999", "network": "CA:QC"}))
     c.chemin(310, [(16, 15), (24, 15)], {"highway": "residential", "name": "Rue Principale"})
+    # Déjà coupé 3 m après la nouvelle limite, puis change de nom 10 m
+    # plus loin, où arrive une track : la coupure est déplacée sur la
+    # limite (comme la route 199 à l'entrée de Grosse-Île).
+    rang = {"highway": "tertiary", "name": "Rang du Témoin"}
+    c.chemin(340, [(16, 12), (20.04, 12)], dict(rang))
+    c.chemin(341, [(20.04, 12), (20.13, 12)], dict(rang))
+    c.chemin(342, [(20.13, 12), (24, 12)], {"highway": "tertiary", "name": "Rang de la Vérification"})
+    c.chemin(343, [(20.13, 12), (20.13, 13)], {"highway": "track"})
 
     # Rues de Lac-Témoin (règles des rues).
     # Coupé sur la bosse de l'ancienne limite : coupure à fusionner.

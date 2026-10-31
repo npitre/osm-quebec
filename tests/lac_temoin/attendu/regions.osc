@@ -85,6 +85,7 @@
     </way>
     <node id="-7" version="0" lat="47.0080000" lon="-71.9800000" />
     <node id="-8" version="0" lat="47.0150000" lon="-71.9800000" />
+    <node id="-9" version="0" lat="47.0120000" lon="-71.9800000" />
     <way id="-15" version="0">
       <nd ref="-7" />
       <nd ref="27" />
@@ -234,11 +235,24 @@
       <tag k="name" v="Rue Principale" />
     </way>
     <way id="320" version="2">
-      <nd ref="31" />
-      <nd ref="32" />
-      <nd ref="33" />
+      <nd ref="36" />
+      <nd ref="37" />
+      <nd ref="38" />
       <tag k="highway" v="residential" />
       <tag k="name" v="Chemin du Lac" />
+    </way>
+    <way id="340" version="2">
+      <nd ref="31" />
+      <nd ref="-9" />
+      <tag k="highway" v="tertiary" />
+      <tag k="name" v="Rang du Témoin" />
+    </way>
+    <way id="341" version="2">
+      <nd ref="-9" />
+      <nd ref="32" />
+      <nd ref="33" />
+      <tag k="highway" v="tertiary" />
+      <tag k="name" v="Rang du Témoin" />
     </way>
     <relation id="700" version="3">
       <member type="way" ref="300" role="" />

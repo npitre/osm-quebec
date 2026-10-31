@@ -412,6 +412,13 @@ class LacTemoin(unittest.TestCase):
         self.assertIn(membres[1], neufs)        # le nouveau segment suit l'ancien
         self.assertEqual(len(membres), 2)
         self.assertEqual(self.regions[("modify", "relation", 700)]["tags"]["ref"], "999")
+        # Rang du Témoin : la coupure à 3 m de la limite est déplacée sur
+        # elle; le bout de 3 m rejoint 341, qui va jusqu'au changement de nom.
+        fin = self.regions[("modify", "way", 340)]["nodes"][-1]
+        self.assertEqual(noeuds[fin]["lon"], P(20, 0)[0])
+        self.assertEqual(self.regions[("modify", "way", 341)]["nodes"], [fin, self.noeud(20.04, 12),
+                                                                          self.noeud(20.13, 12)])
+        self.assertNotIn(342, {k[2] for k in self.regions})
 
     def test_regions_7_fusion_des_coupures_inutiles(self):
         # Chemin du Lac : coupé sur l'ancienne limite, loin de la nouvelle.

@@ -1008,7 +1008,9 @@ def anneaux_proposes(plan, exterieur):
     return res
 
 
-COUPURE_M = 25          # une route coupée à moins de 25 m d'une limite y est coupée
+COUPURE_M = 25          # une coupure à moins de 25 m d'une limite (ancienne, ou proposée
+                        # quand on la déplace) lui servait
+SUR_LIMITE_M = 1        # une coupure à moins de 1 m d'une limite proposée y est déjà
 A_CHEVAL_M = 200        # deux croisements plus proches : la route longe la limite
 
 
@@ -1041,19 +1043,24 @@ def coupures(index, nouvelles, anciennes):
               if "highway" in w.get("tags", {}) and "name" in w.get("tags", {})
               and w["tags"]["highway"] not in ("footway", "path", "cycleway", "steps", "track")
               and all(n in index.noeuds for n in w["nodes"])]
-    # Une coupure est un nœud où se rejoignent deux chemins du même nom
-    # (un cul-de-sac ou un quai au bord de l'eau n'en est pas une).
-    par_bout = defaultdict(list)    # (nom, nœud) -> chemins
+    # Une coupure est un nœud où finissent deux chemins de route, du même
+    # nom ou non (la route change de nom à la limite) : un cul-de-sac ou
+    # un quai au bord de l'eau n'en est pas une.
+    par_bout = defaultdict(list)    # nœud -> chemins qui y finissent
     for w in routes:
-        for n in (w["nodes"][0], w["nodes"][-1]):
-            par_bout[(w["tags"]["name"], n)].append(w["id"])
+        for n in {w["nodes"][0], w["nodes"][-1]}:
+            par_bout[n].append(w["id"])
     bouts = defaultdict(list)       # nom -> [(point, chemin)]
     identiques = set()              # coupures entre chemins aux étiquettes identiques
-    for (nom, n), ws in par_bout.items():
-        if len(ws) >= 2:
-            bouts[nom].append((index.point(n), ws[0]))
-            if all(index.chemins[w].get("tags") == index.chemins[ws[0]].get("tags") for w in ws):
-                identiques.add((nom, ws[0], index.point(n)))
+    for n, ws in par_bout.items():
+        if len(ws) < 2:
+            continue
+        for nom in sorted({index.chemins[w]["tags"]["name"] for w in ws}):
+            memes = [w for w in ws if index.chemins[w]["tags"]["name"] == nom]
+            bouts[nom].append((index.point(n), memes[0]))
+            if len(memes) >= 2 and all(index.chemins[w].get("tags") == index.chemins[memes[0]].get("tags")
+                                       for w in memes):
+                identiques.add((nom, memes[0], index.point(n)))
     res = []
     vus = set()
     croisements = []        # (nom, point, chemin)
@@ -1079,7 +1086,9 @@ def coupures(index, nouvelles, anciennes):
             res.append(("voie à cheval", nom, wid, p, min(autres), wid))
             continue
         proches = sorted((geo.distance(p, b), x) for b, x in bouts[nom] if geo.distance(p, b) < 500)
-        if proches and proches[0][0] < COUPURE_M:
+        # La coupure doit être sur la limite : une coupure à quelques mètres
+        # laisse un bout de route, et parfois un carrefour, du mauvais côté.
+        if proches and proches[0][0] < SUR_LIMITE_M:
             res.append(("déjà coupée", nom, proches[0][1], p, proches[0][0], wid))
         elif proches:
             res.append(("coupure à déplacer", nom, proches[0][1], p, proches[0][0], wid))
@@ -1171,7 +1180,7 @@ def fusions_possibles(index, coupures_, anciennes, nouvelles=()):
     déplacer ». Une coupure entre deux segments aux étiquettes différentes
     (un pont, un changement de revêtement) sert à quelque chose : elle
     n'est pas retenue, ni une coupure qui sert encore à une limite proposée
-    (à moins de COUPURE_M, quand la route la traverse plusieurs fois).
+    (à moins de SUR_LIMITE_M, quand la route la traverse plusieurs fois).
     Renvoie [(nœud, chemin, chemin)] : les deux chemins du même nom qui
     s'y rejoignent."""
     grille_a = geo.Grille([l for l in anciennes if len(l) > 1])
@@ -1183,7 +1192,7 @@ def fusions_possibles(index, coupures_, anciennes, nouvelles=()):
             for n in {w["nodes"][0], w["nodes"][-1]}:
                 par_noeud[n].append(w["id"])
     res, vus = [], set()
-    for action, nom, wid, p, _, _ in coupures_:
+    for action, nom, wid, p, ecart, _ in coupures_:
         if action not in ("coupure devenue inutile", "coupure à déplacer") or wid not in index.chemins:
             continue
         bouts = [n for n in (index.chemins[wid]["nodes"][0], index.chemins[wid]["nodes"][-1])
@@ -1192,8 +1201,10 @@ def fusions_possibles(index, coupures_, anciennes, nouvelles=()):
         if not bouts:
             continue
         n = min(bouts, key=lambda b: geo.distance(index.point(b), p))
-        da = grille_a.distance(index.point(n))
-        if n in vus or da is None or da >= COUPURE_M or grille_n.ecart(index.point(n)) < COUPURE_M:
+        # Une coupure à déplacer de quelques mètres servait à cette limite,
+        # même loin de l'ancienne limite d'OSM.
+        da = 0 if action == "coupure à déplacer" and ecart < COUPURE_M else grille_a.distance(index.point(n))
+        if n in vus or da is None or da >= COUPURE_M or grille_n.ecart(index.point(n)) < SUR_LIMITE_M:
             continue
         vus.add(n)
         a, b = sorted(x for x in par_noeud[n] if index.chemins[x]["tags"].get("name") == nom)

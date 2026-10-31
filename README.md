@@ -170,7 +170,10 @@ dans `sortie/LIEU/` (hors du dépôt); les rapports de révision, dans
    hérite de la municipalité de sa rue. Un nœud est ajouté sur la route
    au point de croisement, sans en modifier la géométrie, et le chemin
    est coupé en deux à ce nœud. Ce nœud n'est pas partagé avec le chemin
-   de limite (voir la règle 2). Le rapport classe chaque croisement :
+   de limite (voir la règle 2). Une coupure existante compte si elle est
+   sur la limite, à 1 m près : à quelques mètres, elle laisse un bout de
+   route, et parfois un carrefour, du mauvais côté. Un changement de nom
+   est aussi une coupure. Le rapport classe chaque croisement :
    déjà coupé, coupure à ajouter, coupure à déplacer, ou coupure devenue
    inutile (sur l'ancienne limite, entre deux segments aux étiquettes
    identiques). Une coupure à ajouter ou à déplacer est faite, et le

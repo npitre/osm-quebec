@@ -91,7 +91,7 @@ en détail les fonctions de base :
 | Doublons | adresse OSM au même numéro à moins de 30 m, ou bâtiment qui contient le point, reconnue; numéro différent ou trop loin, non reconnue |
 | Limites | trou d'une municipalité occupé par une autre : un seul arc, intérieur pour l'une et extérieur pour l'autre; deux municipalités voisines : un arc commun et un arc propre à chacune |
 | Rues | nom identique déclaré conforme; différence de casse renommée sur toute la rue, segments reliés compris; tirets et accents (« Tour du Lac » devient « Tour-du-Lac »); autre nom signalé sans être renommé; voie sans nom proposée comme candidate; rue absente; chemin réclamé par deux noms officiels mis en conflit |
-| Coupures de routes | coupure déjà sur la limite; coupure à ajouter; coupure à déplacer; cul-de-sac au bord de l'ancienne limite ignoré; coupure devenue inutile entre deux segments identiques; coupure qui sert à autre chose (un pont) ignorée |
+| Coupures de routes | coupure déjà sur la limite; coupure à ajouter; coupure à déplacer; coupure à 3 m de la limite, avant un changement de nom, déplacée; cul-de-sac au bord de l'ancienne limite ignoré; coupure devenue inutile entre deux segments identiques; coupure qui sert à autre chose (un pont) ignorée |
 
 Ils ne remplacent pas la révision des rapports : les vérifications sur
 les données réelles (municipalité de chaque adresse avant et après le

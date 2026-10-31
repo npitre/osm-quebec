@@ -50,7 +50,7 @@ Logements du RQA sans lot ni matricule, sur une adresse qui n'a qu'un logement s
 
 | Objet | Changements | Raison |
 |---|---|---|
-| [node/52](https://www.openstreetmap.org/node/52) | addr:street=Chemin du Lac, addr:postcode=J0T 1A0 | adresse 30 Chemin du Lac : addr:street=Chemin du Lac, addr:postcode=J0T 1A0 |
+| [node/57](https://www.openstreetmap.org/node/57) | addr:street=Chemin du Lac, addr:postcode=J0T 1A0 | adresse 30 Chemin du Lac : addr:street=Chemin du Lac, addr:postcode=J0T 1A0 |
 
 ## Lignes d'interpolation supprimées
 

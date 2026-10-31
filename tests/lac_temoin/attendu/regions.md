@@ -59,16 +59,18 @@ Le littoral et les autres objets retirés des relations ne sont pas modifiés : 
 
 ## Routes coupées
 
-2 routes coupées, 2 nœuds de coupure ajoutés sur les routes, 2 morceaux neufs, 1 relations de route mises à jour.
+3 routes coupées, 3 nœuds de coupure ajoutés sur les routes, 2 morceaux neufs, 1 relations de route mises à jour.
 
 - way 301 (Route 999) coupé en 2 morceaux
 - way 310 (Rue Principale) coupé en 2 morceaux
+- way 340 (Rang du Témoin) coupé en 2 morceaux
 
 ### Coupures inutiles fusionnées
 
 Sur une ancienne limite, deux segments d'une même route aux étiquettes et aux relations identiques sont réunis en un seul chemin.
 
 - way 300 et way 301 (Route 999) fusionnés : way 301 supprimé
+- way 340 et way 341 (Rang du Témoin) fusionnés : morceau neuf -17 non créé
 - way 332 et way 333 (Allée du Témoin) : fusion refusée, relations différentes
 - way 320 et way 328 (Chemin du Lac) fusionnés : way 328 supprimé
 
@@ -91,12 +93,12 @@ OsmAnd n'utilise une limite que si sa relation a un membre label ou admin_centre
 
 ## Routes qui traversent les limites
 
-Une route nommée est coupée exactement là où elle traverse une limite municipale (à moins de 25 m), même si ses étiquettes sont identiques des deux côtés : Nominatim et Photon rattachent chaque segment de rue à une seule municipalité. Les coupures « à ajouter » et « à déplacer » sont faites dans le fichier d'envoi; une coupure « devenue inutile », et l'ancienne coupure d'une coupure déplacée, sont fusionnées quand c'est possible (voir plus haut). Une « voie à cheval », qui croise la limite à moins de 200 m d'un autre de ses croisements, la longe plutôt que de la traverser : elle n'est pas coupée, à revoir à la main.
+Une route nommée est coupée exactement là où elle traverse une limite municipale (à 1 m près), même si ses étiquettes sont identiques des deux côtés : Nominatim et Photon rattachent chaque segment de rue à une seule municipalité. Les coupures « à ajouter » et « à déplacer » sont faites dans le fichier d'envoi; une coupure « devenue inutile », et l'ancienne coupure d'une coupure déplacée, sont fusionnées quand c'est possible (voir plus haut). Une « voie à cheval », qui croise la limite à moins de 200 m d'un autre de ses croisements, la longe plutôt que de la traverser : elle n'est pas coupée, à revoir à la main.
 
 | Situation | Nombre |
 |---|---|
 | déjà coupée | 0 |
-| coupure à déplacer | 1 |
+| coupure à déplacer | 2 |
 | coupure à ajouter | 1 |
 | coupure devenue inutile | 2 |
 | voie à cheval | 0 |
@@ -106,4 +108,5 @@ Une route nommée est coupée exactement là où elle traverse une limite munici
 | coupure devenue inutile | Allée du Témoin | [332](https://www.openstreetmap.org/way/332) | 47.01700, -71.99550 | 0 m |
 | coupure devenue inutile | Chemin du Lac | [320](https://www.openstreetmap.org/way/320) | 47.01700, -71.99700 | 0 m |
 | coupure à ajouter | Rue Principale | [310](https://www.openstreetmap.org/way/310) | 47.01500, -71.98000 |  |
+| coupure à déplacer | Rang du Témoin | [340](https://www.openstreetmap.org/way/340) | 47.01200, -71.98000 | 3 m |
 | coupure à déplacer | Route 999 | [300](https://www.openstreetmap.org/way/300) | 47.00800, -71.98000 | 76 m |

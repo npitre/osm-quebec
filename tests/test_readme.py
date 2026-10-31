@@ -210,6 +210,24 @@ class Regions(unittest.TestCase):
         c = {(a, nom) for a, nom, *_ in regions.coupures(idx, [limite], [])}
         self.assertEqual(c, {("voie à cheval", "Rue A"), ("coupure à ajouter", "Rue B")})
 
+    def test_regions_7_coupure_a_quelques_metres(self):
+        # Comme la route 199 à l'entrée de Grosse-Île : la limite proposée
+        # passe en x = 0. La route est déjà coupée 3 m plus loin (nœud 2),
+        # puis change de nom 10 m plus loin (nœud 3), où arrive une track.
+        # La coupure doit être sur la limite : elle est déplacée.
+        route = {"highway": "primary", "name": "Route 199"}
+        principal = {"highway": "primary", "name": "Chemin Principal"}
+        idx = index({1: ((-5, 0), {}), 2: ((0.04, 0), {}), 3: ((0.13, 0), {}), 4: ((5, 0), {}),
+                     5: ((0.13, 3), {})},
+                    [(10, [1, 2], route), (11, [2, 3], route), (12, [3, 4], principal),
+                     (13, [3, 5], {"highway": "track"})])
+        limite = [P(0, -5), P(0, 5)]
+        c = regions.coupures(idx, [limite], [])
+        self.assertEqual([(a, nom, w) for a, nom, w, *_ in c], [("coupure à déplacer", "Route 199", 10)])
+        # Un changement de nom exactement sur la limite est une coupure.
+        sur = [P(0.13, -5), P(0.13, 5)]
+        self.assertEqual(sorted(a for a, *_ in regions.coupures(idx, [sur], [])), ["déjà coupée", "déjà coupée"])
+
     def test_regions_7_fusion_apres_coupure_neuve(self):
         # La rue 10 est coupée à x = 7,5 (limite proposée), et son ancienne
         # coupure avec 11, au nœud 4, ne sert plus : c'est le morceau neuf
@@ -227,15 +245,18 @@ class Regions(unittest.TestCase):
     def test_regions_7_coupure_encore_utile(self):
         # Une rue coupée au nœud 2, sur l'ancienne limite (x = 5). Elle
         # traverse plus loin la nouvelle limite (coupure à déplacer), mais
-        # une autre limite proposée passe aussi à 10 m du nœud 2 : la
-        # coupure y sert encore, elle n'est pas fusionnée.
+        # une autre limite proposée passe aussi à 50 cm du nœud 2 : la
+        # coupure y sert encore, elle n'est pas fusionnée. À 10 m, elle
+        # serait déplacée sur cette limite, donc fusionnée.
         rue = {"highway": "residential", "name": "Rue A"}
         idx = index({1: ((0, 0), {}), 2: ((5, 0), {}), 3: ((10, 0), {})}, [(10, [1, 2], rue), (11, [2, 3], rue)])
         ancienne = [P(5, -5), P(5, 5)]
         c = [("coupure à déplacer", "Rue A", 10, P(7, 0), 152, 11)]
         self.assertEqual(regions.fusions_possibles(idx, c, [ancienne]), [(2, 10, 11)])
-        proche = [P(5.13, -5), P(5.13, 5)]                       # à 10 m du nœud 2
+        proche = [P(5.0065, -5), P(5.0065, 5)]                   # à 50 cm du nœud 2
         self.assertEqual(regions.fusions_possibles(idx, c, [ancienne], [proche]), [])
+        a_dix_metres = [P(5.13, -5), P(5.13, 5)]
+        self.assertEqual(regions.fusions_possibles(idx, c, [ancienne], [a_dix_metres]), [(2, 10, 11)])
 
     def test_regions_8_lien_lieu(self):
         idx = index({1: ((0, 0), {"place": "village", "name": "Lac-Témoin"}),
