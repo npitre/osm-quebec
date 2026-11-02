@@ -1010,7 +1010,7 @@ def anneaux_proposes(plan, exterieur):
 
 COUPURE_M = 25          # une coupure à moins de 25 m d'une limite (ancienne, ou proposée
                         # quand on la déplace) lui servait
-SUR_LIMITE_M = 1        # une coupure à moins de 1 m d'une limite proposée y est déjà
+SUR_LIMITE_M = MEME_POINT_M    # une coupure doit être sur la limite proposée (5 cm près)
 A_CHEVAL_M = 200        # deux croisements plus proches : la route longe la limite
 
 
@@ -1133,7 +1133,7 @@ def decouper(index, coupures_, relations_routes, prochain_noeud, prochain_chemin
             i = min(range(len(pts) - 1), key=lambda k: geo.distance_segment(p, pts[k], pts[k + 1]))
             # Un nœud existant tout près du croisement sert de coupure.
             proche = min((i, i + 1), key=lambda k: geo.distance(p, pts[k]))
-            if geo.distance(p, pts[proche]) < 1:
+            if geo.distance(p, pts[proche]) < SUR_LIMITE_M:
                 k = proche
             else:
                 res["noeuds"][nid] = p

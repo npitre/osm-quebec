@@ -171,9 +171,10 @@ dans `sortie/LIEU/` (hors du dépôt); les rapports de révision, dans
    au point de croisement, sans en modifier la géométrie, et le chemin
    est coupé en deux à ce nœud. Ce nœud n'est pas partagé avec le chemin
    de limite (voir la règle 2). Une coupure existante compte si elle est
-   sur la limite, à 1 m près : à quelques mètres, elle laisse un bout de
-   route, et parfois un carrefour, du mauvais côté. Un changement de nom
-   est aussi une coupure. Le rapport classe chaque croisement :
+   exactement sur la limite (à 5 cm près, la précision des coordonnées
+   d'OSM) : à quelques mètres, elle laisse un bout de route, et parfois
+   un carrefour, du mauvais côté, et la recherche de la rue dans Photon
+   échoue. Un changement de nom est aussi une coupure. Le rapport classe chaque croisement :
    déjà coupé, coupure à ajouter, coupure à déplacer, ou coupure devenue
    inutile (sur l'ancienne limite, entre deux segments aux étiquettes
    identiques). Une coupure à ajouter ou à déplacer est faite, et le

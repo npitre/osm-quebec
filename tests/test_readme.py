@@ -245,7 +245,7 @@ class Regions(unittest.TestCase):
     def test_regions_7_coupure_encore_utile(self):
         # Une rue coupée au nœud 2, sur l'ancienne limite (x = 5). Elle
         # traverse plus loin la nouvelle limite (coupure à déplacer), mais
-        # une autre limite proposée passe aussi à 50 cm du nœud 2 : la
+        # une autre limite proposée passe aussi à 2 cm du nœud 2 : la
         # coupure y sert encore, elle n'est pas fusionnée. À 10 m, elle
         # serait déplacée sur cette limite, donc fusionnée.
         rue = {"highway": "residential", "name": "Rue A"}
@@ -253,7 +253,7 @@ class Regions(unittest.TestCase):
         ancienne = [P(5, -5), P(5, 5)]
         c = [("coupure à déplacer", "Rue A", 10, P(7, 0), 152, 11)]
         self.assertEqual(regions.fusions_possibles(idx, c, [ancienne]), [(2, 10, 11)])
-        proche = [P(5.0065, -5), P(5.0065, 5)]                   # à 50 cm du nœud 2
+        proche = [P(5.00026, -5), P(5.00026, 5)]                 # à 2 cm du nœud 2
         self.assertEqual(regions.fusions_possibles(idx, c, [ancienne], [proche]), [])
         a_dix_metres = [P(5.13, -5), P(5.13, 5)]
         self.assertEqual(regions.fusions_possibles(idx, c, [ancienne], [a_dix_metres]), [(2, 10, 11)])
