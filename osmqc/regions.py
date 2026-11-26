@@ -338,7 +338,7 @@ def reconnaitre(pts, candidats, pris):
 
 
 def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rels_voisines=None,
-             usages=None, chemins_des_noeuds=None, frontiere=None, englobantes=None):
+             usages=None, chemins_des_noeuds=None, frontiere=None, englobantes=None, subdivisions=None):
     """Plan de remplacement des limites.
     officiel : {code: polygones du MRNF}; relations : {code: Relation};
     exterieur : Relation parente (MRC) dont on réutilise les chemins pour
@@ -362,6 +362,11 @@ def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rel
     MRNF, codes de ses municipalités)} : relations de MRC et de région qui
     touchent le lot, modifiées en partie comme une voisine (leur contour
     suit les limites municipales du lot).
+    subdivisions : {clé (« sous-division ID »): Relation} : relations de
+    niveau 9 à 11 (anciennes municipalités, arrondissements) qui partagent
+    des chemins avec le lot ou une voisine. Celle qui est dans une
+    municipalité modifiée suit son nouveau contour là où elle longeait
+    l'ancien.
     Renvoie un dict : nouveaux nœuds et chemins, chemins existants
     réutilisés et leurs nœuds, membres des relations, chemins retirés,
     modifications des voisines, rapport."""
@@ -559,6 +564,33 @@ def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rel
             ", ".join(x for x in ("%d chemin(s) neuf(s)" % nb if nb else "",
                                   "%d chemin(s) existant(s) déjà conforme(s)" % nb_existants
                                   if nb_existants else "") if x)))
+
+    # Sous-divisions : chacune dans sa municipalité (lot ou voisine). Les
+    # chemins neufs sont coupés tout de suite aux points où leurs limites
+    # intérieures rejoindront le nouveau contour.
+    subdivisions = (subdivisions or {}) if index is not None else {}
+    parents_sub = parents_des_subdivisions(subdivisions, dict(relations, **rels_voisines), index)
+    if parents_sub:
+        pos0 = {nid: p for p, nid in noeuds.items()}
+        pos0.update(existants)
+        coupures_sub, memes = rattachements(subdivisions, parents_sub, dict(relations, **rels_voisines), index,
+                                            chemins, lambda n: pos0[n] if n in pos0 else index.point(n))
+        # Une limite intérieure qui finit déjà au point du nouveau contour
+        # (à quelques centimètres) : le chemin neuf passe par son nœud, s'il
+        # ne sert qu'à des lignes de limite (règle 2), au lieu d'un nœud
+        # neuf au même endroit.
+        if memes and chemins_des_noeuds is not None:
+            usage = chemins_des_noeuds(sorted(set(memes.values())))
+            memes = {n: b for n, b in memes.items()
+                     if not index.noeuds[b].get("tags") and usage.get(b)
+                     and all(w in index.chemins and ligne_de_limite(index.chemins[w].get("tags", {}))
+                             for w in usage[b])}
+            for b in memes.values():
+                existants[b] = index.point(b)
+                par_point[arrondi(index.point(b))] = b
+            chemins = [(w, [memes.get(n, n) for n in ids], roles) for w, ids, roles in chemins]
+            coupures_sub = {memes.get(n, n) for n in coupures_sub}
+        chemins = scinder(chemins, coupures_sub, membres, nouveau_chemin)
 
     # Membres des relations : les chemins sont remplacés, les autres
     # membres (label, admin_centre) sont gardés.
@@ -786,10 +818,85 @@ def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rel
             if not inserer(rid, coupes):
                 modif_voisines["relations"].setdefault(rid, []).extend(coupes)
         rapport += ["%s : %s" % (cle, l) for l in res["rapport"]]
-    # Une voisine ou une englobante non modifiée a pu recevoir en mémoire
-    # des morceaux de chemins coupés (frontière, MRC) : elle est envoyée
-    # avec eux, sinon son anneau s'ouvrirait.
-    for c, rel in dict(rels_voisines, **{c: v[0] for c, v in englobantes.items()}).items():
+    # Sous-divisions : là où elles longeaient l'ancien contour de leur
+    # municipalité, elles prennent la portion correspondante du nouveau,
+    # avec des raccords vers leurs limites intérieures (au niveau de la
+    # sous-division, partagés entre deux sous-divisions voisines).
+    if parents_sub:
+        progres.etape("Sous-divisions (%d)" % len(parents_sub))
+        for w, ns in modif_voisines["modifies"].items():
+            if w in index.chemins:
+                index.chemins[w]["nodes"] = ns
+        for nw, (ns, tags) in modif_voisines["neufs"].items():
+            index.chemins.setdefault(nw, {"type": "way", "id": nw, "nodes": ns, "tags": dict(tags)})
+    par_id_sub = {subdivisions[c].id: c for c in parents_sub}
+    for rid in list(modif_voisines["relations"]):
+        if rid in par_id_sub:
+            inserer_morceaux(subdivisions[par_id_sub[rid]], modif_voisines["relations"].pop(rid))
+    raccords_sub = {}
+    toutes_parentes = dict(relations, **rels_voisines)
+    for cle, parent in sorted(parents_sub.items()):
+        rel = subdivisions[cle]
+        nom = rel.tags.get("name", cle)
+        if parent not in nouvelles:
+            continue
+        rel.chemins = [m["ref"] for m in rel.rel["members"] if m["type"] == "way"]
+        p = toutes_parentes[parent]
+        anciens_p = {m["ref"] for m in getattr(p, "membres_origine", p.rel["members"]) if m["type"] == "way"}
+        gardes_p = {m["ref"] for m in nouvelles[parent] if m["type"] == "way"}
+        retirer = {w for w in rel.chemins if w in anciens_p and w not in gardes_p}
+        if not retirer:
+            continue
+        lignes_p = {w: ids for w, ids, _ in chemins}
+        lignes_p.update({w: ns for w, (ns, _) in modif_voisines["neufs"].items()})
+        communs, raison = arc_de_subdivision(retirer, nouvelles[parent], lignes_p, point, index)
+        autres = [[point(n) for n in index.chemins[w]["nodes"]] for w in rel.chemins if w not in retirer]
+        if communs is not None and not autres:
+            communs, raison = None, "entièrement sur le contour de sa municipalité"
+        if communs is None:
+            rapport.append("sous-division %s non modifiée : %s" % (nom, raison))
+            continue
+        res, raison = vois.modifier(rel, index, communs, autres, point, noeud_neuf, nouveau_chemin,
+                                    usages or (lambda ws: {}), lot, retirer, set())
+        if res is None:
+            rapport.append("sous-division %s non modifiée : %s" % (nom, raison))
+            continue
+        pareils = {}
+        for w, ids, role in res["chemins"]:
+            autre = raccords_sub.get(frozenset(ids)) if len(ids) == 2 else None
+            if autre is not None:
+                pareils[w] = (autre, role)
+                continue
+            chemins.append((w, ids, {cle: role}))
+            provisoires.add(w)
+            if len(ids) == 2:
+                raccords_sub[frozenset(ids)] = w
+        for w, (autre, role) in pareils.items():
+            for c, ids, r in chemins:
+                if c == autre:
+                    r[cle] = role
+        nouvelles[cle] = [dict(m, ref=pareils[m["ref"]][0]) if m["type"] == "way" and m["ref"] in pareils
+                          else m for m in res["membres"]]
+        anciens.update(rel.chemins)
+        prendre_coupes(modif_voisines, res["modifies"])
+        modif_voisines["neufs"].update(res["neufs"])
+        modif_voisines["liberes"] |= res["liberes"]
+        for w, ns in res["modifies"].items():
+            index.chemins[w]["nodes"] = ns
+        for nw, (ns, tags) in res["neufs"].items():
+            index.chemins[nw] = {"type": "way", "id": nw, "nodes": ns, "tags": dict(tags)}
+        for rid, coupes in res["relations"].items():
+            autre = par_id_sub.get(rid)
+            if autre is not None and autre not in nouvelles:
+                inserer_morceaux(subdivisions[autre], coupes)
+            else:
+                modif_voisines["relations"].setdefault(rid, []).extend(coupes)
+        rapport += res["rapport"]
+    subs = {c: subdivisions[c] for c in parents_sub}
+    # Une voisine, une englobante ou une sous-division non modifiée a pu
+    # recevoir en mémoire des morceaux de chemins coupés (frontière, MRC) :
+    # elle est envoyée avec eux, sinon son anneau s'ouvrirait.
+    for c, rel in dict(rels_voisines, **{c: v[0] for c, v in englobantes.items()}, **subs).items():
         if c not in nouvelles and hasattr(rel, "membres_origine") \
                 and cles_membres(rel.membres_origine) != cles_membres(rel.rel["members"]):
             nouvelles[c] = list(rel.rel["members"])
@@ -797,7 +904,8 @@ def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rel
     # l'on modifie déjà (autre voisine, ou lot) : ses morceaux entrent
     # dans ses nouveaux membres, juste après lui, au lieu d'un second envoi
     # de la même relation.
-    par_id = {r.id: c for c, r in dict(relations, **rels_voisines, **{c: v[0] for c, v in englobantes.items()}).items()
+    par_id = {r.id: c for c, r in dict(relations, **rels_voisines, **{c: v[0] for c, v in englobantes.items()},
+                                       **subs).items()
               if c in nouvelles}
     for rid in list(modif_voisines["relations"]):
         if rid not in par_id:
@@ -826,7 +934,8 @@ def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rel
     gardes = {m["ref"] for lst in nouvelles.values() for m in lst if m["type"] == "way" and m["ref"] > 0}
     retires = sorted(w for w in anciens - gardes if w > 0)
     toutes = dict(relations, **{c: r for c, r in rels_voisines.items() if c in nouvelles},
-                  **{c: v[0] for c, v in englobantes.items() if c in nouvelles})
+                  **{c: v[0] for c, v in englobantes.items() if c in nouvelles},
+                  **{c: r for c, r in subs.items() if c in nouvelles})
     modifiees = sorted(c for c, rel in toutes.items()
                        if cles_membres(getattr(rel, "membres_origine", rel.rel["members"]))
                        != cles_membres(nouvelles[c]))
@@ -840,6 +949,11 @@ def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rel
                 t = etiquettes.setdefault(m["ref"], {})
                 if int(t.get("admin_level", "99")) > int(niveau):
                     t["admin_level"] = niveau
+    # Un raccord qui ne sert qu'à des sous-divisions porte leur niveau.
+    for w, _, roles in chemins:
+        if roles and set(roles) <= set(subs):
+            etiquettes.setdefault(w, {})["admin_level"] = min(
+                (subs[c].tags.get("admin_level", "10") for c in roles), key=int)
     # Seuls les nœuds neufs dont un chemin se sert sont créés : une voisine
     # ou une englobante qu'on renonce à modifier laisse les siens derrière.
     servent = {n for _, ids, _ in chemins for n in ids}
@@ -851,6 +965,145 @@ def preparer(officiel, relations, exterieur=None, index=None, voisines=None, rel
             "lot": sorted(relations), "voisines": modif_voisines, "provisoires": provisoires,
             "frontiere": {w: index.chemins[w]["nodes"] for ws in fr["morceaux"].values() for w in ws},
             "etiquettes": etiquettes}
+
+
+SOUS_DIVISION_M = 2000  # une limite intérieure plus loin du nouveau contour ne s'y rattache pas
+
+
+def parents_des_subdivisions(subdivisions, parentes, index):
+    """{clé: code de la municipalité} : celle qui partage des chemins avec
+    la sous-division et qui la contient (un de ses sommets hors de leurs
+    chemins communs est dans l'ancien contour de la municipalité). Une
+    sous-division d'une municipalité voisine qui partage un chemin avec le
+    lot n'est donc pas prise pour une sous-division du lot."""
+    res = {}
+    for cle, rel in subdivisions.items():
+        ws = [w for w in rel.chemins if w in index.chemins]
+        if len(ws) != len(rel.chemins):
+            continue
+        for code, p in sorted(parentes.items()):
+            communs = set(ws) & set(p.chemins)
+            if not communs or not all(w in index.chemins for w in p.chemins):
+                continue
+            sur = {n for w in communs for n in index.chemins[w]["nodes"]}
+            dehors = [n for w in ws if w not in communs for n in index.chemins[w]["nodes"] if n not in sur]
+            if not dehors:
+                continue
+            anneaux, _ = geo.assembler([index.chemins[w]["nodes"] for w in p.chemins])
+            if geo.dedans(index.point(dehors[len(dehors) // 2]),
+                          [[index.point(n) for n in a] for a in anneaux]):
+                res[cle] = code
+                break
+    return res
+
+
+def rattachements(subdivisions, parents, parentes, index, chemins, point):
+    """Nœuds des chemins neufs où les sous-divisions se rattacheront : pour
+    chaque bout d'une portion de leur contour qui longe l'ancien contour de
+    leur municipalité, le sommet le plus proche des chemins neufs de cette
+    municipalité. Renvoie (nœuds, {nœud neuf: nœud existant au même
+    point, à moins de MEME_POINT_M})."""
+    res, memes = set(), {}
+    for cle, code in parents.items():
+        cases = defaultdict(list)
+        for _, ids, roles in chemins:
+            if code in roles:
+                for n in ids:
+                    q = point(n)
+                    cases[(round(q[0], 2), round(q[1], 2))].append(n)
+        if not cases:
+            continue
+        rel = subdivisions[cle]
+        anciens = set(parentes[code].chemins)
+        portions, _ = geo.assembler([index.chemins[w]["nodes"] for w in rel.chemins if w in anciens])
+        for c in portions:
+            if c[0] == c[-1]:
+                continue
+            for b in (c[0], c[-1]):
+                p = index.point(b)
+                proches = [n for dx in (-0.01, 0, 0.01) for dy in (-0.01, 0, 0.01)
+                           for n in cases.get((round(p[0] + dx, 2), round(p[1] + dy, 2)), ())]
+                if proches:
+                    n = min(proches, key=lambda n: geo.distance(point(n), p))
+                    if geo.distance(point(n), p) < SOUS_DIVISION_M:
+                        res.add(n)
+                    if n < 0 and geo.distance(point(n), p) < MEME_POINT_M:
+                        memes[n] = b
+    return res, memes
+
+
+def scinder(chemins, coupures_, membres, nouveau_chemin):
+    """Les chemins neufs coupés aux nœuds donnés; chaque morceau prend la
+    place du chemin dans les membres des relations."""
+    res = []
+    for wid, ids, roles in chemins:
+        ks = [k for k in range(1, len(ids) - 1) if ids[k] in coupures_]
+        if not ks:
+            res.append((wid, ids, roles))
+            continue
+        bornes = [0] + ks + [len(ids) - 1]
+        morceaux = [(wid if i == 0 else nouveau_chemin(), ids[a:b + 1])
+                    for i, (a, b) in enumerate(zip(bornes, bornes[1:]))]
+        for w, m in morceaux:
+            res.append((w, m, dict(roles)))
+        for code, role in roles.items():
+            lst = membres[code]
+            i = lst.index(("way", wid, role))
+            lst[i:i + 1] = [("way", w, role) for w, _ in morceaux]
+    return res
+
+
+def arc_de_subdivision(retirer, membres_p, lignes, point, index):
+    """Chemins du nouveau contour de la municipalité qui remplacent, dans
+    une sous-division, chaque portion de son contour retirée (retirer).
+    Chaque portion va du nœud du nouveau contour (un bout de chemin) le
+    plus proche de l'un de ses bouts à celui le plus proche de l'autre,
+    du côté qui suit la portion. Renvoie ([(chemin, nœuds, rôle)], None)
+    ou (None, raison)."""
+    ws = [m["ref"] for m in membres_p if m["type"] == "way"]
+    ns_de = {w: lignes[w] if w in lignes else index.chemins[w]["nodes"] for w in ws}
+    anneaux, ouverts = geo.assembler(list(ns_de.values()))
+    if ouverts:
+        return None, "nouveau contour de sa municipalité ouvert"
+    bouts = {n for ns in ns_de.values() for n in (ns[0], ns[-1])}
+    portions, _ = geo.assembler([index.chemins[w]["nodes"] for w in retirer])
+    pris = set()
+    for c in portions:
+        ligne = [point(n) for n in c]
+        if c[0] == c[-1]:
+            # Tout un anneau (le tour d'une enclave) : l'anneau du nouveau
+            # contour qui en est le plus proche.
+            def ecart_anneau(R):
+                pas = max(1, len(R) // 30)
+                return sum(geo.distance_ligne(point(x), ligne) for x in R[::pas]) / len(R[::pas])
+            R = min(anneaux, key=ecart_anneau)
+            if ecart_anneau(R) > SOUS_DIVISION_M:
+                return None, "nouveau contour trop loin"
+            aretes = {frozenset(e) for e in zip(R, R[1:])}
+            pris |= {w for w in ws if all(frozenset(e) in aretes for e in zip(ns_de[w], ns_de[w][1:]))}
+            continue
+        a, b = point(c[0]), point(c[-1])
+        candidats = [(k, i) for k, R in enumerate(anneaux) for i, n in enumerate(R[:-1]) if n in bouts]
+        if not candidats:
+            return None, "aucun bout de chemin sur le nouveau contour"
+        k, ia = min(candidats, key=lambda x: geo.distance(point(anneaux[x[0]][x[1]]), a))
+        V = anneaux[k][:-1]
+        ib = min((i for kk, i in candidats if kk == k), key=lambda i: geo.distance(point(V[i]), b))
+        if ia == ib:
+            return None, "portion trop courte pour le nouveau contour"
+        if max(geo.distance(point(V[ia]), a), geo.distance(point(V[ib]), b)) > SOUS_DIVISION_M:
+            return None, "nouveau contour trop loin"
+        n = len(V)
+        arcs = [[V[(ia + d) % n] for d in range((ib - ia) % n + 1)],
+                [V[(ia - d) % n] for d in range((ia - ib) % n + 1)]]
+
+        def ecart(arc):
+            pas = max(1, len(arc) // 30)
+            return sum(geo.distance_ligne(point(x), ligne) for x in arc[::pas]) / len(arc[::pas])
+        arc = min(arcs, key=ecart)
+        aretes = {frozenset(e) for e in zip(arc, arc[1:])}
+        pris |= {w for w in ws if all(frozenset(e) in aretes for e in zip(ns_de[w], ns_de[w][1:]))}
+    return [(w, ns_de[w], "outer") for w in ws if w in pris], None
 
 
 def sans_chaines_courtes(communs, point, seulement=None):

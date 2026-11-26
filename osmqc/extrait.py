@@ -285,6 +285,23 @@ def limites_admin(pbf):
     return res
 
 
+def subdivisions(pbf, ids):
+    """Relations boundary=administrative de niveau 9 à 11 (anciennes
+    municipalités, arrondissements) qui partagent au moins un chemin avec
+    l'une des relations données : [id]."""
+    chemins_de, candidates = {}, {}
+    filtre = osmium.filter.TagFilter(("boundary", "administrative"))
+    for o in progres.suivre(osmium.FileProcessor(pbf, osmium.osm.RELATION).with_filter(filtre), pbf,
+                            "sous-divisions"):
+        ws = {m.ref for m in o.members if m.type == "w"}
+        if o.id in ids:
+            chemins_de[o.id] = ws
+        elif o.tags.get("admin_level") in ("9", "10", "11"):
+            candidates[o.id] = ws
+    tous = set().union(*chemins_de.values()) if chemins_de else set()
+    return sorted(r for r, ws in candidates.items() if ws & tous)
+
+
 # Index de l'usage des nœuds des limites administratives : pour chaque
 # nœud d'un chemin membre d'une relation boundary=administrative, les
 # chemins qui l'utilisent dans tout l'extrait; et les nœuds membres d'une

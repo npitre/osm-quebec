@@ -437,6 +437,44 @@ class Regions(unittest.TestCase):
         self.assertEqual({plan["etiquettes"][w]["admin_level"] for w in exterieurs | set(raccords)}, {"6"})
         self.assertIn("MRC 99", plan["modifiees"])
 
+    def test_regions_13_sous_divisions(self):
+        # Lot : A, un carré dont l'ancien contour (500 à l'ouest, 501 à
+        # l'est) passe une unité au large. Deux secteurs de niveau 10, O et
+        # E, s'y partagent A, séparés par la ligne 502 (x = 5).
+        limite = {"boundary": "administrative", "admin_level": "8"}
+        idx = index({1: ((5, -1), {}), 2: ((-1, -1), {}), 3: ((-1, 11), {}), 4: ((5, 11), {}),
+                     5: ((11, 11), {}), 6: ((11, -1), {}), 7: ((5, 5), {})},
+                    [(500, [1, 2, 3, 4], limite), (501, [4, 5, 6, 1], limite),
+                     (502, [1, 7, 4], dict(limite, admin_level="10"))])
+        a = [P(0, 0), P(5, 0), P(10, 0), P(10, 10), P(5, 10), P(0, 10), P(0, 0)]
+        secteur = lambda nom: {"name": nom, "admin_level": "10"}
+        subs = {"sous-division 700": Rel(700, [500, 502], tags=secteur("O")),
+                "sous-division 701": Rel(701, [501, 502], tags=secteur("E"))}
+        plan = regions.preparer({"A": [[a]]}, {"A": Rel(100, [500, 501])}, None, idx, usages=lambda ws: {},
+                                chemins_des_noeuds=lambda ns: {}, subdivisions=subs)
+        self.assertIn("sous-division 700", plan["modifiees"])
+        self.assertIn("sous-division 701", plan["modifiees"])
+        # Deux raccords, de la ligne 502 au nouveau contour, au niveau des
+        # secteurs et partagés par les deux.
+        raccords = [(w, ids) for w, ids, roles in plan["chemins"]
+                    if set(roles) == {"sous-division 700", "sous-division 701"}]
+        self.assertEqual(len(raccords), 2)
+        self.assertEqual({plan["etiquettes"][w]["admin_level"] for w, _ in raccords}, {"10"})
+        ids_de = {w: ids for w, ids, _ in plan["chemins"]}
+        ids_de[502] = [1, 7, 4]
+        pos = {n: p for p, n in plan["noeuds"].items()}
+        for cle, cote in (("sous-division 700", lambda x: x <= P(5, 0)[0]),
+                          ("sous-division 701", lambda x: x >= P(5, 0)[0])):
+            ws = [m["ref"] for m in plan["membres"][cle] if m["type"] == "way"]
+            self.assertIn(502, ws)
+            self.assertFalse({500, 501} & set(ws))
+            # Un anneau fermé, du bon côté de la ligne 502.
+            anneaux, ouverts = geo.assembler([ids_de[w] for w in ws])
+            self.assertEqual(ouverts, 0)
+            self.assertTrue(all(cote(pos[n][0]) for w in ws if w < 0 for n in ids_de[w] if n in pos))
+        # A prend le tracé du MRNF.
+        self.assertFalse({500, 501} & {m["ref"] for m in plan["membres"]["A"]})
+
 
 # Rues
 

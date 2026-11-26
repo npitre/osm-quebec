@@ -1,0 +1,15 @@
+# L'Île-d'Anticosti : demandée par Pierre-Léo Bourbonnais après l'import
+# de ses adresses (courriel du 25 novembre 2026).
+
+nom = "L'Île-d'Anticosti"
+
+[rqa]
+municipalites = ["98020"]
+
+[regions]
+osm = { "98020" = 7734508 }
+
+[regions.groupe]
+comment = "Limites municipales de L'Île-d'Anticosti d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+discussion = "https://community.openstreetmap.org/t/149154"

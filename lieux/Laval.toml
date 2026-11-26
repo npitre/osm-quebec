@@ -1,0 +1,16 @@
+# Laval : demandée par Pierre-Léo Bourbonnais, qui y testera l'import
+# des adresses (courriel du 25 novembre 2026). Seule, sans le reste de
+# la bouchée 94 : ses voisines sont modifiées en partie.
+
+nom = "Laval"
+
+[rqa]
+municipalites = ["65005"]
+
+[regions]
+osm = { "65005" = 1438336 }
+
+[regions.groupe]
+comment = "Limites municipales de Laval d'après les Découpages administratifs du MRNF"
+source = "Découpages administratifs (MRNF), version V2026-09"
+discussion = "https://community.openstreetmap.org/t/149154"

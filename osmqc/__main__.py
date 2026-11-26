@@ -266,9 +266,14 @@ def regions_comparer(lieu, conf, preparer=False):
     lignes_frontiere = regions.frontiere_quebec(chemin_sda()) if preparer else []
     if lignes_frontiere and pbf:
         quebec = cr.get("quebec") or extrait.relation_quebec(pbf)
+    # Sous-divisions (anciennes municipalités, arrondissements) qui
+    # partagent des chemins avec le lot ou ses voisines.
+    ids_sub = extrait.subdivisions(pbf, set(ids) | set(ids_voisines.values())) if preparer and pbf else []
+    if ids_sub:
+        print("Sous-divisions qui touchent le lot ou ses voisines : %d." % len(ids_sub))
     # Toutes les relations en un seul passage dans l'extrait.
     commun = osm.Index(extrait.relations(pbf, ids + list(ids_voisines.values()) + list(ids_englobantes.values())
-                                         + ([quebec] if quebec else []))) if pbf else None
+                                         + ids_sub + ([quebec] if quebec else []))) if pbf else None
     rels = {code: regions.Relation(int(r), pbf, commun) for code, r in cr["osm"].items()}
     officiel = regions.sda(chemin_sda(), list(rels))
     for code, r in sorted(rels.items()):
@@ -310,11 +315,12 @@ def regions_comparer(lieu, conf, preparer=False):
             k = "%s %s" % cle
             if k in ids_englobantes:
                 englobantes[k] = (regions.Relation(ids_englobantes[k], pbf, commun), polys_e, communes)
+        subdivisions = {"sous-division %d" % i: regions.Relation(i, pbf, commun) for i in ids_sub}
         progres.etape("Plan de remplacement des limites")
         plan = regions.preparer(polys, rels, ext, index, vois, rels_voisines, usages, chemins_des_noeuds,
-                                frontiere, englobantes)
+                                frontiere, englobantes, subdivisions)
         plan["liens"] = liens
-        toutes = dict(rels, **rels_voisines, **{k: v[0] for k, v in englobantes.items()})
+        toutes = dict(rels, **rels_voisines, **{k: v[0] for k, v in englobantes.items()}, **subdivisions)
         traitees = [toutes[c].id for c in plan["modifiees"]] + [r.id for r in rels.values()]
         supp = regions.supprimables(plan["retires"], index, traitees, pbf)
         supp = (supp[0], sorted(set(supp[1]) | noeuds_liberes(plan, index, supp[0], pbf)))

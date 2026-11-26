@@ -263,6 +263,20 @@ dans `sortie/LIEU/` (hors du dépôt); les rapports de révision, dans
     chemin de la région). La relation parente d'un lieu (`exterieur =`,
     règle 4) est traitée de même : quand le lot reprend ses chemins, elle
     est déjà raccordée et ne change pas.
+13. **Sous-divisions** : les relations de niveau 9 à 11 (anciennes
+    municipalités, comme les 14 secteurs de Laval, et arrondissements)
+    suivent le nouveau contour de leur municipalité. Leur municipalité
+    est celle qui partage des chemins avec elles et qui les contient.
+    Là où une sous-division longeait l'ancien contour, ces chemins en
+    sont retirés et la portion du nouveau contour qui va du point le
+    plus proche d'un bout à celui le plus proche de l'autre en devient
+    membre. Les chemins neufs sont coupés à ces points. Un raccord relie
+    chaque limite intérieure au nouveau contour; il porte le niveau de
+    la sous-division et sert aux deux sous-divisions qui se touchent
+    là. Le MRNF ne donne pas leurs limites : seul leur bord extérieur
+    change, leurs limites entre elles restent telles quelles. Une
+    sous-division d'une voisine (un arrondissement de Montréal le long
+    de Laval) est traitée de même.
 
 ### Rues
 
