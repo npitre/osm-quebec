@@ -21,27 +21,121 @@ Comparaison faite selon la [méthode de validation des noms de rues et des adres
 
 ### addr:city
 
-Pour les 7026 adresses retrouvées, comparaison de `addr:city` dans OSM avec ce que donne la méthode du wiki (le discriminant de la rue au RQA, sinon le nom de la municipalité) : 1876 pareilles, 5146 différentes, 4 sans `addr:city`.
+Selon la [méthode du wiki](https://wiki.openstreetmap.org/wiki/FR:Qu%C3%A9bec/Validation_des_noms_de_rues_et_des_adresses), `addr:city` est le nom de la municipalité, ou le discriminant de la rue au RQA; les adresses ajoutées avant cette règle gardent leur nom de localité (l'ancienne municipalité). Pour les 7026 adresses retrouvées : 5048 portent une localité sur une rue sans discriminant (gardée, rien à faire), 98 portent autre chose que le discriminant de leur rue, 4 n'ont pas de `addr:city`.
+
+Localités sur les rues sans discriminant : L'Étang-du-Nord 1280, Fatima 1184, Bassin 719, Havre-aux-Maisons 711, Cap-aux-Meules 568, Havre-Aubert 366, L'Île-d'Entrée 94, Grande-Entrée 83, Pointe-aux-Loups 41, Havre-aux-maisons 1, L'Île-du-Havre-Aubert 1.
+
+Écrites autrement que la forme habituelle (casse) : « Havre-aux-maisons », « l'Étang-du-Nord ».
+
+Rues avec discriminant au RQA, `addr:city` différent dans OSM : à corriger, ou le discriminant du RQA est-il à revoir?
 
 | Selon le RQA | Dans OSM | Adresses |
 |---|---|---|
-| Les Îles-de-la-Madeleine | L'Étang-du-Nord | 1280 |
-| Les Îles-de-la-Madeleine | Fatima | 1184 |
-| Les Îles-de-la-Madeleine | Bassin | 719 |
-| Les Îles-de-la-Madeleine | Havre-aux-Maisons | 711 |
-| Les Îles-de-la-Madeleine | Cap-aux-Meules | 568 |
-| Les Îles-de-la-Madeleine | Havre-Aubert | 366 |
-| Les Îles-de-la-Madeleine | L'Île-d'Entrée | 94 |
-| Les Îles-de-la-Madeleine | Grande-Entrée | 83 |
 | Havre-aux-Maisons | Pointe-aux-Loups | 64 |
-| Les Îles-de-la-Madeleine | Pointe-aux-Loups | 41 |
 | Havre-Aubert | Bassin | 32 |
-| Les Îles-de-la-Madeleine | Havre-aux-maisons | 1 |
 | L'Étang-du-Nord | Cap-aux-Meules | 1 |
-| Les Îles-de-la-Madeleine | L'Île-du-Havre-Aubert | 1 |
 | L'Étang-du-Nord | l'Étang-du-Nord | 1 |
 
-Le RQA ne donne de discriminant qu'aux rues dont le nom se répète dans la municipalité. D'où viennent les localités inscrites dans OSM? Si elles sont voulues, la page du wiki serait à préciser, et osmqc à ajuster.
+| Adresse | Objet | Discriminant (RQA) | addr:city (OSM) |
+|---|---|---|---|
+| 10 Chemin Bourgeois | [node/14374965345](https://www.openstreetmap.org/node/14374965345) | Havre-Aubert | Bassin |
+| 15 Chemin Bourgeois | [node/14374965348](https://www.openstreetmap.org/node/14374965348) | Havre-Aubert | Bassin |
+| 16 Chemin Bourgeois | [node/14374965347](https://www.openstreetmap.org/node/14374965347) | Havre-Aubert | Bassin |
+| 25 Chemin Bourgeois | [node/14374964871](https://www.openstreetmap.org/node/14374964871) | Havre-Aubert | Bassin |
+| 30 Chemin Bourgeois | [node/14374964870](https://www.openstreetmap.org/node/14374964870) | Havre-Aubert | Bassin |
+| 32 Chemin Bourgeois | [node/14383583499](https://www.openstreetmap.org/node/14383583499) | Havre-Aubert | Bassin |
+| 41 Chemin Bourgeois | [node/14374964873](https://www.openstreetmap.org/node/14374964873) | Havre-Aubert | Bassin |
+| 2 Chemin Lapierre | [node/14374964592](https://www.openstreetmap.org/node/14374964592) | Havre-Aubert | Bassin |
+| 3 Chemin Lapierre | [node/14374964597](https://www.openstreetmap.org/node/14374964597) | Havre-Aubert | Bassin |
+| 10 Chemin Lapierre | [node/14374964594](https://www.openstreetmap.org/node/14374964594) | Havre-Aubert | Bassin |
+| 13 Chemin Lapierre | [node/14374964595](https://www.openstreetmap.org/node/14374964595) | Havre-Aubert | Bassin |
+| 19 Chemin Lapierre | [node/14374965591](https://www.openstreetmap.org/node/14374965591) | Havre-Aubert | Bassin |
+| 20 Chemin Lapierre | [node/14374964593](https://www.openstreetmap.org/node/14374964593) | Havre-Aubert | Bassin |
+| 39 Chemin Lapierre | [node/14374964759](https://www.openstreetmap.org/node/14374964759) | Havre-Aubert | Bassin |
+| 40 Chemin Lapierre | [node/14374964758](https://www.openstreetmap.org/node/14374964758) | Havre-Aubert | Bassin |
+| 44 Chemin Lapierre | [node/14374965584](https://www.openstreetmap.org/node/14374965584) | Havre-Aubert | Bassin |
+| 4 Chemin Turbide | [node/14374965231](https://www.openstreetmap.org/node/14374965231) | Havre-Aubert | Bassin |
+| 8 Chemin Turbide | [node/14374965232](https://www.openstreetmap.org/node/14374965232) | Havre-Aubert | Bassin |
+| 14 Chemin Turbide | [node/14374965234](https://www.openstreetmap.org/node/14374965234) | Havre-Aubert | Bassin |
+| 16 Chemin Turbide | [node/14374965223](https://www.openstreetmap.org/node/14374965223) | Havre-Aubert | Bassin |
+| 17 Chemin Turbide | [node/14374965225](https://www.openstreetmap.org/node/14374965225) | Havre-Aubert | Bassin |
+| 4 Chemin de l'École | [node/14374911646](https://www.openstreetmap.org/node/14374911646) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 10 Chemin de l'École | [node/14374911670](https://www.openstreetmap.org/node/14374911670) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 14 Chemin de l'École | [node/14374911675](https://www.openstreetmap.org/node/14374911675) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 17 Chemin de l'École | [node/14374911618](https://www.openstreetmap.org/node/14374911618) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 22 Chemin de l'École | [node/14374911632](https://www.openstreetmap.org/node/14374911632) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 39 Chemin de l'École | [node/14374911620](https://www.openstreetmap.org/node/14374911620) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 42 Chemin de l'École | [node/14374911623](https://www.openstreetmap.org/node/14374911623) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 74 Chemin des Gaudet | [node/14374962587](https://www.openstreetmap.org/node/14374962587) | L'Étang-du-Nord | Cap-aux-Meules |
+| 547 Chemin du Gros-Cap | [node/11161788088](https://www.openstreetmap.org/node/11161788088) | L'Étang-du-Nord | l'Étang-du-Nord |
+| 2 Chemin du Moulin | [node/14374965486](https://www.openstreetmap.org/node/14374965486) | Havre-Aubert | Bassin |
+| 21 Chemin du Moulin | [node/14374965481](https://www.openstreetmap.org/node/14374965481) | Havre-Aubert | Bassin |
+| 40 Chemin du Moulin | [node/14374965463](https://www.openstreetmap.org/node/14374965463) | Havre-Aubert | Bassin |
+| 43 Chemin du Moulin | [node/14374965462](https://www.openstreetmap.org/node/14374965462) | Havre-Aubert | Bassin |
+| 60 Chemin du Moulin | [node/14374965465](https://www.openstreetmap.org/node/14374965465) | Havre-Aubert | Bassin |
+| 10 Chemin du Phare | [node/14374964977](https://www.openstreetmap.org/node/14374964977) | Havre-Aubert | Bassin |
+| 19 Chemin du Phare | [node/14374964982](https://www.openstreetmap.org/node/14374964982) | Havre-Aubert | Bassin |
+| 25 Chemin du Phare | [node/14374964978](https://www.openstreetmap.org/node/14374964978) | Havre-Aubert | Bassin |
+| 60 Chemin du Phare | [node/14374965526](https://www.openstreetmap.org/node/14374965526) | Havre-Aubert | Bassin |
+| 65 Chemin du Phare | [node/14374965084](https://www.openstreetmap.org/node/14374965084) | Havre-Aubert | Bassin |
+| 135 Chemin du Phare | [node/14374965081](https://www.openstreetmap.org/node/14374965081) | Havre-Aubert | Bassin |
+| 1602 Route 199 | [node/14391904518](https://www.openstreetmap.org/node/14391904518) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 1621 Route 199 | [node/14374911624](https://www.openstreetmap.org/node/14374911624) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 1628 Route 199 | [node/14374911638](https://www.openstreetmap.org/node/14374911638) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 1633 Route 199 | [node/14374911613](https://www.openstreetmap.org/node/14374911613) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 1634 Route 199 | [node/14374911614](https://www.openstreetmap.org/node/14374911614) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 1641 Route 199 | [node/14374911676](https://www.openstreetmap.org/node/14374911676) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 1646 Route 199 | [node/14374911660](https://www.openstreetmap.org/node/14374911660) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 1657 Route 199 | [node/14374911615](https://www.openstreetmap.org/node/14374911615) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 1665 Route 199 | [node/14374911630](https://www.openstreetmap.org/node/14374911630) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 1667 Route 199 | [node/14374911629](https://www.openstreetmap.org/node/14374911629) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 1671 Route 199 | [node/14374911650](https://www.openstreetmap.org/node/14374911650) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 1678 Route 199 | [node/14374911665](https://www.openstreetmap.org/node/14374911665) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 1681 Route 199 | [node/14374911672](https://www.openstreetmap.org/node/14374911672) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 1682 Route 199 | [node/14374911677](https://www.openstreetmap.org/node/14374911677) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 1683 Route 199 | [node/14374911645](https://www.openstreetmap.org/node/14374911645) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 1687 Route 199 | [node/14374911659](https://www.openstreetmap.org/node/14374911659) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 1689 Route 199 | [node/14374911651](https://www.openstreetmap.org/node/14374911651) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 1690 Route 199 | [node/14374911669](https://www.openstreetmap.org/node/14374911669) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 1693 Route 199 | [node/14374911652](https://www.openstreetmap.org/node/14374911652) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 1695 Route 199 | [node/14374911649](https://www.openstreetmap.org/node/14374911649) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 1696 Route 199 | [node/14374911611](https://www.openstreetmap.org/node/14374911611) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 1697 Route 199 | [node/14374927530](https://www.openstreetmap.org/node/14374927530) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 1701 Route 199 | [node/14374927529](https://www.openstreetmap.org/node/14374927529) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 1704 Route 199 | [node/14374911612](https://www.openstreetmap.org/node/14374911612) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 1708 Route 199 | [node/14374911653](https://www.openstreetmap.org/node/14374911653) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 1709 Route 199 | [node/14374927534](https://www.openstreetmap.org/node/14374927534) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 1720 Route 199 | [node/14374927535](https://www.openstreetmap.org/node/14374927535) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 1725 Route 199 | [node/14374927532](https://www.openstreetmap.org/node/14374927532) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 1728 Route 199 | [node/14374911648](https://www.openstreetmap.org/node/14374911648) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 1731 Route 199 | [node/14374927524](https://www.openstreetmap.org/node/14374927524) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 1732 Route 199 | [node/14374927525](https://www.openstreetmap.org/node/14374927525) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 1736 Route 199 | [node/14374927526](https://www.openstreetmap.org/node/14374927526) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 1739 Route 199 | [node/14374927527](https://www.openstreetmap.org/node/14374927527) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 1743 Route 199 | [node/14374927533](https://www.openstreetmap.org/node/14374927533) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 1746 Route 199 | [node/14374927523](https://www.openstreetmap.org/node/14374927523) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 1747 Route 199 | [node/14374927531](https://www.openstreetmap.org/node/14374927531) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 1751 Route 199 | [node/14374927528](https://www.openstreetmap.org/node/14374927528) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 1757 Route 199 | [node/7970218786](https://www.openstreetmap.org/node/7970218786) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 2496 Route 199 | [node/14397155475](https://www.openstreetmap.org/node/14397155475) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 2500 Route 199 | [node/14374927549](https://www.openstreetmap.org/node/14374927549) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 2504 Route 199 | [node/14374927548](https://www.openstreetmap.org/node/14374927548) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 2508 Route 199 | [node/14374927547](https://www.openstreetmap.org/node/14374927547) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 2512 Route 199 | [node/14374927546](https://www.openstreetmap.org/node/14374927546) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 2516 Route 199 | [node/14374927545](https://www.openstreetmap.org/node/14374927545) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 2520 Route 199 | [node/14374927544](https://www.openstreetmap.org/node/14374927544) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 2524 Route 199 | [node/14374927543](https://www.openstreetmap.org/node/14374927543) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 2528 Route 199 | [node/14374927542](https://www.openstreetmap.org/node/14374927542) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 2532 Route 199 | [node/14374927541](https://www.openstreetmap.org/node/14374927541) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 2536 Route 199 | [node/14374927540](https://www.openstreetmap.org/node/14374927540) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 2540 Route 199 | [node/14374927539](https://www.openstreetmap.org/node/14374927539) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 2544 Route 199 | [node/14374927538](https://www.openstreetmap.org/node/14374927538) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 2548 Route 199 | [node/14374927537](https://www.openstreetmap.org/node/14374927537) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 2552 Route 199 | [node/14374927536](https://www.openstreetmap.org/node/14374927536) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 2586 Route 199 | [node/14374927521](https://www.openstreetmap.org/node/14374927521) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 2590 Route 199 | [node/14374927519](https://www.openstreetmap.org/node/14374927519) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 2596 Route 199 | [node/14374927520](https://www.openstreetmap.org/node/14374927520) | Havre-aux-Maisons | Pointe-aux-Loups |
+| 2600 Route 199 | [node/14374927522](https://www.openstreetmap.org/node/14374927522) | Havre-aux-Maisons | Pointe-aux-Loups |
 
 ### addr:postcode
 

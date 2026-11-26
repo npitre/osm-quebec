@@ -110,14 +110,26 @@ def main():
             continue
         a = groupe(l)[0]
         retrouvees.append((l, ref, tags_de(ref), a))
-    villes = Counter()
+    # addr:city : sur une rue sans discriminant, une localité déjà inscrite
+    # est gardée (adresses ajoutées avant la règle du wiki); sur une rue
+    # avec discriminant, addr:city devrait être ce discriminant.
+    localites = Counter()
+    hors_discriminant = []   # (Ligne, ref, tags, Adresse)
     sans_ville = 0
     for l, ref, t, a in retrouvees:
         if not t.get("addr:city"):
             sans_ville += 1
-        elif a and t["addr:city"] != a.ville:
-            villes[(a.ville, t["addr:city"])] += 1
-    pareilles = sum(1 for l, ref, t, a in retrouvees if a and t.get("addr:city") == a.ville)
+        elif not a or t["addr:city"] == a.ville:
+            continue
+        elif a.discriminant:
+            hors_discriminant.append((l, ref, t, a))
+        else:
+            localites[t["addr:city"]] += 1
+    connues = {a.ville for a in ad} | {v for v in localites} - {
+        v for v in localites if any(v != w and v.lower() == w.lower() for w in localites)}
+    casse = sorted({t["addr:city"] for l, ref, t, a in retrouvees if t.get("addr:city")
+                    and t["addr:city"] not in connues
+                    and any(t["addr:city"].lower() == w.lower() for w in connues)})
     avec_cp = sum(1 for l, ref, t, a in retrouvees if t.get("addr:postcode"))
     cp_differents = sum(1 for l, ref, t, a in retrouvees
                         if t.get("addr:postcode") and t["addr:postcode"] != l.code_postal)
@@ -180,16 +192,30 @@ def main():
     r += ["| %s | %d |" % kv for kv in lignes_resume]
 
     r += ["", "## Questions", "", "### addr:city", ""]
-    r.append("Pour les %d adresses retrouvées, comparaison de `addr:city` dans OSM avec ce que donne "
-             "la méthode du wiki (le discriminant de la rue au RQA, sinon le nom de la "
-             "municipalité) : %d pareilles, %d différentes, %d sans `addr:city`." % (
-                 len(retrouvees), pareilles, sum(villes.values()), sans_ville))
-    if villes:
-        r += ["", "| Selon le RQA | Dans OSM | Adresses |", "|---|---|---|"]
-        r += ["| %s | %s | %d |" % (cellule(a), cellule(b), n) for (a, b), n in villes.most_common()]
-        r += ["", "Le RQA ne donne de discriminant qu'aux rues dont le nom se répète dans la "
-              "municipalité. D'où viennent les localités inscrites dans OSM? Si elles sont "
-              "voulues, la page du wiki serait à préciser, et osmqc à ajuster."]
+    r.append("Selon la [méthode du wiki](https://wiki.openstreetmap.org/wiki/FR:Qu%%C3%%A9bec/"
+             "Validation_des_noms_de_rues_et_des_adresses), `addr:city` est le nom de la "
+             "municipalité, ou le discriminant de la rue au RQA; les adresses ajoutées avant "
+             "cette règle gardent leur nom de localité (l'ancienne municipalité). Pour les %d "
+             "adresses retrouvées : %d portent une localité sur une rue sans discriminant "
+             "(gardée, rien à faire), %d portent autre chose que le discriminant de leur rue, "
+             "%d n'ont pas de `addr:city`." % (len(retrouvees), sum(localites.values()),
+                                                len(hors_discriminant), sans_ville))
+    if localites:
+        r += ["", "Localités sur les rues sans discriminant : %s." % ", ".join(
+            "%s %d" % kv for kv in localites.most_common())]
+    if casse:
+        r += ["", "Écrites autrement que la forme habituelle (casse) : %s." % ", ".join(
+            "« %s »" % v for v in casse)]
+    if hors_discriminant:
+        r += ["", "Rues avec discriminant au RQA, `addr:city` différent dans OSM : à corriger, "
+              "ou le discriminant du RQA est-il à revoir?", "",
+              "| Selon le RQA | Dans OSM | Adresses |", "|---|---|---|"]
+        r += ["| %s | %s | %d |" % (cellule(a), cellule(b), n) for (a, b), n in Counter(
+            (a.ville, t["addr:city"]) for l, ref, t, a in hors_discriminant).most_common()]
+        r += ["", "| Adresse | Objet | Discriminant (RQA) | addr:city (OSM) |", "|---|---|---|---|"]
+        r += ["| %s %s | %s | %s | %s |" % (cellule(l.numero), cellule(l.rue), objet(*ref),
+                                            cellule(a.discriminant), cellule(t["addr:city"]))
+              for l, ref, t, a in sorted(hors_discriminant, key=lambda x: ordre(x[0]))]
     r += ["", "### addr:postcode", ""]
     r.append("%d des %d adresses retrouvées ont un `addr:postcode` dans OSM (%d différent du RQA). "
              "Le RQA donne un code postal pour chaque adresse, sous sa propre licence. "
