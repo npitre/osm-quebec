@@ -619,11 +619,12 @@ class Adresses(unittest.TestCase):
         p = adresses.preparer([adr("10")], idx, {})
         self.assertEqual(p.creer, [])
         self.assertEqual(p.modifier[("node", 50)], {"addr:street": "Chemin du Lac-Témoin",
-                                                   "addr:city": "Lac-Témoin"})
+                                                   "addr:city": "Lac-Témoin",
+                                                   "addr:postcode": "J0V 1G0"})
         # Une localité déjà inscrite est gardée; un nœud à plusieurs numéros
         # (« 8;10 ») est retrouvé.
         idx.noeuds[50]["tags"] = {"addr:housenumber": "8;10", "addr:street": "Chemin du Lac-Témoin",
-                                  "addr:city": "Pointe-du-Lac"}
+                                  "addr:city": "Pointe-du-Lac", "addr:postcode": "J0V 1G0"}
         p = adresses.preparer([adr("10")], idx, {})
         self.assertEqual((p.creer, p.modifier), ([], {}))
         self.assertEqual(p.seules_osm, [])
@@ -646,10 +647,10 @@ class Adresses(unittest.TestCase):
     def test_adresses_6_etiquettes(self):
         p = adresses.preparer([adr("10")], rue_osm(), {})
         (tags, _), = p.creer
-        # Pas de code postal (en attente de Postes Canada); addr:city : la
-        # municipalité, ou le discriminant de la rue.
+        # Le code postal du RQA; addr:city : la municipalité, ou le
+        # discriminant de la rue.
         self.assertEqual(tags, {"addr:housenumber": "10", "addr:street": "Chemin du Lac-Témoin",
-                                "addr:city": "Lac-Témoin"})
+                                "addr:city": "Lac-Témoin", "addr:postcode": "J0V 1G0"})
         p = adresses.preparer([adr("10", discriminant="Fatima")], rue_osm(), {})
         self.assertEqual(p.creer[0][0]["addr:city"], "Fatima")
 

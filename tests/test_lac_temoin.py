@@ -497,7 +497,8 @@ class LacTemoin(unittest.TestCase):
     def test_adresses_5_doublons(self):
         n30 = next(i for i, (p, t) in self.carte.noeuds.items() if t.get("addr:housenumber") == "30")
         self.assertEqual(self.adr[("modify", "node", n30)]["tags"],
-                         {"addr:housenumber": "30", "addr:street": "Chemin du Lac", "addr:city": "Lac-Témoin"})
+                         {"addr:housenumber": "30", "addr:street": "Chemin du Lac", "addr:city": "Lac-Témoin",
+                          "addr:postcode": "J0T 1A0"})
         self.assertEqual(self.ligne("40")["statut"], "existant")
         self.assertEqual(self.ligne("50")["statut"], "existant")             # bâtiment numéroté
         for num in ("30", "40", "50"):
@@ -506,8 +507,9 @@ class LacTemoin(unittest.TestCase):
     def test_adresses_6_etiquettes(self):
         for o in self.crees(self.adr, "node").values():
             self.assertLessEqual(set(o["tags"]), {"addr:housenumber", "addr:street", "addr:city",
-                                                  "addr:flats", "entrance"})
+                                                  "addr:postcode", "addr:flats", "entrance"})
             self.assertIn("addr:city", o["tags"])
+            self.assertIn("addr:postcode", o["tags"])
 
     def test_adresses_7_interpolations(self):
         supprimes = {i for (a, g, i) in self.adr if a == "delete" and g == "way"}

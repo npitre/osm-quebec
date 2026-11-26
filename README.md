@@ -346,21 +346,23 @@ dans `sortie/LIEU/` (hors du dépôt); les rapports de révision, dans
    objet qui porte plusieurs numéros (`47;49`, plusieurs numéros
    derrière une même porte) est retrouvé par chacun. On y corrige
    `addr:street` s'il diffère du nom officiel et on y ajoute
-   `addr:city` s'il manque; une localité déjà inscrite est gardée. Des
+   `addr:city` et `addr:postcode` s'ils manquent; une localité déjà
+   inscrite est gardée. Des
    logements différents de ceux du RQA sont signalés, pas corrigés (une
    autre source, le rôle d'évaluation, a pu servir). Rien d'autre n'est
    touché. Les adresses d'OSM près du lieu qu'aucune adresse du RQA ne
    retrouve sont listées dans le rapport, sans y toucher.
 6. **Étiquettes créées** : `addr:housenumber`, `addr:street`,
-   `addr:city`, `addr:flats`, selon la [méthode de validation des noms
-   de rues et des adresses](https://wiki.openstreetmap.org/wiki/FR:Qu%C3%A9bec/Validation_des_noms_de_rues_et_des_adresses)
+   `addr:city`, `addr:postcode`, `addr:flats`, selon la [méthode de
+   validation des noms de rues et des adresses](https://wiki.openstreetmap.org/wiki/FR:Qu%C3%A9bec/Validation_des_noms_de_rues_et_des_adresses)
    (discussion : <https://community.openstreetmap.org/t/150643>).
    `addr:city` est le discriminant de la rue (l'ancienne municipalité
    ou la localité, dans une municipalité fusionnée qui a deux rues du
    même nom), sinon le nom officiel de la municipalité : plusieurs
-   outils ne lisent pas les limites. Pas de `addr:postcode` tant que
-   Postes Canada ne l'a pas permis (demande faite). Pas d'identifiant
-   du RQA dans OSM (sauf si la communauté décide de l'inclure).
+   outils ne lisent pas les limites. `addr:postcode` est le code postal
+   du RQA, publié sous sa licence; rien n'est pris de Postes Canada.
+   Pas d'identifiant du RQA dans OSM (sauf si la communauté décide de
+   l'inclure).
 7. **Interpolations CanVec** : une ligne `addr:interpolation` est
    supprimée avec ses nœuds, puisque les vraies adresses la remplacent,
    si ses deux extrémités portent le nom d'une rue importée, si elle passe

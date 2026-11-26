@@ -377,6 +377,9 @@ def preparer(adresses, index, conf, positions=None):
             # Une localité déjà inscrite est gardée.
             if not t.get("addr:city") and a.ville:
                 maj["addr:city"] = a.ville
+            # Le code postal du RQA (et non de Postes Canada), s'il manque.
+            if a.code_postal and not t.get("addr:postcode"):
+                maj["addr:postcode"] = a.code_postal
             # Les logements : seulement signalés s'ils diffèrent (une source
             # plus complète, le rôle d'évaluation, a pu servir).
             _, flats = numeros(num, a, autres)
@@ -403,6 +406,8 @@ def preparer(adresses, index, conf, positions=None):
             tags = {"addr:housenumber": numero, "addr:street": a.rue}
             if a.ville:
                 tags["addr:city"] = a.ville
+            if a.code_postal:
+                tags["addr:postcode"] = a.code_postal
             # Une position d'une autre source posée sur le contour d'un
             # bâtiment est une porte d'entrée.
             if source != "RQA":
