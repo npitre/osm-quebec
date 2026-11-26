@@ -465,16 +465,16 @@ class LacTemoin(unittest.TestCase):
     # Adresses
 
     def test_adresses_1_logements_et_suffixes(self):
-        self.assertEqual(self.adresse("250")["tags"]["addr:unit"], "1;2")
+        self.assertEqual(self.adresse("250")["tags"]["addr:flats"], ";1;2")
         self.assertIsNotNone(self.adresse("270;270A"))
         self.assertIsNotNone(self.adresse("280"))
         self.assertIsNotNone(self.adresse("280B"))                          # à 76 m : distincte
-        self.assertEqual(self.adresse("290")["tags"]["addr:unit"], "1")     # sans adresse principale
+        self.assertEqual(self.adresse("290")["tags"]["addr:flats"], "1")    # sans adresse principale
         self.assertIsNotNone(self.adresse("300A;300B"))                     # pas de « 300 » inventé
         self.assertNotIn("pas d'adresse principale", self.ligne("280B")["detail"])
 
     def test_logements_douteux(self):
-        self.assertNotIn("addr:unit", self.adresse("260")["tags"])
+        self.assertNotIn("addr:flats", self.adresse("260")["tags"])
         self.assertIn("9999-260 Chemin du Lac", self.rapport("adresses.md"))
 
     def test_adresses_2_terminees(self):
@@ -497,7 +497,7 @@ class LacTemoin(unittest.TestCase):
     def test_adresses_5_doublons(self):
         n30 = next(i for i, (p, t) in self.carte.noeuds.items() if t.get("addr:housenumber") == "30")
         self.assertEqual(self.adr[("modify", "node", n30)]["tags"],
-                         {"addr:housenumber": "30", "addr:street": "Chemin du Lac", "addr:postcode": "J0T 1A0"})
+                         {"addr:housenumber": "30", "addr:street": "Chemin du Lac", "addr:city": "Lac-Témoin"})
         self.assertEqual(self.ligne("40")["statut"], "existant")
         self.assertEqual(self.ligne("50")["statut"], "existant")             # bâtiment numéroté
         for num in ("30", "40", "50"):
@@ -505,9 +505,9 @@ class LacTemoin(unittest.TestCase):
 
     def test_adresses_6_etiquettes(self):
         for o in self.crees(self.adr, "node").values():
-            self.assertLessEqual(set(o["tags"]), {"addr:housenumber", "addr:street", "addr:postcode",
-                                                  "addr:unit", "entrance"})
-            self.assertIn("addr:postcode", o["tags"])
+            self.assertLessEqual(set(o["tags"]), {"addr:housenumber", "addr:street", "addr:city",
+                                                  "addr:flats", "entrance"})
+            self.assertIn("addr:city", o["tags"])
 
     def test_adresses_7_interpolations(self):
         supprimes = {i for (a, g, i) in self.adr if a == "delete" and g == "way"}

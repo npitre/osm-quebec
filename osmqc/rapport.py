@@ -59,6 +59,8 @@ def adresses(lieu, conf, plan, version):
         ["À revoir (non créées)", stat["à revoir"]],
         ["Exclues", stat["exclu"]],
         ["Logements douteux écartés", len(plan.douteux)],
+        ["Adresses d'OSM sans pendant au RQA", len(plan.seules_osm)],
+        ["Déjà dans OSM, logements différents", sum("logements :" in l.detail for l in plan.rapport)],
         ["Objets OSM modifiés", len(plan.modifier)],
         ["Lignes d'interpolation supprimées", len(plan.supprimer_chemins)],
         ["Nœuds d'interpolation supprimés", len(plan.supprimer_noeuds)],
@@ -97,7 +99,7 @@ def adresses(lieu, conf, plan, version):
     if plan.douteux:
         s += "## Logements douteux\n\n"
         s += ("Logements du RQA sans lot ni matricule, sur une adresse qui n'a qu'un logement "
-              "selon le rôle d'évaluation : ils ne sont pas mis dans addr:unit. Liste à "
+              "selon le rôle d'évaluation : ils ne sont pas mis dans addr:flats. Liste à "
               "signaler au MRNF (géoboutique). Voir le [README](../../README.md#logements-douteux-du-rqa).\n\n")
         s += tableau(["Municipalité", "Adresse", "Créé le", "Identifiant RQA"], [
             [x.nom_municipalite, "%s-%s %s" % (x.logement, x.numero, x.rue),
@@ -111,6 +113,15 @@ def adresses(lieu, conf, plan, version):
             ["[%s/%d](https://www.openstreetmap.org/%s/%d)" % (g, i, g, i),
              ", ".join("%s=%s" % kv for kv in t.items()), "; ".join(plan.raisons.get((g, i), []))]
             for (g, i), t in sorted(plan.modifier.items())])
+        s += "\n"
+    if plan.seules_osm:
+        s += "## Adresses d'OSM sans pendant au RQA\n\n"
+        s += ("Adresses d'OSM, près de celles du lieu, qu'aucune adresse du RQA ne retrouve (même "
+              "numéro à moins de 30 m, ou dans le même bâtiment) : ajoutées d'une autre source (rôle "
+              "d'évaluation, terrain), terminées au RQA, ou écrites autrement. Rien n'y est touché.\n\n")
+        s += tableau(["Objet", "Numéro", "Rue", "Localité"], [
+            ["[%s/%d](https://www.openstreetmap.org/%s/%d)" % (g, i, g, i), n, r, v]
+            for g, i, n, r, v, _ in plan.seules_osm])
         s += "\n"
     if plan.supprimer_chemins:
         s += "## Lignes d'interpolation supprimées\n\n"

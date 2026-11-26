@@ -14,6 +14,8 @@ Source : Référentiel québécois des adresses (MRNF), version AQ20261001. Règ
 | À revoir (non créées) | 6 |
 | Exclues | 3 |
 | Logements douteux écartés | 1 |
+| Adresses d'OSM sans pendant au RQA | 0 |
+| Déjà dans OSM, logements différents | 0 |
 | Objets OSM modifiés | 1 |
 | Lignes d'interpolation supprimées | 1 |
 | Nœuds d'interpolation supprimés | 2 |
@@ -40,7 +42,7 @@ Ces adresses ne sont pas créées tant que la rue n'est pas réglée dans OSM.
 
 ## Logements douteux
 
-Logements du RQA sans lot ni matricule, sur une adresse qui n'a qu'un logement selon le rôle d'évaluation : ils ne sont pas mis dans addr:unit. Liste à signaler au MRNF (géoboutique). Voir le [README](../../README.md#logements-douteux-du-rqa).
+Logements du RQA sans lot ni matricule, sur une adresse qui n'a qu'un logement selon le rôle d'évaluation : ils ne sont pas mis dans addr:flats. Liste à signaler au MRNF (géoboutique). Voir le [README](../../README.md#logements-douteux-du-rqa).
 
 | Municipalité | Adresse | Créé le | Identifiant RQA |
 |---|---|---|---|
@@ -50,7 +52,7 @@ Logements du RQA sans lot ni matricule, sur une adresse qui n'a qu'un logement s
 
 | Objet | Changements | Raison |
 |---|---|---|
-| [node/57](https://www.openstreetmap.org/node/57) | addr:street=Chemin du Lac, addr:postcode=J0T 1A0 | adresse 30 Chemin du Lac : addr:street=Chemin du Lac, addr:postcode=J0T 1A0 |
+| [node/57](https://www.openstreetmap.org/node/57) | addr:street=Chemin du Lac, addr:city=Lac-Témoin | adresse 30 Chemin du Lac : addr:street=Chemin du Lac, addr:city=Lac-Témoin |
 
 ## Lignes d'interpolation supprimées
 

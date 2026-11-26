@@ -47,13 +47,14 @@ class Rel:
 
 def adr(numero, rue="Chemin du Lac-Témoin", dx=1, dy=0.3, suffixe="", unite="", fin="",
         municipalite="99001", categorie="RESI", nom_municipalite="Lac-Témoin", matricule="",
-        lot="", logements="", etat="", reseau=None):
+        lot="", logements="", etat="", reseau=None, discriminant=""):
     p = P(dx, dy)
     return rqa.Adresse(ident="x", municipalite=municipalite, nom_municipalite=nom_municipalite,
                        odonyme="1", rue=rue, numero=numero, suffixe=suffixe, unite=unite,
                        code_postal="J0V 1G0", lon=p[0], lat=p[1], qualite="Bâtiment",
                        lot=lot, matricule=matricule, date_creation="20211211", fin=fin,
-                       categorie=categorie, nombre_unite=logements, etat=etat, reseau=reseau)
+                       categorie=categorie, nombre_unite=logements, etat=etat, reseau=reseau,
+                       discriminant=discriminant)
 
 
 def rue_osm(nom="Chemin du Lac-Témoin"):
@@ -531,24 +532,45 @@ class Adresses(unittest.TestCase):
                                      adr("120"), adr("120", suffixe="A"),
                                      adr("120", suffixe="B", dx=2)])     # à 77 m : distinct
         base, autres = groupe[("99001", "1", "329")]
-        self.assertEqual(adresses.numeros("329", base, autres), ("329", "1;2"))
+        # Logements dans addr:flats; « ; » en tête : le 329 sans logement
+        # existe aussi.
+        self.assertEqual(adresses.numeros("329", base, autres), ("329", [";1;2"]))
         base, autres = groupe[("99001", "1", "120")]
-        self.assertEqual(adresses.numeros("120", base, autres), ("120;120A", None))
+        self.assertEqual(adresses.numeros("120", base, autres), ("120;120A", []))
         base, autres = groupe[("99001", "1", "120B")]
-        self.assertEqual(adresses.numeros("120B", base, autres), ("120B", None))
+        self.assertEqual(adresses.numeros("120B", base, autres), ("120B", []))
         p = adresses.preparer([adr("120"), adr("120", suffixe="B", dx=2)], rue_osm(), {})
         self.assertEqual(sorted(t["addr:housenumber"] for t, _ in p.creer), ["120", "120B"])
         # Des suffixes sans numéro de base : pas de « 300 » inventé.
         groupe = adresses.regrouper([adr("300", suffixe="A"), adr("300", suffixe="B")])
-        self.assertEqual(adresses.numeros("300", *groupe[("99001", "1", "300")]), ("300A;300B", None))
+        self.assertEqual(adresses.numeros("300", *groupe[("99001", "1", "300")]), ("300A;300B", []))
+        # Sans adresse principale : pas de « ; » en tête.
+        groupe = adresses.regrouper([adr("596", unite=u) for u in ("237", "301", "302")])
+        self.assertEqual(adresses.numeros("596", *groupe[("99001", "1", "596")]), ("596", ["237;301;302"]))
+
+    def test_adresses_1_plages_de_logements(self):
+        # Une suite d'au moins trois logements consécutifs s'écrit en plage;
+        # un trou coupe la plage.
+        self.assertEqual(adresses.plages(["1", "2", "101", "102", "103", "105", "106", "107", "2A"]),
+                         ["1", "2", "101-103", "105-107", "2A"])
+        self.assertEqual(adresses.deplier(";101-103;2A"), {"101", "102", "103", "2A"})
+        # Au-delà de 255 caractères : un nœud par tranche, au même point.
+        unites = [adr("1500", unite="A%04d" % i) for i in range(1, 80)]
+        p = adresses.preparer([adr("1500")] + unites, rue_osm(), {})
+        valeurs = [t["addr:flats"] for t, _ in p.creer]
+        self.assertGreater(len(valeurs), 1)
+        self.assertTrue(all(len(v) <= 255 for v in valeurs))
+        self.assertTrue(valeurs[0].startswith(";") and not valeurs[1].startswith(";"))
+        self.assertEqual(set().union(*map(adresses.deplier, valeurs)), {"A%04d" % i for i in range(1, 80)})
+        self.assertEqual(len({pt for _, pt in p.creer}), 1)
 
     def test_adresses_1_logements_douteux(self):
         # Logement 2, ni lot ni matricule, sur une maison d'un seul logement
-        # au rôle : écarté de addr:unit et listé pour le MRNF.
+        # au rôle : écarté de addr:flats et listé pour le MRNF.
         maison = adr("250", logements="1")
         p = adresses.preparer([maison, adr("250", unite="2")], rue_osm(), {})
         (tags, _), = p.creer
-        self.assertNotIn("addr:unit", tags)
+        self.assertNotIn("addr:flats", tags)
         self.assertEqual([(x.logement, b.numero) for x, b in p.douteux], [("2", "250")])
         self.assertIn("logement(s) douteux écarté(s) : 2", p.rapport[0].detail)
         # Gardés : logement avec matricule ou lot, immeuble de 6 logements,
@@ -559,7 +581,7 @@ class Adresses(unittest.TestCase):
                                   (adr("250"), adr("250", unite="2"), {}),
                                   (maison, adr("250", unite="2"), {"ecarter_logements_douteux": False})]:
             p = adresses.preparer([base, unite], rue_osm(), conf)
-            self.assertEqual(p.creer[0][0].get("addr:unit"), "2")
+            self.assertEqual(p.creer[0][0].get("addr:flats"), ";2")
             self.assertEqual(p.douteux, [])
 
     def test_adresses_2_terminees(self):
@@ -597,12 +619,39 @@ class Adresses(unittest.TestCase):
         p = adresses.preparer([adr("10")], idx, {})
         self.assertEqual(p.creer, [])
         self.assertEqual(p.modifier[("node", 50)], {"addr:street": "Chemin du Lac-Témoin",
-                                                   "addr:postcode": "J0V 1G0"})
+                                                   "addr:city": "Lac-Témoin"})
+        # Une localité déjà inscrite est gardée; un nœud à plusieurs numéros
+        # (« 8;10 ») est retrouvé.
+        idx.noeuds[50]["tags"] = {"addr:housenumber": "8;10", "addr:street": "Chemin du Lac-Témoin",
+                                  "addr:city": "Pointe-du-Lac"}
+        p = adresses.preparer([adr("10")], idx, {})
+        self.assertEqual((p.creer, p.modifier), ([], {}))
+        self.assertEqual(p.seules_osm, [])
+        # Une porte à 150 m du point du RQA, au même numéro sur la même rue,
+        # est la même adresse; sur une autre rue, non.
+        idx.noeuds[50].update({"lon": P(1, 1.65)[0], "lat": P(1, 1.65)[1]})
+        self.assertEqual(adresses.preparer([adr("10")], idx, {}).creer, [])
+        idx.noeuds[50]["tags"]["addr:street"] = "Chemin des Pins"
+        self.assertEqual(len(adresses.preparer([adr("10")], idx, {}).creer), 1)
+
+    def test_adresses_5_seules_dans_osm(self):
+        # Une adresse d'OSM près du lieu qu'aucune adresse du RQA ne
+        # retrouve est signalée.
+        idx = rue_osm()
+        idx.noeuds[50] = {"type": "node", "id": 50, "lon": P(2, 0.4)[0], "lat": P(2, 0.4)[1],
+                          "version": 3, "tags": {"addr:housenumber": "12", "addr:street": "Chemin du Lac-Témoin"}}
+        p = adresses.preparer([adr("10")], idx, {})
+        self.assertEqual([(t, i, n) for t, i, n, *_ in p.seules_osm], [("node", 50, "12")])
 
     def test_adresses_6_etiquettes(self):
         p = adresses.preparer([adr("10")], rue_osm(), {})
         (tags, _), = p.creer
-        self.assertEqual(set(tags), {"addr:housenumber", "addr:street", "addr:postcode"})
+        # Pas de code postal (en attente de Postes Canada); addr:city : la
+        # municipalité, ou le discriminant de la rue.
+        self.assertEqual(tags, {"addr:housenumber": "10", "addr:street": "Chemin du Lac-Témoin",
+                                "addr:city": "Lac-Témoin"})
+        p = adresses.preparer([adr("10", discriminant="Fatima")], rue_osm(), {})
+        self.assertEqual(p.creer[0][0]["addr:city"], "Fatima")
 
     def _interpolation(self, ville="Lac-Témoin", dy=0.5, partage=False):
         idx = rue_osm()

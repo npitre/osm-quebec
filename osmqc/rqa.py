@@ -38,6 +38,13 @@ class Adresse:
     nombre_unite: str = ""  # nombre de logements selon le rôle d'évaluation
     etat: str = ""      # Certifiée, Non certifiée (projetée, en construction) ou Détruite
     reseau: str = None  # identifiant_reseau_routier (None : colonne absente)
+    discriminant: str = ""  # discriminant_odonyme : ancienne municipalité ou localité de la rue
+
+    @property
+    def ville(self):
+        """addr:city : le discriminant de la rue (dans une municipalité
+        fusionnée, deux rues du même nom), sinon la municipalité."""
+        return self.discriminant or self.nom_municipalite
 
     @property
     def retiree(self):
@@ -126,6 +133,7 @@ def adresse(r):
         nombre_unite=r.get("nombre_unite", ""),
         etat=r.get("etat", ""),
         reseau=r.get("identifiant_reseau_routier"),
+        discriminant=(r.get("discriminant_odonyme") or "").strip(),
     )
 
 

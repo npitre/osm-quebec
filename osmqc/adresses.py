@@ -13,8 +13,10 @@ from . import geo
 from .rqa import developper
 
 DOUBLON_M = 30          # adresse OSM existante au même numéro à moins de 30 m
+MEME_RUE_M = 300        # ou au même numéro et sur la même rue (une porte loin du point du RQA)
 SUFFIXE_DISTINCT_M = 5  # un suffixe plus loin que ça de son numéro de base est une adresse à part
 RUE_PROCHE_M = 300      # distance maximale entre l'adresse et une rue du même nom dans OSM
+SEULE_OSM_M = 500       # une adresse d'OSM sans pendant au RQA n'est signalée que près du lieu
 
 
 def cle_nom(nom):
@@ -49,6 +51,7 @@ class Plan:
     supprimer_noeuds: list = field(default_factory=list)
     rapport: list = field(default_factory=list)
     douteux: list = field(default_factory=list)     # (logement, adresse de base)
+    seules_osm: list = field(default_factory=list)  # (type, id, numéro, rue, ville, point)
 
     def corriger(self, genre, ident, tags, raison):
         self.modifier.setdefault((genre, ident), {}).update(tags)
@@ -84,19 +87,81 @@ def _ordre(v):
     return (int(m.group(1) or 0), m.group(2))
 
 
+MAX_VALEUR = 255        # longueur maximale d'une valeur d'étiquette dans OSM
+PLAGE_MIN = 3           # une suite d'au moins 3 numéros consécutifs s'écrit en plage
+
+
+def plages(logements):
+    """Les logements en plages : « 101;102;103;105 » devient
+    « 101-103;105 ». Seuls les numéros entiers consécutifs (sans zéro en
+    tête) sont regroupés; un trou coupe la plage, pour qu'on sache
+    exactement quels logements existent."""
+    res, suite = [], []
+
+    def vider():
+        if len(suite) >= PLAGE_MIN:
+            res.append("%s-%s" % (suite[0], suite[-1]))
+        else:
+            res.extend(suite)
+        suite.clear()
+    for l in logements:
+        if l.isdigit() and not l.startswith("0"):
+            if suite and int(l) != int(suite[-1]) + 1:
+                vider()
+            suite.append(l)
+        else:
+            vider()
+            res.append(l)
+    vider()
+    return res
+
+
+def deplier(valeur):
+    """Les logements d'une valeur addr:flats, plages dépliées : un
+    ensemble, pour comparer deux écritures."""
+    res = set()
+    for x in (valeur or "").split(";"):
+        x = x.strip()
+        m = re.fullmatch(r"(\d+)-(\d+)", x)
+        if m and int(m.group(1)) < int(m.group(2)) and int(m.group(2)) - int(m.group(1)) < 10000:
+            res.update(str(i) for i in range(int(m.group(1)), int(m.group(2)) + 1))
+        elif x:
+            res.add(x)
+    return res
+
+
+def tranches(valeurs, tete=False):
+    """Valeurs addr:flats d'au plus MAX_VALEUR caractères : une liste
+    trop longue est répartie sur plusieurs nœuds. tete : la liste commence
+    par un élément vide (l'adresse sans logement existe aussi)."""
+    res, cur = [], [""] if tete else []
+    for v in valeurs:
+        if cur and cur != [""] and len(";".join(cur + [v])) > MAX_VALEUR:
+            res.append(";".join(cur))
+            cur = []
+        cur.append(v)
+    if cur:
+        res.append(";".join(cur))
+    return res
+
+
 def numeros(num, base, autres):
     """Étiquettes de numéro d'une adresse fusionnée : addr:housenumber
-    avec les suffixes en lettre (« 120;120A;120B »), et addr:unit avec les
-    logements (« 1;2;3 »), ou None s'il n'y en a pas. Le numéro de base
-    n'y figure que s'il existe au RQA, ou s'il n'y a pas de suffixe : 120A
-    et 120B sans 120 donnent « 120A;120B »."""
+    avec les suffixes en lettre (« 120;120A;120B »), et les valeurs
+    addr:flats des logements (une par nœud, en général une seule), ou []
+    s'il n'y en a pas. La liste des logements commence par un élément vide
+    quand l'adresse sans logement existe aussi au RQA (« ;1;2 »), et les
+    suites s'écrivent en plages (« 101-109;201-209 »). Le numéro de base
+    n'est dans addr:housenumber que s'il existe au RQA, ou s'il n'y a pas
+    de suffixe : 120A et 120B sans 120 donnent « 120A;120B »."""
     groupe = [base] + list(autres)
     lettres = sorted({a.numero + a.suffixe for a in groupe if a.suffixe and not a.logement}, key=_ordre)
     logements = sorted({a.logement for a in groupe if a.logement}, key=_ordre)
     lettres = [l for l in lettres if l != num]
-    tete = [num] if any(a.principale for a in groupe) or not lettres else []
+    principale = any(a.principale for a in groupe)
+    tete = [num] if principale or not lettres else []
     numero = ";".join(tete + lettres)
-    return numero, ";".join(logements) or None
+    return numero, tranches(plages(logements), principale) if logements else []
 
 
 def logement_douteux(base, a):
@@ -174,7 +239,9 @@ def interpolations(index, noms, rapport, points=None, villes=None):
 
 
 def existantes(index, ignorer):
-    """Adresses déjà dans OSM, par numéro : (objet, point ou contour)."""
+    """Adresses déjà dans OSM, par numéro : (objet, point ou contour). Un
+    objet qui porte plusieurs numéros (« 47;49 », « 120;120A ») est rangé
+    sous chacun."""
     res = defaultdict(list)
     for e in index.tous():
         t = e.get("tags", {})
@@ -183,17 +250,30 @@ def existantes(index, ignorer):
         if e["type"] == "node":
             if e["id"] in ignorer:
                 continue
-            res[t["addr:housenumber"]].append((e, [(e["lon"], e["lat"])]))
+            pts = [(e["lon"], e["lat"])]
         elif e["type"] == "way":
-            contour = [index.point(n) for n in e["nodes"] if n in index.noeuds]
-            if contour:
-                res[t["addr:housenumber"]].append((e, contour))
+            pts = [index.point(n) for n in e["nodes"] if n in index.noeuds]
+            if not pts:
+                continue
+        else:
+            continue
+        for num in {x.strip() for x in t["addr:housenumber"].split(";") if x.strip()}:
+            res[num].append((e, pts))
     return res
 
 
-def correspondance(existants, numero, point):
+def correspondance(existants, numero, point, rue=None):
     """Objet OSM au même numéro : nœud à moins de DOUBLON_M, ou contour
-    fermé (bâtiment, terrain) qui contient le point ou en est proche."""
+    fermé (bâtiment, terrain) qui contient le point ou en est proche.
+    Sinon, avec rue : le plus proche au même numéro sur la même rue, à
+    moins de MEME_RUE_M (une porte placée loin du point du RQA, au fond
+    d'un grand terrain)."""
+    if rue is not None:
+        cle = cle_nom(rue)
+        proches = [(min(geo.distance(q, point) for q in pts), e) for e, pts in existants.get(numero, [])
+                   if cle_nom(e.get("tags", {}).get("addr:street")) == cle]
+        proches = [x for x in proches if x[0] < MEME_RUE_M]
+        return min(proches, key=lambda x: x[0])[1] if proches else None
     for e, pts in existants.get(numero, []):
         if len(pts) == 1:
             if geo.distance(pts[0], point) < DOUBLON_M:
@@ -263,6 +343,7 @@ def preparer(adresses, index, conf, positions=None):
     if hasattr(positions, "associer"):
         positions.associer(gardees)
     corriger_rue = conf.get("corriger_rue_existante", True)
+    vus = set()             # adresses d'OSM qui correspondent à une adresse du RQA
 
     for (mun, odo, num), (a, autres) in sorted(
             groupes.items(), key=lambda kv: (kv[0][0], kv[1][0].rue, int(re.match(r"\d*", kv[0][2]).group() or 0), kv[0][2])):
@@ -285,14 +366,26 @@ def preparer(adresses, index, conf, positions=None):
         if remarque:
             detail.insert(0, remarque)
 
-        e = correspondance(deja, num, point) or correspondance(deja, num, a.point)
+        e = correspondance(deja, num, point) or correspondance(deja, num, a.point) \
+            or correspondance(deja, num, a.point, a.rue)
         if e is not None:
+            vus.add((e["type"], e["id"]))
             t = e.get("tags", {})
             maj = {}
             if corriger_rue and t.get("addr:street") != a.rue:
                 maj["addr:street"] = a.rue
-            if a.code_postal and not t.get("addr:postcode"):
-                maj["addr:postcode"] = a.code_postal
+            # Une localité déjà inscrite est gardée.
+            if not t.get("addr:city") and a.ville:
+                maj["addr:city"] = a.ville
+            # Les logements : seulement signalés s'ils diffèrent (une source
+            # plus complète, le rôle d'évaluation, a pu servir).
+            _, flats = numeros(num, a, autres)
+            attendus = set().union(*(deplier(f) for f in flats)) if flats else set()
+            dans_osm = deplier(t.get("addr:flats") or t.get("addr:unit"))
+            if attendus != dans_osm:
+                detail.append("logements : %s" % ", ".join(x for x in (
+                    "%d de plus au RQA" % len(attendus - dans_osm) if attendus - dans_osm else "",
+                    "%d de plus dans OSM" % len(dans_osm - attendus) if dans_osm - attendus else "") if x))
             if maj:
                 plan.corriger(e["type"], e["id"], maj, "adresse %s %s : %s" % (
                     num, a.rue, ", ".join("%s=%s" % kv for kv in maj.items())))
@@ -306,12 +399,10 @@ def preparer(adresses, index, conf, positions=None):
             # tant que la rue n'est pas réglée (renommée ou ajoutée).
             pass
         else:
-            numero, logements = numeros(num, a, autres)
+            numero, flats = numeros(num, a, autres)
             tags = {"addr:housenumber": numero, "addr:street": a.rue}
-            if logements:
-                tags["addr:unit"] = logements
-            if a.code_postal:
-                tags["addr:postcode"] = a.code_postal
+            if a.ville:
+                tags["addr:city"] = a.ville
             # Une position d'une autre source posée sur le contour d'un
             # bâtiment est une porte d'entrée.
             if source != "RQA":
@@ -319,7 +410,12 @@ def preparer(adresses, index, conf, positions=None):
                 if d is not None and d < SUR_CONTOUR_M:
                     tags["entrance"] = entree(a.categorie)
                     detail.append("entrance=%s" % tags["entrance"])
-            plan.creer.append((tags, point))
+            # Une liste de logements trop longue pour une valeur : un nœud
+            # par tranche, au même point.
+            for f in flats or [None]:
+                plan.creer.append((dict(tags, **({"addr:flats": f} if f else {})), point))
+            if len(flats) > 1:
+                detail.append("logements répartis sur %d nœuds" % len(flats))
             statut = statut or "nouveau"
         if not a.principale and num == a.numero:
             detail.append("pas d'adresse principale au RQA, point d'un logement ou d'un suffixe")
@@ -330,4 +426,22 @@ def preparer(adresses, index, conf, positions=None):
                 sorted({x.logement for x in douteux}, key=_ordre)))
         plan.rapport.append(Ligne(mun, a.rue, num, a.code_postal, point[0], point[1], a.qualite,
                                   statut, "; ".join(detail), source))
+    # Adresses d'OSM qu'aucune adresse du RQA n'a retrouvées, près des
+    # adresses du lieu (ajoutées à la main, venues d'une autre source, ou
+    # écrites autrement).
+    # Les extrémités d'une ligne d'interpolation n'en sont pas.
+    grille = geo.Grille([[a.point, a.point] for a in gardees], pas=0.01)
+    interp = {n for w in index.chemins.values() if "addr:interpolation" in w.get("tags", {}) for n in w["nodes"]}
+    for num, lst in deja.items():
+        for e, pts in lst:
+            if (e["type"], e["id"]) in vus or e.get("tags", {}).get("addr:street") is None \
+                    or (e["type"] == "node" and e["id"] in interp):
+                continue
+            if grille.ecart(pts[0], rayon_deg=0.01) > SEULE_OSM_M:
+                continue
+            vus.add((e["type"], e["id"]))
+            t = e["tags"]
+            plan.seules_osm.append((e["type"], e["id"], t["addr:housenumber"], t["addr:street"],
+                                    t.get("addr:city", ""), pts[0]))
+    plan.seules_osm.sort(key=lambda x: (x[3], _ordre(x[2])))
     return plan

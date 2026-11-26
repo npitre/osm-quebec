@@ -312,14 +312,20 @@ dans `sortie/LIEU/` (hors du dépôt); les rapports de révision, dans
 1. **Une adresse par numéro de base et par rue.** Le RQA répète le
    point pour chaque logement d'un immeuble (2-1701, 329 1) : seul le
    numéro de base est créé. Les numéros de logement (2-1701, 329 1)
-   vont dans `addr:unit`, séparés par « ; », sauf les logements
-   douteux (voir « Logements douteux du RQA »). Un suffixe en lettre
+   vont dans `addr:flats`, séparés par « ; », sauf les logements
+   douteux (voir « Logements douteux du RQA »). La liste commence par
+   un élément vide quand l'adresse sans logement existe aussi au RQA
+   (`;1;2` : trois logements, dont un sans numéro). Une suite d'au moins
+   trois logements consécutifs s'écrit en plage (`101-109;201-209`);
+   un trou coupe la plage, pour qu'on sache exactement quels logements
+   existent. Une liste de plus de 255 caractères (la limite d'OSM pour
+   une valeur) est répartie sur plusieurs nœuds au même point. Un suffixe en lettre
    (120A) au même point que son numéro de base est fusionné et ajouté
    à `addr:housenumber` (« 120;120A;120B »); placé à plus de 5 m, il
    devient une adresse distincte. Le numéro de base n'est ajouté que
    s'il existe au RQA : 120A et 120B sans 120 donnent « 120A;120B ».
    À valider : un suffixe en lettre que Postes Canada traite comme un
-   logement devrait aller dans `addr:unit` plutôt que dans
+   logement devrait aller dans `addr:flats` plutôt que dans
    `addr:housenumber`.
 2. **Adresses terminées ou pas encore établies** : une adresse détruite
    (`date_fin` remplie) est ignorée. Une adresse pas encore certifiée
@@ -334,17 +340,27 @@ dans `sortie/LIEU/` (hors du dépôt); les rapports de révision, dans
    passe « à revoir » : rue absente, sans nom ou écrite autrement dans
    OSM. Les rues se corrigent d'abord, les adresses suivent.
 5. **Doublons** : une adresse OSM au même numéro, à moins de 30 m (ou
-   un bâtiment ou terrain qui contient le point), n'est pas recréée.
-   On y corrige `addr:street` s'il diffère du nom officiel et on y
-   ajoute `addr:postcode` s'il manque. Rien d'autre n'est touché.
+   un bâtiment ou terrain qui contient le point), ou au même numéro sur
+   la même rue à moins de 300 m (une porte placée au fond d'un grand
+   terrain, loin du point du RQA), n'est pas recréée. Un
+   objet qui porte plusieurs numéros (`47;49`, plusieurs numéros
+   derrière une même porte) est retrouvé par chacun. On y corrige
+   `addr:street` s'il diffère du nom officiel et on y ajoute
+   `addr:city` s'il manque; une localité déjà inscrite est gardée. Des
+   logements différents de ceux du RQA sont signalés, pas corrigés (une
+   autre source, le rôle d'évaluation, a pu servir). Rien d'autre n'est
+   touché. Les adresses d'OSM près du lieu qu'aucune adresse du RQA ne
+   retrouve sont listées dans le rapport, sans y toucher.
 6. **Étiquettes créées** : `addr:housenumber`, `addr:street`,
-   `addr:postcode`. `addr:city` : à décider par la communauté. Aucun
-   géocodeur courant n'en a besoin pour trouver la municipalité, qui
-   vient des limites. S'il est ajouté, ce sera la localité postale de
-   Postes Canada (définition du wiki), pas la municipalité officielle;
-   Nominatim l'ajoute alors aux termes de recherche de l'adresse. Pas
-   d'identifiant du RQA dans OSM (sauf si la communauté décide de
-   l'inclure).
+   `addr:city`, `addr:flats`, selon la [méthode de validation des noms
+   de rues et des adresses](https://wiki.openstreetmap.org/wiki/FR:Qu%C3%A9bec/Validation_des_noms_de_rues_et_des_adresses)
+   (discussion : <https://community.openstreetmap.org/t/150643>).
+   `addr:city` est le discriminant de la rue (l'ancienne municipalité
+   ou la localité, dans une municipalité fusionnée qui a deux rues du
+   même nom), sinon le nom officiel de la municipalité : plusieurs
+   outils ne lisent pas les limites. Pas de `addr:postcode` tant que
+   Postes Canada ne l'a pas permis (demande faite). Pas d'identifiant
+   du RQA dans OSM (sauf si la communauté décide de l'inclure).
 7. **Interpolations CanVec** : une ligne `addr:interpolation` est
    supprimée avec ses nœuds, puisque les vraies adresses la remplacent,
    si ses deux extrémités portent le nom d'une rue importée, si elle passe
@@ -372,7 +388,7 @@ dans `sortie/LIEU/` (hors du dépôt); les rapports de révision, dans
 Certains logements du RQA ne correspondent à rien sur le terrain : des
 numéros d'unité bizarres (36A, 3511, 9999) sur des propriétés qui n'ont
 qu'un seul logement. Par exemple, le logement 9999-2225 chemin du
-Lac-Gagnon Ouest, à Duhamel. Ils ne sont pas mis dans `addr:unit`.
+Lac-Gagnon Ouest, à Duhamel. Ils ne sont pas mis dans `addr:flats`.
 
 **Règle.** Un logement est douteux s'il n'a ni lot ni matricule, et que
 son adresse principale n'a qu'un seul logement selon le rôle
@@ -396,7 +412,7 @@ signaler : la section « Logements douteux » du rapport des adresses de
 chaque lieu en donne la liste, avec l'identifiant du RQA. Une version
 corrigée du RQA les fera disparaître de cette liste.
 
-**Effet.** Aucune adresse n'est perdue : seul un faux `addr:unit` est
+**Effet.** Aucune adresse n'est perdue : seul un faux `addr:flats` est
 évité. La règle se désactive par `ecarter_logements_douteux = false`
 dans la section `[adresses]` du lieu.
 

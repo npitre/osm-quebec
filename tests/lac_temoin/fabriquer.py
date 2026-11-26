@@ -249,10 +249,10 @@ def carte():
     # Adresses déjà dans OSM (règle 5 des adresses).
     c.noeud(3.45, 5, {"addr:housenumber": "30", "addr:street": "Ch. du Lac"})
     c.noeud(3.45, 6, {"addr:housenumber": "40", "addr:street": "Chemin du Lac",
-                      "addr:postcode": "J0T 1A0"})
+                      "addr:city": "Lac-Témoin", "addr:postcode": "J0T 1A0"})
     c.chemin(350, [(3.3, 6.9), (3.6, 6.9), (3.6, 7.1), (3.3, 7.1), (3.3, 6.9)],
              {"building": "house", "addr:housenumber": "50", "addr:street": "Chemin du Lac",
-              "addr:postcode": "J0T 1A0"})
+              "addr:city": "Lac-Témoin", "addr:postcode": "J0T 1A0"})
 
     # Interpolations CanVec (règle 7 des adresses).
     def interpolation(ident, y0, y1, ville, partage=False):
