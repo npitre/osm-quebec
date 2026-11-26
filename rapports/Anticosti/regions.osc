@@ -1,0 +1,122 @@
+<?xml version='1.0' encoding='utf-8'?>
+<osmChange version="0.6" generator="osmqc">
+  <create>
+    <node id="-1" version="0" lat="49.1047372" lon="-62.5046625" />
+    <node id="-2" version="0" lat="49.0441896" lon="-62.2574418" />
+    <node id="-3" version="0" lat="49.0450211" lon="-61.8277035" />
+    <node id="-4" version="0" lat="49.0730760" lon="-61.6779755" />
+    <node id="-5" version="0" lat="49.1391847" lon="-61.6432491" />
+    <node id="-6" version="0" lat="49.2155711" lon="-61.7057477" />
+    <node id="-7" version="0" lat="49.3264091" lon="-61.8126985" />
+    <node id="-8" version="0" lat="49.3755787" lon="-61.8832582" />
+    <node id="-9" version="0" lat="49.4211260" lon="-62.1360350" />
+    <node id="-10" version="0" lat="49.6039069" lon="-62.4993794" />
+    <node id="-11" version="0" lat="49.6766931" lon="-62.6899490" />
+    <node id="-12" version="0" lat="49.7678065" lon="-62.9991265" />
+    <node id="-13" version="0" lat="49.7679892" lon="-63.0000004" />
+    <node id="-14" version="0" lat="49.8455874" lon="-63.3746938" />
+    <node id="-15" version="0" lat="49.8914217" lon="-63.7285968" />
+    <node id="-16" version="0" lat="49.9042017" lon="-63.8902712" />
+    <node id="-17" version="0" lat="49.9383668" lon="-63.9747162" />
+    <node id="-18" version="0" lat="49.9680927" lon="-64.1569491" />
+    <node id="-19" version="0" lat="49.9564261" lon="-64.3208440" />
+    <node id="-20" version="0" lat="49.9161491" lon="-64.5250184" />
+    <node id="-21" version="0" lat="49.8572600" lon="-64.5600203" />
+    <node id="-22" version="0" lat="49.7822558" lon="-64.4716799" />
+    <node id="-23" version="0" lat="49.7183657" lon="-64.2033376" />
+    <node id="-24" version="0" lat="49.6808676" lon="-64.0000018" />
+    <node id="-25" version="0" lat="49.6403075" lon="-63.8980482" />
+    <node id="-26" version="0" lat="49.5105883" lon="-63.6719341" />
+    <node id="-27" version="0" lat="49.3741994" lon="-63.6191565" />
+    <node id="-28" version="0" lat="49.3058603" lon="-63.3458103" />
+    <node id="-29" version="0" lat="49.2369676" lon="-63.2010813" />
+    <node id="-30" version="0" lat="49.1860740" lon="-63.0000009" />
+    <way id="-1" version="0">
+      <nd ref="5228857024" />
+      <nd ref="-1" />
+      <nd ref="-2" />
+      <nd ref="-3" />
+      <nd ref="-4" />
+      <nd ref="-5" />
+      <nd ref="-6" />
+      <nd ref="-7" />
+      <nd ref="-8" />
+      <nd ref="-9" />
+      <nd ref="-10" />
+      <nd ref="-11" />
+      <nd ref="-12" />
+      <nd ref="-13" />
+      <nd ref="-14" />
+      <nd ref="-15" />
+      <nd ref="-16" />
+      <nd ref="-17" />
+      <nd ref="-18" />
+      <nd ref="-19" />
+      <nd ref="-20" />
+      <nd ref="-21" />
+      <nd ref="-22" />
+      <nd ref="-23" />
+      <nd ref="-24" />
+      <nd ref="-25" />
+      <nd ref="-26" />
+      <nd ref="-27" />
+      <nd ref="-28" />
+      <nd ref="-29" />
+      <nd ref="-30" />
+      <nd ref="5228857024" />
+      <tag k="admin_level" v="8" />
+      <tag k="boundary" v="administrative" />
+    </way>
+  </create>
+  <modify>
+    <relation id="7734508" version="9">
+      <member type="way" ref="-1" role="outer" />
+      <tag k="admin_level" v="8" />
+      <tag k="boundary" v="administrative" />
+      <tag k="name" v="L'Île-d'Anticosti" />
+      <tag k="name:en" v="Anticosti Island" />
+      <tag k="ref:qc" v="98020" />
+      <tag k="type" v="boundary" />
+      <tag k="wikidata" v="Q4543508" />
+    </relation>
+  </modify>
+  <delete>
+    <way id="541770099" version="3" />
+    <way id="776297543" version="2" />
+    <way id="776298128" version="2" />
+    <way id="802076517" version="1" />
+    <way id="802076518" version="1" />
+    <way id="802076519" version="1" />
+    <way id="802076520" version="1" />
+    <way id="802076521" version="1" />
+    <way id="802076524" version="1" />
+    <way id="802076526" version="1" />
+    <way id="802076527" version="1" />
+    <node id="5228856987" version="1" lat="49.2500000" lon="-63.2284596" />
+    <node id="5228856989" version="1" lat="49.9161491" lon="-64.5250184" />
+    <node id="5228856991" version="1" lat="49.7822558" lon="-64.4716799" />
+    <node id="5228856992" version="1" lat="49.3741994" lon="-63.6191565" />
+    <node id="5228856993" version="1" lat="49.0730760" lon="-61.6779755" />
+    <node id="5228856999" version="1" lat="49.9210844" lon="-64.5000000" />
+    <node id="5228857001" version="1" lat="49.5000000" lon="-63.6678368" />
+    <node id="5228857002" version="1" lat="49.2500000" lon="-61.7389692" />
+    <node id="5228857003" version="1" lat="49.3058603" lon="-63.3458103" />
+    <node id="5228857006" version="1" lat="49.8063006" lon="-64.5000000" />
+    <node id="5228857008" version="2" lat="49.0450176" lon="-61.8276995" />
+    <node id="5228857009" version="1" lat="49.8618159" lon="-63.5000000" />
+    <node id="5228857011" version="1" lat="49.3444092" lon="-63.5000000" />
+    <node id="5228857015" version="1" lat="49.8572600" lon="-64.5600204" />
+    <node id="5228857016" version="1" lat="49.7678065" lon="-62.9991265" />
+    <node id="5228857017" version="1" lat="49.5105883" lon="-63.6719341" />
+    <node id="5228857018" version="1" lat="49.0446878" lon="-62.0000000" />
+    <node id="5228857020" version="1" lat="49.2369676" lon="-63.2010813" />
+    <node id="5228857025" version="1" lat="49.7500000" lon="-62.9387032" />
+    <node id="5228857027" version="1" lat="49.6403075" lon="-63.8980482" />
+    <node id="5238499603" version="1" lat="49.6898611" lon="-62.7346048" />
+    <node id="7502341982" version="1" lat="49.6766931" lon="-62.6899490" />
+    <node id="7502414789" version="1" lat="49.8455874" lon="-63.3746938" />
+    <node id="7502414790" version="1" lat="49.2155711" lon="-61.7057478" />
+    <node id="7502414791" version="1" lat="49.1391847" lon="-61.6432491" />
+    <node id="14343334034" version="1" lat="49.1652933" lon="-62.9023058" />
+  </delete>
+</osmChange>
