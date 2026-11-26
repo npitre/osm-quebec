@@ -316,6 +316,10 @@ def regions_comparer(lieu, conf, preparer=False):
             if k in ids_englobantes:
                 englobantes[k] = (regions.Relation(ids_englobantes[k], pbf, commun), polys_e, communes)
         subdivisions = {"sous-division %d" % i: regions.Relation(i, pbf, commun) for i in ids_sub}
+        # Membres des relations dans l'extrait, avant que le plan ne les
+        # touche : comparés plus bas à leur version actuelle dans OSM.
+        origine = {c: [dict(m) for m in r.rel["members"]] for c, r in dict(
+            rels, **rels_voisines, **{k: v[0] for k, v in englobantes.items()}, **subdivisions).items()}
         progres.etape("Plan de remplacement des limites")
         plan = regions.preparer(polys, rels, ext, index, vois, rels_voisines, usages, chemins_des_noeuds,
                                 frontiere, englobantes, subdivisions)
@@ -337,6 +341,10 @@ def regions_comparer(lieu, conf, preparer=False):
         codes = sorted(set(rels) | set(plan["modifiees"]))
         par_id = {e["id"]: e for e in osm.objets("relation", sorted({toutes[c].id for c in codes}))}
         actuelles = {c: par_id[toutes[c].id] for c in codes}
+        plan["membres"], changees = regions.membres_actuels(plan["membres"], actuelles, origine)
+        if changees:
+            sys.exit("Chemins modifiés dans OSM depuis l'extrait : %s. Rafraîchissez "
+                     "l'extrait et relancez." % ", ".join(changees))
         progres.etape("Vérification des adresses avec les limites proposées")
         apres, _ = regions.comparer(charger_adresses(lieu), polys, regions.anneaux_proposes(plan, ext))
         plan["verification"] = apres

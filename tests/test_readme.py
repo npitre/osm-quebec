@@ -476,6 +476,19 @@ class Regions(unittest.TestCase):
         # A prend le tracé du MRNF.
         self.assertFalse({500, 501} & {m["ref"] for m in plan["membres"]["A"]})
 
+    def test_regions_8_membres_actuels(self):
+        chemin = {"type": "way", "ref": 1, "role": "outer"}
+        lien = {"type": "node", "ref": 9, "role": "label"}
+        origine = {"A": [chemin]}
+        membres = {"A": [{"type": "way", "ref": -1, "role": "outer"}]}
+        # Un label ajouté dans OSM depuis l'extrait est gardé.
+        res, changees = regions.membres_actuels(membres, {"A": {"id": 5, "members": [chemin, lien]}}, origine)
+        self.assertEqual(changees, [])
+        self.assertEqual(res["A"], [lien, {"type": "way", "ref": -1, "role": "outer"}])
+        # Des chemins changés depuis l'extrait : le plan ne vaut plus.
+        _, changees = regions.membres_actuels(membres, {"A": {"id": 5, "members": [lien]}}, origine)
+        self.assertEqual(changees, ["A (relation 5)"])
+
 
 # Rues
 

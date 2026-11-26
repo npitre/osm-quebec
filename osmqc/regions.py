@@ -1140,6 +1140,24 @@ def prendre_coupes(modif, modifies):
             modif["modifies"][w] = ns
 
 
+def membres_actuels(membres, actuelles, origine):
+    """Les membres qui ne sont pas des chemins (label, admin_centre) sont
+    pris dans la version actuelle de la relation, pas dans l'extrait : un
+    ajout fait depuis n'est pas effacé. Rend (membres, changees), où
+    changees nomme les relations dont les chemins ont changé depuis
+    l'extrait : le plan, fait sur l'extrait, ne vaut plus pour elles."""
+    def chemins(ms):
+        return [(m["ref"], m["role"]) for m in ms if m["type"] == "way"]
+    changees = sorted("%s (relation %d)" % (c, a["id"]) for c, a in actuelles.items()
+                      if c in origine and chemins(a["members"]) != chemins(origine[c]))
+    res = dict(membres)
+    for c, a in actuelles.items():
+        if c in res:
+            res[c] = ([m for m in a["members"] if m["type"] != "way"]
+                      + [m for m in res[c] if m["type"] == "way"])
+    return res, changees
+
+
 def inserer_morceaux(r, coupes):
     """Ajoute en mémoire à la relation r les morceaux neufs de chemins
     coupés, juste après le chemin coupé. coupes : [(chemin, [morceaux])]."""

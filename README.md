@@ -198,8 +198,11 @@ dans `sortie/LIEU/` (hors du dépôt); les rapports de révision, dans
    un membre `label` (ou `admin_centre`) qui pointe vers un nœud `place`
    portant exactement le même `name` que la relation. Sans ce lien,
    OsmAnd n'utilise pas la limite pour attribuer les adresses. Les
-   membres existants sont conservés; le rapport signale les relations
-   sans lien ou dont les noms diffèrent.
+   membres existants sont conservés, pris dans la version actuelle de
+   la relation (un lien ajouté depuis l'extrait n'est pas effacé); le
+   rapport signale les relations sans lien ou dont les noms diffèrent.
+   Une relation dont les chemins ont changé depuis l'extrait arrête la
+   préparation : l'extrait est à rafraîchir.
 9. **Chemins déjà conformes** : un chemin de limite existant (une simple
    ligne de limite, jamais un littoral, une route ou un cours d'eau)
    qui suit exactement le tracé du MRNF, mêmes sommets au 1e-7 degré

@@ -69,7 +69,9 @@
     </way>
   </create>
   <modify>
-    <relation id="7734508" version="9">
+    <relation id="7734508" version="11">
+      <member type="node" ref="14419853630" role="label" />
+      <member type="node" ref="1125473447" role="admin_centre" />
       <member type="way" ref="-1" role="outer" />
       <tag k="admin_level" v="8" />
       <tag k="boundary" v="administrative" />
