@@ -95,6 +95,12 @@ comme si OSM l'avait accepté, et vérifie que toutes les relations
 touchées restent des anneaux fermés, qu'aucun chemin ni nœud créé n'est
 orphelin et qu'une relance ne produit plus rien.
 
+Là où les adresses sont déjà dans OSM (importées ou validées à la
+main), `python3 outils/comparer.py lieux/LIEU.toml` écrit
+`rapports/LIEU/comparaison.md` et sa carte : adresses du RQA absentes
+d'OSM, adresses d'OSM sans pendant au RQA, logements, noms de rue,
+`addr:city` et `addr:postcode` différents. Rien n'est envoyé.
+
 `--test` envoie au serveur de test d'OSM; `--reel` à OpenStreetMap, ce
 qui est refusé tant que la discussion publique n'est pas inscrite dans
 la section `groupe` correspondante du lieu. Pour l'authentification,

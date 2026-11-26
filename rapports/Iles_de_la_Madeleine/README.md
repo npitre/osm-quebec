@@ -11,6 +11,9 @@ encore envoyées.
 Rapports générés : [régions](regions.md), [rues](rues.md) et
 [adresses](adresses.md), avec leurs cartes ([regions.geojson](regions.geojson),
 [rues.geojson](rues.geojson), [adresses.geojson](adresses.geojson)).
+Comparaison avec les adresses validées par Pierre-Léo Bourbonnais
+(novembre 2026) : [comparaison.md](comparaison.md), avec sa carte
+[comparaison.geojson](comparaison.geojson).
 Configuration : [lieux/Iles_de_la_Madeleine.toml](../../lieux/Iles_de_la_Madeleine.toml).
 
 Fichier d'envoi des limites, tel qu'il a été envoyé :
